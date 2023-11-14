@@ -9,6 +9,8 @@ SCREEN_HEIGHT = 3
 
 INPUT_SIZE = 9
 OUTPUT_SIZE = SCREEN_HEIGHT * SCREEN_WIDTH
+DEBUG_BUFFER_SIZE = 10000
+
 if __name__ == '__main__':
     # vector struct
     vector_type = np.dtype([('x', np.float32), ('y', np.float32), ('z', np.float32)])
@@ -65,8 +67,14 @@ if __name__ == '__main__':
     # prepare memory for final answer from OpenCL
     out = np.empty(OUTPUT_SIZE, dtype=pixel_color_type)
 
+    # prepare memory for debugging output
+    # debug is a string of '$$$$$$$0'
+    debug = np.full(DEBUG_BUFFER_SIZE, 36, dtype=np.uint8)
+    debug[DEBUG_BUFFER_SIZE-1] = 0
+    print(debug)
     # create context
     ctx = cl.create_some_context()
+
     # create command queue
     queue = cl.CommandQueue(ctx, properties=cl.command_queue_properties.PROFILING_ENABLE)
 
@@ -78,17 +86,25 @@ if __name__ == '__main__':
     pixel_pos_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=pix_data)
     # prepare device memory for output
     out_buf = cl.Buffer(ctx, cl.mem_flags.WRITE_ONLY, out.nbytes)
+    debug_buf = cl.Buffer(ctx, cl.mem_flags.KERNEL_READ_AND_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=debug)
 
     # compile kernel code
     prg = cl.Program(ctx, kernels).build()
     time_kernel_compilation = time.time()
 
     # execute kernel programs
-    evt = prg.adjust_score(queue, (INPUT_SIZE,), (1,), triangle_buf, vertex_buf, light_buf,
-                           camera_buf, pixel_pos_buf, out_buf)
+    evt = prg.trace_rays(queue, (INPUT_SIZE,), (1,), triangle_buf, vertex_buf, light_buf,
+                         camera_buf, pixel_pos_buf, out_buf, debug_buf)
     # wait for kernel executions
     evt.wait()
 
     cl.enqueue_copy(queue, out, out_buf).wait()
+    cl.enqueue_copy(queue, debug, debug_buf).wait()
+    print(debug)
+    debug_string = ""
+    i = 0
+    while debug[i] != 36:
+        debug_string += chr(debug[i])
+        i += 1
+    print(debug_string)
 
-    print(out)
