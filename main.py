@@ -1,13 +1,20 @@
 import numpy as np
 import pyopencl as cl
 import time
+import pygame
+from pygame.locals import *
 
 # help from: https://github.com/PyOCL/pyopencl-examples
 
-SCREEN_WIDTH = 3
-SCREEN_HEIGHT = 3
+SCREEN_WIDTH = 100
+SCREEN_HEIGHT = 100
 
 OUTPUT_SIZE = SCREEN_HEIGHT * SCREEN_WIDTH
+
+# Pygame initialization
+pygame.init()
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+clock = pygame.time.Clock()
 
 if __name__ == '__main__':
     # vector struct
@@ -25,13 +32,14 @@ if __name__ == '__main__':
 
     # world data struct
     world_data_type = np.dtype([('num_tris', np.int32),
-                                ('num_lights', np.int32)])
+                                ('num_lights', np.int32),
+                                ('world_ambient_intensity', np.float)])
 
     # -1 to 1 pixel position struct
     pixel_pos_type = np.dtype([('pix_x', np.float32), ('pix_y', np.float32)])
 
-    # output pixel color struct
-    pixel_color_type = np.dtype([('r', np.float32), ('g', np.float32), ('b', np.float32)])
+    # material struct
+    # pixel_color_type = np.dtype([('r', np.int8), ('g', np.int8), ('b', np.int8)])
 
     # camera data struct
     camera_data_type = np.dtype([('position', vector_type),
@@ -54,12 +62,11 @@ if __name__ == '__main__':
     # initialize triangle vertices (can be pointed to by multiple triangles)
     vertex_data = np.array([(0.0, -1, 1.0), (1.0, -1, 1.0), (1.0, -1, 0.0)],
                            dtype=vector_type)
-    print(vertex_data)
 
     # initialize pixel data array, an array of indexes for each pixel's position on the screen, starting at top right.
     frac = SCREEN_HEIGHT / SCREEN_WIDTH
-    pix_data = np.array([(((i % SCREEN_WIDTH) + 0.5) / SCREEN_WIDTH * 2 - 1,
-                          frac - ((i // SCREEN_WIDTH) + 0.5) / SCREEN_WIDTH * 2)
+    pix_data = np.array([(((i // SCREEN_WIDTH) + 0.5) / SCREEN_WIDTH * 2 - 1,
+                          frac - ((i % SCREEN_WIDTH) + 0.5) / SCREEN_WIDTH * 2)
                          for i in range(SCREEN_WIDTH * SCREEN_HEIGHT)],
                         dtype=pixel_pos_type)
 
@@ -83,7 +90,7 @@ if __name__ == '__main__':
     matrix = np.random.randint(low=1, high=101, dtype=np.uint32, size=OUTPUT_SIZE)
 
     # prepare memory for final answer from OpenCL
-    out = np.empty(OUTPUT_SIZE, dtype=pixel_color_type)
+    out = np.empty(shape=(SCREEN_WIDTH, SCREEN_HEIGHT, 3), dtype=np.uint8)
 
     # create context
     ctx = cl.create_some_context()
@@ -114,4 +121,15 @@ if __name__ == '__main__':
 
     cl.enqueue_copy(queue, out, out_buf).wait()
 
-    print(out)
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                running = False
+
+        pygame.surfarray.blit_array(screen, out)
+        pygame.display.flip()
+
+        clock.tick(60)
+
+    pygame.quit()

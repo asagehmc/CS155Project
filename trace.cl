@@ -12,6 +12,7 @@ typedef struct {
 typedef struct {
     int num_tris;
     int num_lights;
+    float world_ambient_intensity;
 } world_data;
 
 typedef struct {
@@ -36,9 +37,9 @@ typedef struct {
 } pixel_pos;
 
 typedef struct {
-    float r;
-    float g;
-    float b;
+    char r;
+    char g;
+    char b;
 } pixel_color;
 
 typedef struct {
@@ -117,24 +118,8 @@ __kernel void trace_rays(__global triangle* tris,
             __private vector point_minus_direction = gpminus(&(vertices[tris[i].a]), &(ray_cast.pos));
             float d = pgdot(&point_minus_direction, &(tris[i].normal)) /
                       pgdot(&(ray_cast.dir), &(tris[i].normal));
-            if (global_id == 7) {
-                printf("L: %f %f %f", ray_dir.x, ray_dir.y, ray_dir.z);
-                printf("P0: %f %f %f", vertices[tris[i].a].x, vertices[tris[i].a].y, vertices[tris[i].a].z);
-                printf("L0: %f %f %f", ray_cast.pos.x, ray_cast.pos.y, ray_cast.pos.z);
-                printf("n: %f %f %f", tris[i].normal.x, tris[i].normal.y, tris[i].normal.z);
 
-                printf("P0 - L0: %f %f %f", point_minus_direction.x, point_minus_direction.y, point_minus_direction.z);
-
-                printf("dot(P0 - L0, N), %f", pgdot(&point_minus_direction, &(tris[i].normal)));
-//                printf("P0 - L0: %f %f %f", point_minus_direction.x, point_minus_direction.y, point_minus_direction.z);
-
-
-
-
-                printf("d for %f", d);
-            }
             if (d >= 0 && d < closest_hit) {
-                printf("HIT in %i, %f", global_id, d);
                 closest_hit = d;
                 closest_triangle = 1;
             }
@@ -143,10 +128,11 @@ __kernel void trace_rays(__global triangle* tris,
     //__global vector v1_global = ;
     //__private vector v1 = {v1_global.x, v1_global.y, v1_global.z};
     if (closest_triangle != -1) {
-        out[global_id].r = 1;
-        out[global_id].g = 1;
-        out[global_id].b = 1;
+        out[global_id].r = 255;
+        out[global_id].g = 255;
+        out[global_id].b = 255;
     }
+
 
 
 }
