@@ -8,8 +8,8 @@ from pygame.locals import *
 
 # help from: https://github.com/PyOCL/pyopencl-examples
 
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 1000
+SCREEN_WIDTH = 500
+SCREEN_HEIGHT = 250
 
 OUTPUT_SIZE = SCREEN_HEIGHT * SCREEN_WIDTH
 
@@ -59,8 +59,8 @@ if __name__ == '__main__':
 
     # initialize pixel data array, an array of indexes for each pixel's position on the screen, starting at top right.
     frac = SCREEN_HEIGHT / SCREEN_WIDTH
-    pix_data = np.array([(((i // SCREEN_WIDTH) + 0.5) / SCREEN_WIDTH * 2 - 1,
-                          frac - ((i % SCREEN_WIDTH) + 0.5) / SCREEN_WIDTH * 2)
+    pix_data = np.array([(((i // SCREEN_HEIGHT) + 0.5) / SCREEN_WIDTH * 2 - 1,
+                          frac - ((i % SCREEN_HEIGHT) + 0.5) / SCREEN_WIDTH * 2)
                          for i in range(SCREEN_WIDTH * SCREEN_HEIGHT)],
                         dtype=pixel_pos_type)
 
