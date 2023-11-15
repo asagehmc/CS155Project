@@ -4,8 +4,8 @@ import time
 
 # help from: https://github.com/PyOCL/pyopencl-examples
 
-SCREEN_WIDTH = 10
-SCREEN_HEIGHT = 5
+SCREEN_WIDTH = 4
+SCREEN_HEIGHT = 2
 
 OUTPUT_SIZE = SCREEN_HEIGHT * SCREEN_WIDTH
 DEBUG_BUFFER_SIZE = 10000
@@ -46,8 +46,9 @@ if __name__ == '__main__':
                            dtype=vector_type)
 
     # initialize pixel data array, an array of indexes for each pixel's position on the screen, starting at top right.
+    frac = SCREEN_HEIGHT/SCREEN_WIDTH
     pix_data = np.array([(((i % SCREEN_WIDTH) + 0.5) / SCREEN_WIDTH * 2 - 1,
-                          ((i // SCREEN_HEIGHT) + 0.5) / SCREEN_WIDTH * 2 - 1)
+                          frac - ((i // SCREEN_WIDTH) + 0.5) / SCREEN_WIDTH * 2)
                          for i in range(SCREEN_WIDTH * SCREEN_HEIGHT)],
                         dtype=pixel_pos_type)
 
@@ -55,7 +56,8 @@ if __name__ == '__main__':
     light_data = np.array([((0.0, 0.5, 0.0), 255, 255, 255, 1.0)], dtype=light_type)
 
     # initialize camera data array
-    camera_data = np.array([((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 0.0, 0.0), (0.0, 1.0, 0.0))],
+    # position, right, up, forward
+    camera_data = np.array([((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0))],
                            dtype=camera_data_type)
 
     # load program from cl source file
@@ -69,10 +71,6 @@ if __name__ == '__main__':
     # prepare memory for final answer from OpenCL
     out = np.empty(OUTPUT_SIZE, dtype=pixel_color_type)
 
-    # prepare memory for debugging output
-    # debug is a string of '$$$$$$$0'
-    debug = np.full(DEBUG_BUFFER_SIZE, 36, dtype=np.uint8)
-    debug[DEBUG_BUFFER_SIZE-1] = 0
     # create context
     ctx = cl.create_some_context()
 
@@ -87,7 +85,6 @@ if __name__ == '__main__':
     pixel_pos_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=pix_data)
     # prepare device memory for output
     out_buf = cl.Buffer(ctx, cl.mem_flags.WRITE_ONLY, out.nbytes)
-    debug_buf = cl.Buffer(ctx, cl.mem_flags.READ_WRITE | cl.mem_flags.COPY_HOST_PTR, hostbuf=debug)
 
     # compile kernel code
     prg = cl.Program(ctx, kernels).build()
@@ -95,16 +92,10 @@ if __name__ == '__main__':
 
     # execute kernel programs
     evt = prg.trace_rays(queue, (OUTPUT_SIZE,), (1,), triangle_buf, vertex_buf, light_buf,
-                         camera_buf, pixel_pos_buf, out_buf, debug_buf)
+                         camera_buf, pixel_pos_buf, out_buf)
     # wait for kernel executions
     evt.wait()
 
     cl.enqueue_copy(queue, out, out_buf).wait()
-    cl.enqueue_copy(queue, debug, debug_buf).wait()
-    debug_string = ""
-    i = 0
-    while debug[i] != 36:
-        debug_string += chr(debug[i])
-        i += 1
-    print(debug_string)
+
     print(out)
