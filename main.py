@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 import pyopencl as cl
 import time
@@ -6,8 +8,8 @@ from pygame.locals import *
 
 # help from: https://github.com/PyOCL/pyopencl-examples
 
-SCREEN_WIDTH = 100
-SCREEN_HEIGHT = 100
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 1000
 
 OUTPUT_SIZE = SCREEN_HEIGHT * SCREEN_WIDTH
 
@@ -39,17 +41,18 @@ if __name__ == '__main__':
                            ('intensity', np.float32)])
 
     # initialize light data array
-    light_data = np.array([((0.0, 0.5, 0.0), (1.0, 1.0, 1.0), 1.0)], dtype=light_type)
+    light_data = np.array([((1.0, 0.5, 4.0), (1.0, 1.0, 1.0), 1.0)], dtype=light_type)
 
     # world data struct
     world_data_type = np.dtype([('num_tris', np.int32),
                                 ('num_lights', np.int32),
                                 ('world_ambient_color', vector_type),
+                                ('world_background_color', vector_type),
                                 ('world_ambient_intensity', np.float32)])
 
     # initialize world data
     world_data = np.array([(triangle_data.shape[0], light_data.shape[0],
-                            (1, 1, 1), 1.0)], dtype=world_data_type)
+                            (1, 1, 1), (0, 0, 0), 1.0)], dtype=world_data_type)
 
     # -1 to 1 pixel position struct
     pixel_pos_type = np.dtype([('pix_x', np.float32), ('pix_y', np.float32)])
@@ -67,7 +70,7 @@ if __name__ == '__main__':
                               ('specular_color', vector_type),
                               ('specular_power', np.int32)])
 
-    material_data = np.array([((0.2, 0.2, 0.2), (0.6, 0.6, 0.6), (0.2, 0.2, 0.2), 30)], dtype=material_type)
+    material_data = np.array([((0.2, 0.2, 0.2), (0.6, 0.6, 0.6), (0.999, 0.999, 0.999), 30)], dtype=material_type)
 
     # camera data struct
     camera_data_type = np.dtype([('position', vector_type),
@@ -96,37 +99,37 @@ if __name__ == '__main__':
 
     # create command queue
     queue = cl.CommandQueue(ctx, properties=cl.command_queue_properties.PROFILING_ENABLE)
-
-    # prepare device memory for input
-    triangle_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=triangle_data)
-    vertex_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=vertex_data)
-    light_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=light_data)
-    camera_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=camera_data)
-    material_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=material_data)
-    pixel_pos_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=pix_data)
-    world_data_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world_data)
-
-    # prepare device memory for output
-    out_buf = cl.Buffer(ctx, cl.mem_flags.WRITE_ONLY, out.nbytes)
-
-    # compile kernel code
-    prg = cl.Program(ctx, kernels).build()
-    time_kernel_compilation = time.time()
-
-    # execute kernel programs
-    evt = prg.trace_rays(queue, (OUTPUT_SIZE,), (1,), triangle_buf, vertex_buf, light_buf,
-                         camera_buf, material_buf, pixel_pos_buf, world_data_buf, out_buf)
-    # wait for kernel executions
-    evt.wait()
-
-    cl.enqueue_copy(queue, out, out_buf).wait()
-
+    x = 0
     running = True
     while running:
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
+        light_data[0]["position"] = (2 * math.sin(x), 1, 5)
+        x += 0.05
+        # prepare device memory for input
+        triangle_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=triangle_data)
+        vertex_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=vertex_data)
+        light_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=light_data)
+        camera_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=camera_data)
+        material_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=material_data)
+        pixel_pos_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=pix_data)
+        world_data_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world_data)
 
+        # prepare device memory for output
+        out_buf = cl.Buffer(ctx, cl.mem_flags.WRITE_ONLY, out.nbytes)
+
+        # compile kernel code
+        prg = cl.Program(ctx, kernels).build()
+        time_kernel_compilation = time.time()
+
+        # execute kernel programs
+        evt = prg.trace_rays(queue, (OUTPUT_SIZE,), (1,), triangle_buf, vertex_buf, light_buf,
+                             camera_buf, material_buf, pixel_pos_buf, world_data_buf, out_buf)
+        # wait for kernel executions
+        evt.wait()
+
+        cl.enqueue_copy(queue, out, out_buf).wait()
         pygame.surfarray.blit_array(screen, out)
         pygame.display.flip()
 

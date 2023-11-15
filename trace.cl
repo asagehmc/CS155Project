@@ -13,6 +13,7 @@ typedef struct {
     int num_tris;
     int num_lights;
     vector world_ambient_color;
+    vector world_background_color;
     float world_ambient_intensity;
 } world_data;
 
@@ -20,7 +21,7 @@ typedef struct {
     vector ambient_color;
     vector diffuse_color;
     vector specular_color;
-    int world_ambient_intensity;
+    int specular_power;
 } material;
 
 
@@ -158,6 +159,7 @@ __kernel void trace_rays(__global triangle* tris,
             }
         }
     }
+    // copy important data to __private scope
     triangle tri = tris[closest_triangle];
     material mat = materials[tri.mat];
     vector origin = camera->position;
@@ -165,39 +167,41 @@ __kernel void trace_rays(__global triangle* tris,
     vector intersection_point = ppsum(&origin, &travel_vec);
     if (closest_triangle != -1) {
         //get ambient light
-        __private vector ambient_and_world = gpmult(&(world->world_ambient_color), &(mat.ambient_color));
-        __private vector light = pCmult(&ambient_and_world, world->world_ambient_intensity);
+        vector ambient_and_world = gpmult(&(world->world_ambient_color), &(mat.ambient_color));
+        vector light = pCmult(&ambient_and_world, world->world_ambient_intensity);
         //get ambient & spectral light
         for (int i = 0; i < world->num_lights; ++i) {
-            __private vector light_color = lights[i].color;
-            __private vector light_pos = lights[i].position;
-            __private vector to_light = ppminus(&light_pos, &intersection_point);
+            // setup required vector data
+            vector light_color = lights[i].color;
+            vector light_pos = lights[i].position;
+            vector to_light = ppminus(&light_pos, &intersection_point);
             pnormalize(&to_light);
 
-            if (global_id == 100 * 100-1) {
-                printf("light color %f %f %f", light_color.x, light_color.y, light_color.z);
-                printf("dot %f", fmax(ppdot(&tri.normal, &to_light), 0));
-                printf("mat color %f %f %f", mat.diffuse_color.x, mat.diffuse_color.y, mat.diffuse_color.z);
-
-            }
+            // get diffuse color
             vector diffuse = pCmult(&light_color, fmax(ppdot(&tri.normal, &to_light), 0));
             diffuse = ppmult(&mat.diffuse_color, &diffuse);
-            if (global_id == 100 * 100-1) {
-                printf("diffuse %f %f %f", diffuse.x, diffuse.y, diffuse.z);
-                printf("light %f %f %f", light.x, light.y, light.z);
 
-            }
+            // construct the reflection vector
+            vector reflected = pCmult(&tri.normal, ppdot(&to_light, &tri.normal));
+            reflected = pCmult(&reflected, 2);
+            reflected = ppminus(&reflected, &to_light);
+
+            vector specular = pCmult(&light_color, pow(fmax(-ppdot(&ray_cast.dir, &reflected), 0), mat.specular_power));
+            specular = ppmult(&mat.diffuse_color, &specular);
+
             light = ppsum(&diffuse, &light);
-            if (global_id == 100 * 100-1) {
-                printf("light %f %f %f", light.x, light.y, light.z);
-            }
+            light = ppsum(&specular, &light);
+
         }
 
-        out[global_id].r = light.x * 255;
-        out[global_id].g = light.y * 255;
-        out[global_id].b = light.z * 255;
+        out[global_id].r = fmin(light.x, 1) * 255;
+        out[global_id].g = fmin(light.y, 1) * 255;
+        out[global_id].b = fmin(light.z, 1) * 255;
+        return;
     }
-
+    out[global_id].r = world->world_background_color.x * 255;
+    out[global_id].g = world->world_background_color.y * 255;
+    out[global_id].b = world->world_background_color.z * 255;
 
 
 
