@@ -1,10 +1,10 @@
 import math
 
-import numpy as np
 import pyopencl as cl
 import time
 import pygame
 from pygame.locals import *
+from custom_types import *
 
 # help from: https://github.com/PyOCL/pyopencl-examples
 from world import World
@@ -22,43 +22,23 @@ pygame.font.init()
 font = pygame.font.SysFont('courier', 30)
 
 if __name__ == '__main__':
-    world = World("./world.txt")
-    exit()
-    # vector struct
-    vector_type = np.dtype([('x', np.float32), ('y', np.float32), ('z', np.float32)])
+    # world = World("./world.txt")
+    # exit()
 
     # initialize triangle vertices (can be pointed to by multiple triangles)
     vertex_data = np.array([(-2, 0, 5.0), (0, 2, 5), (0, 0, 5.0), (2, 0, 5.5), (0, -2, 6)],
                            dtype=vector_type)
 
-    # triangle struct, 3 vertex indexes, 3 floats for normal vector, 1 material index
-    triangle_type = np.dtype([('v1', np.uint32), ('v2', np.uint32), ('v3', np.uint32),
-                              ('mat', np.uint32)])
-
     # initialize triangle data, 3 indexes for vertices, 3 floats for normal vector, 1 material index
     triangle_data = np.array([(0, 1, 2, 1), (2, 1, 3, 0), (4, 2, 3, 0), (4, 0, 2, 1)],
                              dtype=triangle_type)
-    # light type struct
-    light_type = np.dtype([('position', vector_type),
-                           ("color", vector_type),
-                           ('intensity', np.float32)])
 
     # initialize light data array
     light_data = np.array([((1.0, 0.5, 4.0), (1.0, 1.0, 1.0), 1.0)], dtype=light_type)
 
-    # world data struct
-    world_data_type = np.dtype([('num_tris', np.int32),
-                                ('num_lights', np.int32),
-                                ('world_ambient_color', vector_type),
-                                ('world_background_color', vector_type),
-                                ('world_ambient_intensity', np.float32)])
-
     # initialize world data
     world_data = np.array([(triangle_data.shape[0], light_data.shape[0],
                             (1, 1, 1), (0, 0, 0), 1.0)], dtype=world_data_type)
-
-    # -1 to 1 pixel position struct
-    pixel_pos_type = np.dtype([('pix_x', np.float32), ('pix_y', np.float32)])
 
     # initialize pixel data array, an array of indexes for each pixel's position on the screen, starting at top right.
     frac = SCREEN_HEIGHT / SCREEN_WIDTH
@@ -67,20 +47,8 @@ if __name__ == '__main__':
                          for i in range(SCREEN_WIDTH * SCREEN_HEIGHT)],
                         dtype=pixel_pos_type)
 
-    # material struct
-    material_type = np.dtype([('ambient_color', vector_type),
-                              ('diffuse_color', vector_type),
-                              ('specular_color', vector_type),
-                              ('specular_power', np.int32)])
-
     material_data = np.array([((0.2, 0.2, 0.2), (0.6, 0.6, 0.6), (0.5, 0.5, 0.5), 30),
                               ((0.2, 0.2, 0.2), (0.3, 0.3, 0.3), (0.0, 0.999, 0.0), 60)], dtype=material_type)
-
-    # camera data struct
-    camera_data_type = np.dtype([('position', vector_type),
-                                 ('right', vector_type),
-                                 ('up', vector_type),
-                                 ('forward', vector_type)])  # note: only including this cause it's faster to do once
 
     # initialize camera data array
     # position, right, up, forward
