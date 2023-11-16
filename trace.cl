@@ -183,7 +183,7 @@ __kernel void trace_rays(__global triangle* tris,
         vector normal = ppcross(&va_to_vb, &vb_to_vc);
         pnormalize(&normal);
         //if we are parallel, or backface is showing, skip triangle
-        if (ppdot(&ray_dir, &normal) > 0) {
+        if (ppdot(&ray_dir, &normal) > 0 && i < 4) {
             vector point_minus_direction = ppminus(&vec_a, &(ray_cast.pos));
             // calculate distance to plane
             float d = ppdot(&point_minus_direction, &normal) /
@@ -192,6 +192,9 @@ __kernel void trace_rays(__global triangle* tris,
             if (d >= 0 && d < closest_hit) {
                 vector travel_vec = pCmult(&(ray_cast.dir), d);
                 vector intersection_point = ppsum(&origin, &travel_vec);
+//                printf("a: %f %f %f\n", vec_a.x, vec_a.y, vec_a.z);
+//                printf("b: %f %f %f\n", vec_b.x, vec_b.y, vec_b.z);
+//                printf("c: %f %f %f\n\n", vec_c.x, vec_c.y, vec_c.z);
 
                 if (barycentricInside(&intersection_point, &vec_a, &vec_b, &vec_c)) {
                     closest_hit = d;

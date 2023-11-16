@@ -22,23 +22,22 @@ pygame.font.init()
 font = pygame.font.SysFont('courier', 30)
 
 if __name__ == '__main__':
-    # world = World("./world.txt")
-    # exit()
+    world = World("./world.txt")
 
-    # initialize triangle vertices (can be pointed to by multiple triangles)
-    vertex_data = np.array([(-2, 0, 5.0), (0, 2, 5), (0, 0, 5.0), (2, 0, 5.5), (0, -2, 6)],
-                           dtype=vector_type)
-
-    # initialize triangle data, 3 indexes for vertices, 3 floats for normal vector, 1 material index
-    triangle_data = np.array([(0, 1, 2, 1), (2, 1, 3, 0), (4, 2, 3, 0), (4, 0, 2, 1)],
-                             dtype=triangle_type)
-
-    # initialize light data array
-    light_data = np.array([((1.0, 0.5, 4.0), (1.0, 1.0, 1.0), 1.0)], dtype=light_type)
-
-    # initialize world data
-    world_data = np.array([(triangle_data.shape[0], light_data.shape[0],
-                            (1, 1, 1), (0, 0, 0), 1.0)], dtype=world_data_type)
+    # # initialize triangle vertices (can be pointed to by multiple triangles)
+    # vertex_data = np.array([(-2, 0, 5.0), (0, 2, 5), (0, 0, 5.0), (2, 0, 5.5), (0, -2, 6)],
+    #                        dtype=vector_type)
+    #
+    # # initialize triangle data, 3 indexes for vertices, 3 floats for normal vector, 1 material index
+    # triangle_data = np.array([(0, 1, 2, 1), (2, 1, 3, 0), (4, 2, 3, 0), (4, 0, 2, 1)],
+    #                          dtype=triangle_type)
+    #
+    # # initialize light data array
+    # light_data = np.array([((1.0, 0.5, 4.0), (1.0, 1.0, 1.0), 1.0)], dtype=light_type)
+    #
+    # # initialize world data
+    # world_data = np.array([(triangle_data.shape[0], light_data.shape[0],
+    #                         (1, 1, 1), (0, 0, 0), 1.0)], dtype=world_data_type)
 
     # initialize pixel data array, an array of indexes for each pixel's position on the screen, starting at top right.
     frac = SCREEN_HEIGHT / SCREEN_WIDTH
@@ -47,8 +46,8 @@ if __name__ == '__main__':
                          for i in range(SCREEN_WIDTH * SCREEN_HEIGHT)],
                         dtype=pixel_pos_type)
 
-    material_data = np.array([((0.2, 0.2, 0.2), (0.6, 0.6, 0.6), (0.5, 0.5, 0.5), 30),
-                              ((0.2, 0.2, 0.2), (0.3, 0.3, 0.3), (0.0, 0.999, 0.0), 60)], dtype=material_type)
+    # material_data = np.array([((0.2, 0.2, 0.2), (0.6, 0.6, 0.6), (0.5, 0.5, 0.5), 30),
+    #                           ((0.2, 0.2, 0.2), (0.3, 0.3, 0.3), (0.0, 0.999, 0.0), 60)], dtype=material_type)
 
     # initialize camera data array
     # position, right, up, forward
@@ -79,16 +78,18 @@ if __name__ == '__main__':
                 running = False
         dt = 1/clock.get_fps() if clock.get_fps() > 0 else 0
 
-        light_data[0]["position"] = (2 * math.sin(x), -2 + 2 * math.cos(x), 3)
+        world.game_lights["light1"].set_position(2 * math.sin(x), -2 + 2 * math.cos(x), 3)
+        # light_data[0]["position"] = (2 * math.sin(x), -2 + 2 * math.cos(x), 3)
         x += 2 * dt
         # prepare device memory for input
-        triangle_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=triangle_data)
-        vertex_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=vertex_data)
-        light_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=light_data)
+        triangle_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.triangles_buf)
+        vertex_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.vertices_buf)
+        light_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.lights_buf)
         camera_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=camera_data)
-        material_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=material_data)
+        material_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.materials_buf)
         pixel_pos_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=pix_data)
-        world_data_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world_data)
+        world_data_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.world_data_buf)
+
 
         # prepare device memory for output
         out_buf = cl.Buffer(ctx, cl.mem_flags.WRITE_ONLY, out.nbytes)

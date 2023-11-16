@@ -4,7 +4,7 @@ def generate_vertices(corner1, corner2):
     # get corners that are highest/lowest in x, y and z directions
     # makes calculations easier.
     top = (max(corner1[0], corner2[0]), max(corner1[1], corner2[1]), max(corner1[2], corner2[2]))
-    bottom = (max(corner1[0], corner2[0]), max(corner1[1], corner2[1]), max(corner1[2], corner2[2]))
+    bottom = (min(corner1[0], corner2[0]), min(corner1[1], corner2[1]), min(corner1[2], corner2[2]))
     #   x-  y|   z/
     #
     #    btt_____ttt
@@ -16,10 +16,10 @@ def generate_vertices(corner1, corner2):
     # bbb, tbb, bbt, tbt: bottom 4 vertices in block
     # btb, ttb, btt, ttt: top 4 vertices in block
 
-    return bottom, (top[0], bottom[0], bottom[0]), \
-        (bottom[0], bottom[0], top[0]), (top[0], bottom[0], top[0]), \
-        top, (top[0], top[0], bottom[0]), \
-        (bottom[0], top[0], top[0]), (top[0], top[0], top[0])
+    return [bottom, (top[0], bottom[1], bottom[2]),
+            (bottom[0], bottom[1], top[2]), (top[0], bottom[1], top[2]),
+            (bottom[0], top[1], bottom[2]), (top[0], top[1], bottom[2]),
+            (bottom[0], top[1], top[2]), top]
 
 
 # returns the vertex orderings to generate the 12 triangles of a block.
@@ -33,49 +33,32 @@ def get_vertex_orderings(offset):
             (7, 5, 1), (7, 1, 3)]
     out = []
     for i in tris:
-        out += [(i[0] + offset, i[1] + offset), i[2] + offset]
+        out += [(i[0] + offset, i[1] + offset, i[2] + offset)]
     return out
 
 
 class Block:
-    def __init__(self, tri_buf, tri_range, vert_buf, vert_range):
+    def __init__(self, tri_buf, tri_start, vert_buf, vert_start):
         self.tri_buf = tri_buf
         self.vert_buf = vert_buf
-        self.tri_range = tri_range
-        self.vert_range = vert_range
-        self.upper_corner = self.calculate_upper_corner()
-        self.lower_corner = self.calculate_lower_corner()
+        self.tri_start = tri_start
+        self.vert_start = vert_start
+        self.upper_corner = self.get_upper_corner()
+        self.lower_corner = self.get_lower_corner()
 
     def get_material(self):
         # all triangles in the block should have the same material
-        return self.tri_buf["mat"][self.tri_range[0]]
+        return self.tri_buf["mat"][self.tri_start]
 
     def update_material(self, mat_index):
-        for i in self.tri_range:
+        # iterate through owned triangles, update material index
+        for i in range(self.tri_start, self.tri_start + 12):
             self.tri_buf["mat"][i] = mat_index
 
-    # TODO: make this private
-    def calculate_upper_corner(self):
-        upper_corner = [float("-inf")] * 3
-        for i in self.tri_range:
-            uc_index = 0
-            for j in ["x", "y", "z"]:
-                # this will probably need fixing:
-                if self.tri_buf["position"][j][i] > upper_corner[uc_index]:
-                    upper_corner[uc_index] = self.tri_buf["position"][j][i]
-                uc_index += 1
-            return upper_corner[0], upper_corner[1], upper_corner[2]
+    # using the fact that the order of triangle vertexes comes from this class, so we know the ordering
+    def get_upper_corner(self):
+        return self.vert_buf[self.vert_start]
 
-    # TODO: make this private
-    def calculate_lower_corner(self):
-        # this could probably be done more efficiently considering we know
-        # about the order the vertexes are generated in, but this is probably safest for now.
-        lower_corner = [float("inf")] * 3
-        for i in self.tri_range:
-            lc_index = 0
-            for j in ["x", "y", "z"]:
-                # this will probably need fixing:
-                if self.tri_buf["position"][j][i] < lower_corner[lc_index]:
-                    lower_corner[lc_index] = self.tri_buf["position"][j][i]
-                lc_index += 1
-        return lower_corner[1], lower_corner[1], lower_corner[2]
+    def get_lower_corner(self):
+        return self.vert_buf[self.vert_start + 7]
+
