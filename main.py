@@ -8,8 +8,8 @@ from pygame.locals import *
 
 # help from: https://github.com/PyOCL/pyopencl-examples
 
-SCREEN_WIDTH = 500
-SCREEN_HEIGHT = 250
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 700
 
 OUTPUT_SIZE = SCREEN_HEIGHT * SCREEN_WIDTH
 
@@ -17,24 +17,24 @@ OUTPUT_SIZE = SCREEN_HEIGHT * SCREEN_WIDTH
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
+pygame.font.init()
+font = pygame.font.SysFont('courier', 30)
 
 if __name__ == '__main__':
     # vector struct
     vector_type = np.dtype([('x', np.float32), ('y', np.float32), ('z', np.float32)])
 
     # initialize triangle vertices (can be pointed to by multiple triangles)
-    vertex_data = np.array([(0.0, -1, 1.0), (1.0, -1, 1.0), (1.0, -1, 0.0)],
+    vertex_data = np.array([(-2, 0, 5.0), (0, 2, 5), (0, 0, 5.0), (2, 0, 5.5), (0, -2, 6)],
                            dtype=vector_type)
 
     # triangle struct, 3 vertex indexes, 3 floats for normal vector, 1 material index
     triangle_type = np.dtype([('v1', np.uint32), ('v2', np.uint32), ('v3', np.uint32),
-                              ('normal', vector_type),
                               ('mat', np.uint32)])
 
     # initialize triangle data, 3 indexes for vertices, 3 floats for normal vector, 1 material index
-    triangle_data = np.array([(0, 1, 2, (0.0, 1.0, 0.0), 0)],
+    triangle_data = np.array([(0, 1, 2, 1), (2, 1, 3, 0), (4, 2, 3, 0), (4, 0, 2, 1)],
                              dtype=triangle_type)
-    print(triangle_data)
     # light type struct
     light_type = np.dtype([('position', vector_type),
                            ("color", vector_type),
@@ -70,7 +70,8 @@ if __name__ == '__main__':
                               ('specular_color', vector_type),
                               ('specular_power', np.int32)])
 
-    material_data = np.array([((0.2, 0.2, 0.2), (0.6, 0.6, 0.6), (0.999, 0.999, 0.999), 30)], dtype=material_type)
+    material_data = np.array([((0.2, 0.2, 0.2), (0.6, 0.6, 0.6), (0.999, 0.999, 0.999), 30),
+                              ((0.2, 0.2, 0.2), (0.3, 0.3, 0.3), (0.0, 0.999, 0.0), 60)], dtype=material_type)
 
     # camera data struct
     camera_data_type = np.dtype([('position', vector_type),
@@ -105,8 +106,10 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
-        light_data[0]["position"] = (2 * math.sin(x), 1, 5)
-        x += 0.05
+        dt = 1/clock.get_fps() if clock.get_fps() > 0 else 0
+
+        light_data[0]["position"] = (2 * math.sin(x), -2 + 2 * math.cos(x), 3)
+        x += 2 * dt
         # prepare device memory for input
         triangle_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=triangle_data)
         vertex_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=vertex_data)
@@ -131,8 +134,11 @@ if __name__ == '__main__':
 
         cl.enqueue_copy(queue, out, out_buf).wait()
         pygame.surfarray.blit_array(screen, out)
+        text = str(int(clock.get_fps()))
+        text_surface = font.render(text, False, (255, 255, 255))
+        screen.blit(text_surface, (SCREEN_WIDTH-60, 10))
         pygame.display.flip()
 
-        clock.tick(60)
+        clock.tick()
 
     pygame.quit()

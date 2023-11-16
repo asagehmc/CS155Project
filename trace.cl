@@ -29,8 +29,7 @@ typedef struct {
     uint a;
     uint b;
     uint c;
-    vector normal;
-    int mat;
+    uint mat;
 } triangle;
 
 typedef struct {
@@ -67,6 +66,9 @@ vector gpmult(__global vector* v1, __private vector* v2);
 vector ppmult(__private vector* v1, __private vector* v2);
 vector pCmult(__private vector* v1, float f);
 vector ppsum(__private vector* v1, __private vector* v2);
+vector ppcross(__private vector* v1, __private vector* v2);
+bool barycentricInside(__private vector* point, __private vector* A, __private vector* B, __private vector* C);
+
 
 
 float ppdot(__private vector* v1, __private vector* v2) {
@@ -88,7 +90,7 @@ void pnormalize(__private vector* v) {
 }
 
 vector ppminus(__private vector* v1, __private vector* v2) {
-    vector v = {v1->x - v2->x, v1->y - v2->y, v1->z - v2->z};
+    __private vector v = {v1->x - v2->x, v1->y - v2->y, v1->z - v2->z};
     return v;
 }
 
@@ -111,6 +113,33 @@ vector ppsum(__private vector* v1, __private vector* v2) {
     __private vector vout = {v1->x + v2->x, v1->y + v2->y, v1->z + v2->z};
     return vout;
 }
+vector ppcross(__private vector* v1, __private vector* v2) {
+    __private vector vout = {
+        (v1)->y * (v2)->z - (v1)->z * (v2)->y,
+        (v1)->z * (v2)->x - (v1)->x * (v2)->z,
+        (v1)->x * (v2)->y - (v1)->y * (v2)->x
+    };
+    return vout;
+}
+
+bool barycentricInside(__private vector* point, __private vector* A, __private vector* B, __private vector* C) {
+    vector PA = ppminus(A, point);
+    vector PB = ppminus(B, point);
+    vector PC = ppminus(C, point);
+    vector AB = ppminus(B, A);
+    vector BC = ppminus(C, B);
+    vector CA = ppminus(A, C);
+
+    vector total_cross = ppcross(&AB, &BC);
+    float total = pmagnitude(&total_cross);
+    vector alpha_cross = ppcross(&PB, &BC);
+    float alpha = pmagnitude(&alpha_cross);
+    vector beta_cross = ppcross(&PC, &CA);
+    float beta = pmagnitude(&beta_cross);
+    vector gamma_cross = ppcross(&PA, &AB);
+    float gamma = pmagnitude(&gamma_cross);
+    return (alpha + beta + gamma <= 1.0001 * total);
+}
 
 
 __kernel void trace_rays(__global triangle* tris,
@@ -124,8 +153,6 @@ __kernel void trace_rays(__global triangle* tris,
                         ) {
 
     __private int global_id = get_global_id(0);
-
-
     __private pixel_pos screen_coords = pixels[global_id];
     // forwards vector
     __private vector f = camera->forwards;
@@ -143,33 +170,47 @@ __kernel void trace_rays(__global triangle* tris,
     __private ray ray_cast = {camera->position, ray_dir};
     int closest_triangle = -1;
     float closest_hit = INFINITY;
+    vector closest_normal;
     // find closest triangle
+    vector origin = camera->position;
     for (int i = 0; i < world->num_tris; ++i) {
         // if ray & plane are not parallel
-        if (pgdot(&ray_dir, &(tris[i].normal)) != 0) {
-            vector point_on_plane = (vertices[tris[i].a]);
-            __private vector point_minus_direction = ppminus(&point_on_plane, &(ray_cast.pos));
+        vector vec_a = vertices[tris[i].a];
+        vector vec_b = vertices[tris[i].b];
+        vector vec_c = vertices[tris[i].c];
+        vector va_to_vb = ppminus(&vec_b, &vec_a);
+        vector vb_to_vc = ppminus(&vec_c, &vec_b);
+        vector normal = ppcross(&va_to_vb, &vb_to_vc);
+        pnormalize(&normal);
+        if (ppdot(&ray_dir, &normal) != 0) {
+            vector point_minus_direction = ppminus(&vec_a, &(ray_cast.pos));
             // calculate distance to plane
-            float d = pgdot(&point_minus_direction, &(tris[i].normal)) /
-                      pgdot(&(ray_cast.dir), &(tris[i].normal));
-            // this is the new closest triangle
+            float d = ppdot(&point_minus_direction, &normal) /
+                      ppdot(&(ray_cast.dir), &normal);
+            //  this is the new closest triangle
             if (d >= 0 && d < closest_hit) {
-                closest_hit = d;
-                closest_triangle = i;
+                vector travel_vec = pCmult(&(ray_cast.dir), d);
+                vector intersection_point = ppsum(&origin, &travel_vec);
+
+                if (barycentricInside(&intersection_point, &vec_a, &vec_b, &vec_c)) {
+                    closest_hit = d;
+                    closest_triangle = i;
+                    closest_normal = normal;
+                }
+
             }
         }
     }
     // copy important data to __private scope
     triangle tri = tris[closest_triangle];
     material mat = materials[tri.mat];
-    vector origin = camera->position;
     vector travel_vec = pCmult(&(ray_cast.dir), closest_hit);
     vector intersection_point = ppsum(&origin, &travel_vec);
     if (closest_triangle != -1) {
         //get ambient light
         vector ambient_and_world = gpmult(&(world->world_ambient_color), &(mat.ambient_color));
         vector light = pCmult(&ambient_and_world, world->world_ambient_intensity);
-        //get ambient & spectral light
+        //get ambient & specular light
         for (int i = 0; i < world->num_lights; ++i) {
             // setup required vector data
             vector light_color = lights[i].color;
@@ -178,20 +219,19 @@ __kernel void trace_rays(__global triangle* tris,
             pnormalize(&to_light);
 
             // get diffuse color
-            vector diffuse = pCmult(&light_color, fmax(ppdot(&tri.normal, &to_light), 0));
+            vector diffuse = pCmult(&light_color, fmax(ppdot(&closest_normal, &to_light), 0));
             diffuse = ppmult(&mat.diffuse_color, &diffuse);
 
             // construct the reflection vector
-            vector reflected = pCmult(&tri.normal, ppdot(&to_light, &tri.normal));
+            vector reflected = pCmult(&closest_normal, ppdot(&to_light, &closest_normal));
             reflected = pCmult(&reflected, 2);
             reflected = ppminus(&reflected, &to_light);
 
             vector specular = pCmult(&light_color, pow(fmax(-ppdot(&ray_cast.dir, &reflected), 0), mat.specular_power));
-            specular = ppmult(&mat.diffuse_color, &specular);
+            specular = ppmult(&mat.specular_color, &specular);
 
             light = ppsum(&diffuse, &light);
             light = ppsum(&specular, &light);
-
         }
 
         out[global_id].r = fmin(light.x, 1) * 255;
