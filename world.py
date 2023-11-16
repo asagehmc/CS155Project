@@ -1,4 +1,5 @@
 from custom_types import *
+from light import Light
 
 
 def begins_with(line, prefix):
@@ -40,6 +41,7 @@ class World:
         self.num_triangles = 0
         self.num_lights = 0
         self.num_materials = 0
+        self.num_vertices = 0
         with open(read_path, 'r') as file:
             try:
                 for line in file:
@@ -112,26 +114,14 @@ class World:
 
     def create_block(self, name, corner1, corner2, mat):
         print("CREATING NEW BLOCK")
-        print(name)
-        print(corner1)
-        print(corner2)
-        print(mat)
+        current_num_vertices = self.num_vertices
 
     def create_mat(self, name, ambient, diffuse, specular, spec_power):
         self.materials_buf = np.append(self.materials_buf, (name, ambient, diffuse, specular, spec_power))
-        print("CREATED NEW MATERIAL!")
-        print(name)
-        print(ambient)
-        print(diffuse)
-        print(specular)
-        print(spec_power)
 
     def create_light(self, name, position, color, intensity):
         current_len = self.lights_buf.shape[0]
+        # add the light data to the light buffer
         self.lights_buf = np.append(self.lights_buf, (name, position, color, intensity))
-
-        print("CREATING NEW LIGHT!")
-        print(name)
-        print(position)
-        print(color)
-        print(intensity)
+        # initialize a light object with a pointer to the light buffer where the light data is stored
+        self.game_lights[name] = Light(self.lights_buf, current_len)

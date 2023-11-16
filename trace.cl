@@ -182,7 +182,8 @@ __kernel void trace_rays(__global triangle* tris,
         vector vb_to_vc = ppminus(&vec_c, &vec_b);
         vector normal = ppcross(&va_to_vb, &vb_to_vc);
         pnormalize(&normal);
-        if (ppdot(&ray_dir, &normal) != 0) {
+        //if we are parallel, or backface is showing, skip triangle
+        if (ppdot(&ray_dir, &normal) > 0) {
             vector point_minus_direction = ppminus(&vec_a, &(ray_cast.pos));
             // calculate distance to plane
             float d = ppdot(&point_minus_direction, &normal) /
