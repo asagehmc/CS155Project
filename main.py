@@ -7,9 +7,10 @@ import pygame
 from pygame.locals import *
 
 # help from: https://github.com/PyOCL/pyopencl-examples
+from world import World
 
-SCREEN_WIDTH = 1280
-SCREEN_HEIGHT = 700
+SCREEN_WIDTH = 400
+SCREEN_HEIGHT = 300
 
 OUTPUT_SIZE = SCREEN_HEIGHT * SCREEN_WIDTH
 
@@ -21,6 +22,8 @@ pygame.font.init()
 font = pygame.font.SysFont('courier', 30)
 
 if __name__ == '__main__':
+    world = World("./world.txt")
+    exit()
     # vector struct
     vector_type = np.dtype([('x', np.float32), ('y', np.float32), ('z', np.float32)])
 
@@ -70,7 +73,7 @@ if __name__ == '__main__':
                               ('specular_color', vector_type),
                               ('specular_power', np.int32)])
 
-    material_data = np.array([((0.2, 0.2, 0.2), (0.6, 0.6, 0.6), (0.999, 0.999, 0.999), 30),
+    material_data = np.array([((0.2, 0.2, 0.2), (0.6, 0.6, 0.6), (0.5, 0.5, 0.5), 30),
                               ((0.2, 0.2, 0.2), (0.3, 0.3, 0.3), (0.0, 0.999, 0.0), 60)], dtype=material_type)
 
     # camera data struct
