@@ -1,4 +1,5 @@
 import block
+from camera import Camera
 from custom_types import *
 from light import Light
 
@@ -44,69 +45,70 @@ class World:
         self.num_materials = 0
         self.num_vertices = 0
         with open(read_path, 'r') as file:
-            if True:
-                # try:
-                for line in file:
-                    line = line.strip()
-                    if line == "Blocks:":
-                        context = "blocks"
-                        continue
-                    if line == "Materials:":
-                        context = "materials"
-                        continue
-                    if line == "Lights:":
-                        context = "lights"
-                        continue
-                    if context == "world_settings":
-                        if begins_with(line, "World Ambient Light"):
-                            self.world_ambient_light = string_to_3tuple(line.split(":")[1])
-                        if begins_with(line, "World Background Color"):
-                            self.world_background_color = string_to_3tuple(line.split(":")[1])
-                        if begins_with(line, "World Ambient Intensity"):
-                            self.world_ambient_intensity = float(line.split(":")[1])
-                    if context == "blocks":
-                        if begins_with(line, "block:"):
-                            data.append(line.split(":")[1].strip())
-                        if begins_with(line, "corner1:"):
-                            data.append(string_to_3tuple(line.split(":")[1].strip()))
-                        if begins_with(line, "corner2:"):
-                            data.append(string_to_3tuple(line.split(":")[1].strip()))
-                        if begins_with(line, "material:"):
-                            data.append(line.split(":")[1].strip())
-                            self.create_block(data[0], data[1], data[2], data[3])
-                            data = []
-                    if context == "materials":
-                        if begins_with(line, "mat:"):
-                            data.append(line.split(":")[1].strip())
-                        if begins_with(line, "ambient_color:"):
-                            data.append(string_to_3tuple(line.split(":")[1].strip()))
-                        if begins_with(line, "diffuse_color:"):
-                            data.append(string_to_3tuple(line.split(":")[1].strip()))
-                        if begins_with(line, "specular_color:"):
-                            data.append(string_to_3tuple(line.split(":")[1].strip()))
-                        if begins_with(line, "specular_power:"):
-                            data.append(int(line.split(":")[1].strip()))
-                            self.create_mat(data[0], data[1], data[2], data[3], data[4])
-                            # store the material's index hashed by material name
-                            # (for retrieval when creating triangle mat indexes later)
-                            data = []
+            for line in file:
+                line = line.strip()
+                if line == "Blocks:":
+                    context = "blocks"
+                    continue
+                if line == "Materials:":
+                    context = "materials"
+                    continue
+                if line == "Lights:":
+                    context = "lights"
+                    continue
+                if context == "world_settings":
+                    if begins_with(line, "World Ambient Light"):
+                        self.world_ambient_light = string_to_3tuple(line.split(":")[1])
+                    if begins_with(line, "World Background Color"):
+                        self.world_background_color = string_to_3tuple(line.split(":")[1])
+                    if begins_with(line, "World Ambient Intensity"):
+                        self.world_ambient_intensity = float(line.split(":")[1])
+                if context == "blocks":
+                    if begins_with(line, "block:"):
+                        data.append(line.split(":")[1].strip())
+                    if begins_with(line, "corner1:"):
+                        data.append(string_to_3tuple(line.split(":")[1].strip()))
+                    if begins_with(line, "corner2:"):
+                        data.append(string_to_3tuple(line.split(":")[1].strip()))
+                    if begins_with(line, "material:"):
+                        data.append(line.split(":")[1].strip())
+                        self.create_block(data[0], data[1], data[2], data[3])
+                        data = []
+                if context == "materials":
+                    if begins_with(line, "mat:"):
+                        data.append(line.split(":")[1].strip())
+                    if begins_with(line, "ambient_color:"):
+                        data.append(string_to_3tuple(line.split(":")[1].strip()))
+                    if begins_with(line, "diffuse_color:"):
+                        data.append(string_to_3tuple(line.split(":")[1].strip()))
+                    if begins_with(line, "specular_color:"):
+                        data.append(string_to_3tuple(line.split(":")[1].strip()))
+                    if begins_with(line, "specular_power:"):
+                        data.append(int(line.split(":")[1].strip()))
+                        self.create_mat(data[0], data[1], data[2], data[3], data[4])
+                        self.num_materials += 1
+                        # store the material's index hashed by material name
+                        # (for retrieval when creating triangle mat indexes later)
+                        data = []
 
-                    if context == "lights":
-                        if begins_with(line, "light:"):
-                            data.append(line.split(":")[1].strip())
-                        if begins_with(line, "position:"):
-                            data.append(string_to_3tuple(line.split(":")[1].strip()))
-                        if begins_with(line, "color:"):
-                            data.append(string_to_3tuple(line.split(":")[1].strip()))
-                        if begins_with(line, "intensity:"):
-                            data.append(float(line.split(":")[1].strip()))
-                            self.create_light(data[0], data[1], data[2], data[3])
-                            data = []
-                            self.num_lights += 1
-                    line_num += 1
-            # except Exception:
-            #     raise Exception("Error parsing line " + str(line_num) + " of world file")
-        # add the single element of world data to the world buf
+                if context == "lights":
+                    if begins_with(line, "light:"):
+                        data.append(line.split(":")[1].strip())
+                    if begins_with(line, "position:"):
+                        data.append(string_to_3tuple(line.split(":")[1].strip()))
+                    if begins_with(line, "color:"):
+                        data.append(string_to_3tuple(line.split(":")[1].strip()))
+                    if begins_with(line, "intensity:"):
+                        data.append(float(line.split(":")[1].strip()))
+                        self.create_light(data[0], data[1], data[2], data[3])
+                        data = []
+                        self.num_lights += 1
+                line_num += 1
+
+        self.camera_data_buf = np.array([((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0))],
+                                        dtype=camera_data_type)
+        self.camera = Camera(self.camera_data_buf)
+
         self.world_data_buf = np.array([(self.num_triangles,
                                          self.num_lights,
                                          self.world_ambient_color,
@@ -114,6 +116,7 @@ class World:
                                          self.world_ambient_intensity)], dtype=world_data_type)
 
     def create_block(self, name, corner1, corner2, mat):
+
         mat_index = self.material_name_index[mat]
         # get the 8 new vertices for the block
         new_vertices = np.array(block.generate_vertices(corner1, corner2), dtype=vector_type)

@@ -9,7 +9,7 @@ from custom_types import *
 # help from: https://github.com/PyOCL/pyopencl-examples
 from world import World
 
-SCREEN_WIDTH = 400
+SCREEN_WIDTH = 500
 SCREEN_HEIGHT = 300
 
 OUTPUT_SIZE = SCREEN_HEIGHT * SCREEN_WIDTH
@@ -48,11 +48,11 @@ if __name__ == '__main__':
 
     # material_data = np.array([((0.2, 0.2, 0.2), (0.6, 0.6, 0.6), (0.5, 0.5, 0.5), 30),
     #                           ((0.2, 0.2, 0.2), (0.3, 0.3, 0.3), (0.0, 0.999, 0.0), 60)], dtype=material_type)
-
-    # initialize camera data array
-    # position, right, up, forward
-    camera_data = np.array([((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0))],
-                           dtype=camera_data_type)
+    #
+    # # initialize camera data array
+    # # position, right, up, forward
+    # camera_data = np.array([((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0))],
+    #                        dtype=camera_data_type)
 
     # load program from cl source file
     f = open('trace.cl', 'r', encoding='utf-8')
@@ -78,19 +78,20 @@ if __name__ == '__main__':
                 running = False
         dt = 1/clock.get_fps() if clock.get_fps() > 0 else 0
 
-        world.game_lights["light1"].set_position(2 * math.sin(x), -2 + 2 * math.cos(x), 3)
+        world.game_lights["light1"].set_position(2 * math.sin(x), 0, 2 * math.cos(x))
+        world.camera.set_position(3 * math.sin(x), 2 * math.cos(x/4), 3 * math.cos(x))
+        world.camera.set_direction(-3 * math.sin(x), -2 * math.cos(x/4), -3 * math.cos(x))
+
         # light_data[0]["position"] = (2 * math.sin(x), -2 + 2 * math.cos(x), 3)
         x += 2 * dt
         # prepare device memory for input
         triangle_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.triangles_buf)
         vertex_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.vertices_buf)
         light_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.lights_buf)
-        camera_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=camera_data)
+        camera_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.camera_data_buf)
         material_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.materials_buf)
         pixel_pos_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=pix_data)
         world_data_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.world_data_buf)
-
-
         # prepare device memory for output
         out_buf = cl.Buffer(ctx, cl.mem_flags.WRITE_ONLY, out.nbytes)
 

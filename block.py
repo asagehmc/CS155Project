@@ -25,11 +25,11 @@ def generate_vertices(corner1, corner2):
 # returns the vertex orderings to generate the 12 triangles of a block.
 # offset included in order
 def get_vertex_orderings(offset):
-    tris = [(0, 1, 3), (0, 3, 2),
+    tris = [(0, 3, 1), (0, 2, 3),
             (0, 1, 5), (0, 5, 4),
-            (0, 2, 6), (0, 6, 4),
+            (0, 6, 2), (0, 4, 6),
             (7, 6, 4), (7, 4, 5),
-            (7, 6, 2), (7, 2, 3),
+            (7, 2, 6), (7, 3, 2),
             (7, 5, 1), (7, 1, 3)]
     out = []
     for i in tris:

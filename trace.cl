@@ -183,7 +183,7 @@ __kernel void trace_rays(__global triangle* tris,
         vector normal = ppcross(&va_to_vb, &vb_to_vc);
         pnormalize(&normal);
         //if we are parallel, or backface is showing, skip triangle
-        if (ppdot(&ray_dir, &normal) > 0 && i < 4) {
+        if (ppdot(&ray_dir, &normal) > 0) {
             vector point_minus_direction = ppminus(&vec_a, &(ray_cast.pos));
             // calculate distance to plane
             float d = ppdot(&point_minus_direction, &normal) /
@@ -223,7 +223,7 @@ __kernel void trace_rays(__global triangle* tris,
             pnormalize(&to_light);
 
             // get diffuse color
-            vector diffuse = pCmult(&light_color, fmax(ppdot(&closest_normal, &to_light), 0));
+            vector diffuse = pCmult(&light_color, fmax(-ppdot(&closest_normal, &to_light), 0));
             diffuse = ppmult(&mat.diffuse_color, &diffuse);
 
             // construct the reflection vector

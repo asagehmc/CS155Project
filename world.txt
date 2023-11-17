@@ -5,22 +5,26 @@ Materials:
     mat: shiny_gray
         ambient_color: 0.2, 0.2, 0.2
         diffuse_color: 0.6, 0.6, 0.6
-        specular_color: 0.5, 0.5, 0.5
-        specular_power: 30
-    mat: white_specular_green
-        ambient_color: 0.2, 0.2, 0.2
+        specular_color: 0.3, 0.3, 0.3
+        specular_power: 50
+    mat: matte_gray
+        ambient_color: 0.1, 0.1, 0.1
         diffuse_color: 0.3, 0.3, 0.3
-        specular_color: 0, 0.5, 0
-        specular_power: 30
+        specular_color: 0.05, 0.05, 0.05
+        specular_power: 60
 Lights:
     light: light1
         position: 1, 0.5, 4
         color: 1, 1, 1
         intensity: 1
 Blocks:
-    block: block1name
-        corner1: -1, -1, 5
-        corner2: 1, 1, 7
+    block: block1
+        corner1: -1, -1, -1
+        corner2: 1, 1, 1
         material: shiny_gray
+    block: floor2
+        corner1: -30, -8, -30
+        corner2: 30, -7, 30
+        material: matte_gray
 
 
