@@ -62,3 +62,13 @@ class Block:
     def get_lower_corner(self):
         return self.vert_buf[self.vert_start + 7]
 
+    def set_corners(self, upper, lower):
+        vertices = generate_vertices(upper, lower)
+        for i in range(self.vert_start, self.vert_start + 6):
+            self.vert_buf = vertices[i]
+
+    # def set_upper_corner(self, x, y, z):
+    #
+    #
+    # def set_lower_corner(self, x, y, z):
+

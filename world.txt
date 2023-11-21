@@ -12,16 +12,21 @@ Materials:
         diffuse_color: 0.3, 0.3, 0.3
         specular_color: 0.05, 0.05, 0.05
         specular_power: 60
+    mat: PLAYER_MAT
+        ambient_color: 0.03, 0.1, 0.03
+        diffuse_color: 0.1, 0.4, 0.1
+        specular_color: 0.05, 0.4, 0.05
+        specular_power: 20
 Lights:
     light: light1
         position: 1, 0.5, 4
         color: 1, 1, 1
         intensity: 1
 Blocks:
-    block: block1
-        corner1: -1, -1, -1
+    block: PLAYER_BLOCK
+        corner1: 0, 0, 0
         corner2: 1, 1, 1
-        material: shiny_gray
+        material: PLAYER_MAT
     block: floor2
         corner1: -30, -8, -30
         corner2: 30, -7, 30

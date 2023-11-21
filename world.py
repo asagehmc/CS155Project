@@ -87,8 +87,6 @@ class World:
                         data.append(int(line.split(":")[1].strip()))
                         self.create_mat(data[0], data[1], data[2], data[3], data[4])
                         self.num_materials += 1
-                        # store the material's index hashed by material name
-                        # (for retrieval when creating triangle mat indexes later)
                         data = []
 
                 if context == "lights":
@@ -134,15 +132,18 @@ class World:
             while name in self.game_blocks:
                 name = short_name + str(num)
                 num += 1
-        # pass in the triangle and vertex buffers, along with the start references for their data location in buffers
-        self.game_blocks[name] = block.Block(self.triangles_buf, self.num_triangles,
-                                             self.vertices_buf, self.num_vertices)
+        if name != "PLAYER_BLOCK":
+            # pass in the triangle and vertex buffers, and the start references for their data locations in buffers
+            self.game_blocks[name] = block.Block(self.triangles_buf, self.num_triangles,
+                                                 self.vertices_buf, self.num_vertices)
         self.num_triangles += 12
         self.num_vertices += 8
 
     def create_mat(self, name, ambient, diffuse, specular, spec_power):
         new_mat = np.array([(ambient, diffuse, specular, spec_power)], dtype=material_type)
         self.materials_buf = np.append(self.materials_buf, new_mat)
+        # store the material's index hashed by material name
+        # (for retrieval when creating triangle mat indexes later)
         self.material_name_index[name] = self.num_materials
 
     def create_light(self, name, position, color, intensity):

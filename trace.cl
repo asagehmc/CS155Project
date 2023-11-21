@@ -237,7 +237,6 @@ __kernel void trace_rays(__global triangle* tris,
             light = ppsum(&diffuse, &light);
             light = ppsum(&specular, &light);
         }
-
         out[global_id].r = fmin(light.x, 1) * 255;
         out[global_id].g = fmin(light.y, 1) * 255;
         out[global_id].b = fmin(light.z, 1) * 255;
@@ -246,7 +245,4 @@ __kernel void trace_rays(__global triangle* tris,
     out[global_id].r = world->world_background_color.x * 255;
     out[global_id].g = world->world_background_color.y * 255;
     out[global_id].b = world->world_background_color.z * 255;
-
-
-
 }
