@@ -10,7 +10,7 @@ typedef struct {
 } ray;
 
 typedef struct {
-    int num_tris;
+    int num_rects;
     int num_lights;
     vector world_ambient_color;
     vector world_background_color;
@@ -26,11 +26,11 @@ typedef struct {
 
 
 typedef struct {
-    uint a;
-    uint b;
-    uint c;
+    vector bot;
+    vector top;
+    vector normal;
     uint mat;
-} triangle;
+} rect;
 
 typedef struct {
     vector position;
@@ -66,7 +66,6 @@ vector gpmult(__global vector* v1, __private vector* v2);
 vector ppmult(__private vector* v1, __private vector* v2);
 vector pCmult(__private vector* v1, float f);
 vector ppsum(__private vector* v1, __private vector* v2);
-vector ppcross(__private vector* v1, __private vector* v2);
 bool barycentricInside(__private vector* point, __private vector* A, __private vector* B, __private vector* C);
 
 
@@ -113,37 +112,10 @@ vector ppsum(__private vector* v1, __private vector* v2) {
     __private vector vout = {v1->x + v2->x, v1->y + v2->y, v1->z + v2->z};
     return vout;
 }
-vector ppcross(__private vector* v1, __private vector* v2) {
-    __private vector vout = {
-        (v1)->y * (v2)->z - (v1)->z * (v2)->y,
-        (v1)->z * (v2)->x - (v1)->x * (v2)->z,
-        (v1)->x * (v2)->y - (v1)->y * (v2)->x
-    };
-    return vout;
-}
-
-bool barycentricInside(__private vector* point, __private vector* A, __private vector* B, __private vector* C) {
-    vector PA = ppminus(A, point);
-    vector PB = ppminus(B, point);
-    vector PC = ppminus(C, point);
-    vector AB = ppminus(B, A);
-    vector BC = ppminus(C, B);
-    vector CA = ppminus(A, C);
-
-    vector total_cross = ppcross(&AB, &BC);
-    float total = pmagnitude(&total_cross);
-    vector alpha_cross = ppcross(&PB, &BC);
-    float alpha = pmagnitude(&alpha_cross);
-    vector beta_cross = ppcross(&PC, &CA);
-    float beta = pmagnitude(&beta_cross);
-    vector gamma_cross = ppcross(&PA, &AB);
-    float gamma = pmagnitude(&gamma_cross);
-    return (alpha + beta + gamma <= 1.0001 * total);
-}
 
 
-__kernel void trace_rays(__global triangle* tris,
-                         __global vector* vertices,
+
+__kernel void trace_rays(__global rect* rects,
                          __global light* lights,
                          __global camera_data* camera,
                          __global material* materials,
@@ -168,49 +140,72 @@ __kernel void trace_rays(__global triangle* tris,
                      };
     pnormalize(&ray_dir);
     __private ray ray_cast = {camera->position, ray_dir};
-    int closest_triangle = -1;
+    int closest_rect = -1;
     float closest_hit = INFINITY;
-    vector closest_normal;
     // find closest triangle
     vector origin = camera->position;
-    for (int i = 0; i < world->num_tris; ++i) {
+    for (int i = 0; i < world->num_rects; ++i) {
         // if ray & plane are not parallel
-        vector vec_a = vertices[tris[i].a];
-        vector vec_b = vertices[tris[i].b];
-        vector vec_c = vertices[tris[i].c];
-        vector va_to_vb = ppminus(&vec_b, &vec_a);
-        vector vb_to_vc = ppminus(&vec_c, &vec_b);
-        vector normal = ppcross(&va_to_vb, &vb_to_vc);
-        pnormalize(&normal);
-        //if we are parallel, or backface is showing, skip triangle
-        if (ppdot(&ray_dir, &normal) > 0) {
-            vector point_minus_direction = ppminus(&vec_a, &(ray_cast.pos));
+        vector top = rects[i].top;
+        vector bot = rects[i].bot;
+        vector normal = rects[i].normal;
+
+        //if we are parallel, or backface is showing, skip rect
+        if (ppdot(&ray_dir, &normal) < 0) {
+            vector point_minus_direction = ppminus(&bot, &(ray_cast.pos));
             // calculate distance to plane
             float d = ppdot(&point_minus_direction, &normal) /
                       ppdot(&(ray_cast.dir), &normal);
-            //  this is the new closest triangle
+            //  this is the new closest rect?
             if (d >= 0 && d < closest_hit) {
                 vector travel_vec = pCmult(&(ray_cast.dir), d);
                 vector intersection_point = ppsum(&origin, &travel_vec);
-//                printf("a: %f %f %f\n", vec_a.x, vec_a.y, vec_a.z);
-//                printf("b: %f %f %f\n", vec_b.x, vec_b.y, vec_b.z);
-//                printf("c: %f %f %f\n\n", vec_c.x, vec_c.y, vec_c.z);
-
-                if (barycentricInside(&intersection_point, &vec_a, &vec_b, &vec_c)) {
+                float bot1;
+                float bot2;
+                float top1;
+                float top2;
+                float intersect1;
+                float intersect2;
+                if (normal.x != 0) {
+                    bot1 = bot.y;
+                    bot2 = bot.z;
+                    top1 = top.y;
+                    top2 = top.z;
+                    intersect1 = intersection_point.y;
+                    intersect2 = intersection_point.z;
+                } else if (normal.y != 0) {
+                    bot1 = bot.x;
+                    bot2 = bot.z;
+                    top1 = top.x;
+                    top2 = top.z;
+                    intersect1 = intersection_point.x;
+                    intersect2 = intersection_point.z;
+                } else {
+                    bot1 = bot.x;
+                    bot2 = bot.y;
+                    top1 = top.x;
+                    top2 = top.y;
+                    intersect1 = intersection_point.x;
+                    intersect2 = intersection_point.y;
+                }
+                if (bot1 < intersect1 && intersect1 < top1 && bot2 < intersect2 && intersect2 < top2) {
                     closest_hit = d;
-                    closest_triangle = i;
-                    closest_normal = normal;
+                    closest_rect = i;
                 }
 
             }
         }
     }
-    // copy important data to __private scope
-    triangle tri = tris[closest_triangle];
-    material mat = materials[tri.mat];
-    vector travel_vec = pCmult(&(ray_cast.dir), closest_hit);
-    vector intersection_point = ppsum(&origin, &travel_vec);
-    if (closest_triangle != -1) {
+
+    if (closest_rect != -1) {
+        // copy important data to __private scope
+        rect rectangle = rects[closest_rect];
+        vector normal = rectangle.normal;
+        material mat = materials[rectangle.mat];
+
+        vector travel_vec = pCmult(&(ray_cast.dir), closest_hit);
+        vector intersection_point = ppsum(&origin, &travel_vec);
+
         //get ambient light
         vector ambient_and_world = gpmult(&(world->world_ambient_color), &(mat.ambient_color));
         vector light = pCmult(&ambient_and_world, world->world_ambient_intensity);
@@ -223,11 +218,11 @@ __kernel void trace_rays(__global triangle* tris,
             pnormalize(&to_light);
 
             // get diffuse color
-            vector diffuse = pCmult(&light_color, fmax(-ppdot(&closest_normal, &to_light), 0));
+            vector diffuse = pCmult(&light_color, fmax(ppdot(&normal, &to_light), 0));
             diffuse = ppmult(&mat.diffuse_color, &diffuse);
 
             // construct the reflection vector
-            vector reflected = pCmult(&closest_normal, ppdot(&to_light, &closest_normal));
+            vector reflected = pCmult(&normal, ppdot(&to_light, &normal));
             reflected = pCmult(&reflected, 2);
             reflected = ppminus(&reflected, &to_light);
 

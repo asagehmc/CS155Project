@@ -13,12 +13,12 @@ class Player:
         z_width = top[2] - bot[2]
         self.size = array([x_width, height, z_width], dtype=np.float64)
         self.pos = array([bot[0], bot[1], bot[2]], dtype=np.float64)
-        self.velocity = array([0, 7, 0], dtype=np.float64)
+        self.velocity = array([0, 0, 0], dtype=np.float64)
 
     def update_position(self, dt):
         self.pos += self.velocity * dt
         self.player_block.set_corners(self.pos, self.pos + self.size)
-        self.velocity[1] += -9.8 * dt
+        # self.velocity[1] += -9.8 * dt
 
 
 
