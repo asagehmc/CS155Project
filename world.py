@@ -128,7 +128,6 @@ class World:
                                          self.world_ambient_intensity)], dtype=world_data_type)
 
     def create_block(self, name, corner1, corner2, mat):
-
         # get the vertex indices for each of the 12 triangles for the block
         new_rects = block.generate_rects(corner1, corner2)
         # add material data to each triangle indexes to create whole tri structs, append them to triangle buffer

@@ -31,11 +31,12 @@ class Block:
     def __init__(self, rect_buf, rect_start):
         self.rect_buf = rect_buf
         self.rect_start = rect_start
-        self.upper_corner = self.get_upper_corner()
-        self.lower_corner = self.get_lower_corner()
-        self.material = self.get_material()
 
-    def get_material(self):
+        self.top_corner = self.__get_top_corner()
+        self.bottom_corner = self.__get_bottom_corner()
+        self.material = self.__get_material()
+
+    def __get_material(self):
         # all triangles in the block should have the same material
         return self.rect_buf["mat"][self.rect_start]
 
@@ -43,12 +44,13 @@ class Block:
         # iterate through owned triangles, update material index
         for i in range(self.rect_start, self.rect_start + 6):
             self.rect_buf["mat"][i] = mat_index
+        self.material = mat_index
 
     # using the fact that the order of triangle vertexes comes from this class, so we know the ordering
-    def get_upper_corner(self):
+    def __get_top_corner(self):
         return self.rect_buf["top"][self.rect_start + 5]
 
-    def get_lower_corner(self):
+    def __get_bottom_corner(self):
         return self.rect_buf["bot"][self.rect_start]
 
     def set_corners(self, upper, lower):
@@ -56,5 +58,11 @@ class Block:
         for i in range(6):
             self.rect_buf[i + self.rect_start] = rects[i] + (self.material,)
 
+    def center(self):
+        return (self.top_corner + self.bottom_corner) / 2
 
+    def get_rect_index(self, index):
+        if index > 5 or index < 0:
+            raise Exception("Invalid get_rect index")
+        return index + self.rect_start
 
