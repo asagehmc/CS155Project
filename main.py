@@ -103,8 +103,9 @@ if __name__ == '__main__':
                              camera_buf, material_buf, pixel_pos_buf, world_data_buf, out_buf)
         # wait for kernel executions
         world.update(dt)
+        before = int(datetime.timestamp(datetime.now()) * 1000)
         evt.wait()
-        # current_time_millis = int(datetime.timestamp(datetime.now()) * 1000)
+        # print(int(datetime.timestamp(datetime.now()) * 1000) - before)
 
         cl.enqueue_copy(queue, out, out_buf).wait()
         pygame.surfarray.blit_array(screen, out)
