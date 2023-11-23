@@ -57,18 +57,13 @@ class Block:
 
     # using the fact that the order of triangle vertexes comes from this class, so we know the ordering
     def get_upper_corner(self):
-        return self.vert_buf[self.vert_start]
+        return self.vert_buf[self.vert_start + 7]
 
     def get_lower_corner(self):
-        return self.vert_buf[self.vert_start + 7]
+        return self.vert_buf[self.vert_start]
 
     def set_corners(self, upper, lower):
         vertices = generate_vertices(upper, lower)
-        for i in range(self.vert_start, self.vert_start + 6):
-            self.vert_buf = vertices[i]
-
-    # def set_upper_corner(self, x, y, z):
-    #
-    #
-    # def set_lower_corner(self, x, y, z):
+        for i in range(8):
+            self.vert_buf[i + self.vert_start] = vertices[i]
 

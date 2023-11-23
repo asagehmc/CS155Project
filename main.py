@@ -1,5 +1,5 @@
 import math
-
+from datetime import datetime
 import pyopencl as cl
 import time
 import pygame
@@ -83,7 +83,7 @@ if __name__ == '__main__':
         world.camera.set_direction(-3 * math.sin(x), -2 * math.cos(x/4), -3 * math.cos(x))
 
         # light_data[0]["position"] = (2 * math.sin(x), -2 + 2 * math.cos(x), 3)
-        x += 2 * dt
+        # x += 2 * dt
         # prepare device memory for input
         triangle_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.triangles_buf)
         vertex_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.vertices_buf)
@@ -94,7 +94,6 @@ if __name__ == '__main__':
         world_data_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.world_data_buf)
         # prepare device memory for output
         out_buf = cl.Buffer(ctx, cl.mem_flags.WRITE_ONLY, out.nbytes)
-
         # compile kernel code
         prg = cl.Program(ctx, kernels).build()
         time_kernel_compilation = time.time()
@@ -103,7 +102,9 @@ if __name__ == '__main__':
         evt = prg.trace_rays(queue, (OUTPUT_SIZE,), (1,), triangle_buf, vertex_buf, light_buf,
                              camera_buf, material_buf, pixel_pos_buf, world_data_buf, out_buf)
         # wait for kernel executions
+        world.update(dt)
         evt.wait()
+        # current_time_millis = int(datetime.timestamp(datetime.now()) * 1000)
 
         cl.enqueue_copy(queue, out, out_buf).wait()
         pygame.surfarray.blit_array(screen, out)
@@ -111,7 +112,6 @@ if __name__ == '__main__':
         text_surface = font.render(text, False, (255, 255, 255))
         screen.blit(text_surface, (SCREEN_WIDTH-60, 10))
         pygame.display.flip()
-
         clock.tick()
 
     pygame.quit()
