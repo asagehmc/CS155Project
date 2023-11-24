@@ -1,5 +1,8 @@
 # given a square defined by 2 opposite corners, create 8 vertices and indexes to those vertices
 # (with buffer offset included)
+import numpy as np
+
+
 def generate_rects(corner1, corner2):
     # get corners that are highest/lowest in x, y and z directions
     # makes calculations easier.
@@ -59,10 +62,14 @@ class Block:
             self.rect_buf[i + self.rect_start] = rects[i] + (self.material,)
 
     def center(self):
-        return (self.top_corner + self.bottom_corner) / 2
+        return np.array(
+            [(self.top_corner[0] + self.bottom_corner[0]) / 2,
+             (self.top_corner[1] + self.bottom_corner[1]) / 2,
+             (self.top_corner[2] + self.bottom_corner[2]) / 2]
+        )
 
     def get_rect_index(self, index):
-        if index > 5 or index < 0:
-            raise Exception("Invalid get_rect index")
+        if index > 7 or index < 0:
+            raise Exception("Invalid get_rect index " + str(index))
         return index + self.rect_start
 

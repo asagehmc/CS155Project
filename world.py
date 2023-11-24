@@ -1,4 +1,5 @@
 import block
+import bvh_generator
 from camera import Camera
 from custom_types import *
 from light import Light
@@ -126,6 +127,7 @@ class World:
                                          self.world_ambient_color,
                                          self.world_background_color,
                                          self.world_ambient_intensity)], dtype=world_data_type)
+        self.bounding_hierarchy_buf = bvh_generator.generate_bvh_tree(list(self.game_blocks.values()))
 
     def create_block(self, name, corner1, corner2, mat):
         # get the vertex indices for each of the 12 triangles for the block

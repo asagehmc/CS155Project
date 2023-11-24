@@ -6,8 +6,8 @@ class Player:
     def __init__(self, player_block, game_blocks):
         self.player_block = player_block
         self.game_blocks = game_blocks
-        bot = player_block.get_bottom_corner()
-        top = player_block.get_top_corner()
+        bot = player_block.bottom_corner
+        top = player_block.top_corner
         x_width = top[0] - bot[0]
         height = top[1] - bot[1]
         z_width = top[2] - bot[2]
