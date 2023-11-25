@@ -121,13 +121,13 @@ class World:
         self.camera_data_buf = np.array([((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0))],
                                         dtype=camera_data_type)
         self.camera = Camera(self.camera_data_buf)
-
+        self.bounding_hierarchy = bvh_generator.generate_bvh_tree(list(self.game_blocks.values()))
         self.world_data_buf = np.array([(self.num_rects,
+                                         self.bounding_hierarchy.shape[0],
                                          self.num_lights_added,
                                          self.world_ambient_color,
                                          self.world_background_color,
                                          self.world_ambient_intensity)], dtype=world_data_type)
-        self.bounding_hierarchy_buf = bvh_generator.generate_bvh_tree(list(self.game_blocks.values()))
 
     def create_block(self, name, corner1, corner2, mat):
         # get the vertex indices for each of the 12 triangles for the block

@@ -65,6 +65,7 @@ if __name__ == '__main__':
         material_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.materials_buf)
         pixel_pos_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=pix_data)
         world_data_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.world_data_buf)
+        bounding_volume_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.bounding_hierarchy)
         # prepare device memory for output
         out_buf = cl.Buffer(ctx, cl.mem_flags.WRITE_ONLY, out.nbytes)
         # compile kernel code
@@ -72,8 +73,8 @@ if __name__ == '__main__':
         time_kernel_compilation = time.time()
 
         # execute kernel programs
-        evt = prg.trace_rays(queue, (OUTPUT_SIZE,), (1,), rect_buf, light_buf,
-                             camera_buf, material_buf, pixel_pos_buf, world_data_buf, out_buf)
+        evt = prg.trace_rays(queue, (OUTPUT_SIZE,), (1,), rect_buf, light_buf, camera_buf,
+                             material_buf, pixel_pos_buf, world_data_buf, out_buf, bounding_volume_buf)
         # wait for kernel executions
         world.update(dt)
         before = int(datetime.timestamp(datetime.now()) * 1000)

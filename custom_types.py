@@ -13,6 +13,7 @@ light_type = np.dtype([('position', vector_type),
 
 # world data struct
 world_data_type = np.dtype([('num_rects', np.int32),
+                            ('bounding_hierarchy_size', np.int32),
                             ('num_lights', np.int32),
                             ('world_ambient_color', vector_type),
                             ('world_background_color', vector_type),
@@ -33,9 +34,10 @@ camera_data_type = np.dtype([('position', vector_type),
                              ('up', vector_type),
                              ('forward', vector_type)])  # note: only including this cause it's faster to do once
 
-aabb_node_type = np.dtype([("top", vector_type), # top corner of bounding box
-                           ("bottom", vector_type), # bottom corner of bounding box
-                           ("plane1", np.int32),  # the first of 2 planes contained, -1 if empty
-                           ("plane2", np.int32),  # the second of 2 planes contained, -1 if empty
-                           ("same", np.bool)])  # true if the bounding box is identical in size to its parent
+bounding_node_type = np.dtype([("filled", np.bool),
+                               ("top", vector_type),  # top corner of bounding box
+                               ("bottom", vector_type),  # bottom corner of bounding box
+                               ("plane1", np.int32),  # the first of 2 planes contained, -1 if empty
+                               ("plane2", np.int32),  # the second of 2 planes contained, -1 if empty
+                               ("same", np.bool)])  # true if the bounding box is identical in size to its parent
 
