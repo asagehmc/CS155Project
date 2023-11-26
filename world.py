@@ -118,10 +118,12 @@ class World:
                     self.create_light(data[0], data[1], data[2], data[3])
                     data = []
 
-        self.camera_data_buf = np.array([((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0))],
+        self.camera_data_buf = np.array([((-1.9934121, 0.3613965, 2.241943), (2.241943, 0., 1.9934121), (0.23841369, 2.9784663, -0.26813817), (0.65970117, -0.1196008, -0.74195015))],
                                         dtype=camera_data_type)
         self.camera = Camera(self.camera_data_buf)
-        self.bounding_hierarchy = bvh_generator.generate_bvh_tree(list(self.game_blocks.values()))
+        if self.player is None:
+            raise Exception("No player block was initialized! \n Create a PLAYER_BLOCK block in world.txt")
+        self.bounding_hierarchy = bvh_generator.generate_bvh_tree(list(self.game_blocks.values()), self.player.block)
         self.world_data_buf = np.array([(self.num_rects,
                                          self.bounding_hierarchy.shape[0],
                                          self.num_lights_added,
@@ -171,6 +173,7 @@ class World:
 
     def update(self, dt):
         self.player.update_position(dt)
+        # pass
 
 
 

@@ -59,12 +59,12 @@ typedef struct {
 } camera_data;
 
 typedef struct {
-    bool initialized;
+    int initialized;
     vector top;
     vector bottom;
     int plane1;
     int plane2;
-    bool same;
+    int same;
 } bounding_node;
 
 typedef struct {
@@ -131,9 +131,9 @@ vector ppsum(__private vector* v1, __private vector* v2) {
 }
 
 closest_hit_data check_intersection(__global rect* rects, int index, __private ray* ray_cast) {
-    vector top = rects[index]->top;
-    vector bot = rects[index]->bot;
-    vector normal = rects[index]->normal;
+    vector top = rects[index].top;
+    vector bot = rects[index].bot;
+    vector normal = rects[index].normal;
     //if we are parallel, or backface is showing, skip rect
     if (ppdot(&(ray_cast->dir), &normal) < 0) {
         vector point_minus_direction = ppminus(&bot, &(ray_cast->pos));
@@ -142,7 +142,7 @@ closest_hit_data check_intersection(__global rect* rects, int index, __private r
                   ppdot(&(ray_cast->dir), &normal);
         if (d >= 0) {
             vector travel_vec = pCmult(&(ray_cast->dir), d);
-            vector intersection_point = ppsum(&origin, &travel_vec);
+            vector intersection_point = ppsum(&(ray_cast->pos), &travel_vec);
             float bot1;
             float bot2;
             float top1;
@@ -183,13 +183,42 @@ closest_hit_data check_intersection(__global rect* rects, int index, __private r
 
 // credit to chatgpt
 bool intersects_box(__global bounding_node* box, __private ray* ray_cast) {
+    // printf("box_data: %d, %d\n", box->initialized, box->same);
+    // printf("low: %f, %f, %f\n", box->bottom.x, box->bottom.y, box->bottom.z);
+    // printf("high: %f, %f, %f\n", box->top.x, box->top.y, box->top.z);
 
-    float invDirX = 1.0f / ray_cast->dir.x;
-    float invDirY = 1.0f / ray_cast->dir.y;
-    float invDirZ = 1.0f / ray_cast->dir.z;
 
-    float tMinX = (box->bottom.x - ray_cast->origin.x) * invDirX;
-    float tMaxX = (box->top.x - ray_cast->origin.x) * invDirX;
+    // Check if the ray is parallel to the axes
+    if (ray_cast->dir.x == 0.0) {
+        if (ray_cast->pos.x < box->bottom.x || ray_cast->pos.x > box->top.x) {
+            return false;
+        }
+    }
+
+    if (ray_cast->dir.y == 0.0f) {
+        if (ray_cast->pos.y < box->bottom.y || ray_cast->pos.y > box->top.y) {
+            return false;
+        }
+    }
+
+    if (ray_cast->dir.z == 0.0f) {
+        if (ray_cast->pos.z < box->bottom.z || ray_cast->pos.z > box->top.z) {
+            return false;
+        }
+    }
+
+    float invDirX = (ray_cast->dir.x != 0.0f) ? 1.0f / ray_cast->dir.x : INFINITY;
+    float invDirY = (ray_cast->dir.y != 0.0f) ? 1.0f / ray_cast->dir.y : INFINITY;
+    float invDirZ = (ray_cast->dir.z != 0.0f) ? 1.0f / ray_cast->dir.z : INFINITY;
+
+
+
+    float tMinX = (box->bottom.x - ray_cast->pos.x) * invDirX;
+    float tMaxX = (box->top.x - ray_cast->pos.x) * invDirX;
+    // printf("x_low: %f %f %f =  %f\n", box->bottom.x, ray_cast->pos.x, invDirX, tMinX);
+    // printf("x_high: %f %f %f = %f\n", box->top.x, ray_cast->pos.x, invDirX, tMaxX);
+
+
 
     if (tMinX > tMaxX) {
         float temp = tMinX;
@@ -197,8 +226,8 @@ bool intersects_box(__global bounding_node* box, __private ray* ray_cast) {
         tMaxX = temp;
     }
 
-    float tMinY = (box->bottom.y - ray_cast->origin.y) * invDirY;
-    float tMaxY = (box->top.y - ray_cast->origin.y) * invDirY;
+    float tMinY = (box->bottom.y - ray_cast->pos.y) * invDirY;
+    float tMaxY = (box->top.y - ray_cast->pos.y) * invDirY;
 
     if (tMinY > tMaxY) {
         float temp = tMinY;
@@ -206,21 +235,22 @@ bool intersects_box(__global bounding_node* box, __private ray* ray_cast) {
         tMaxY = temp;
     }
 
-    float tMinZ = (box->bottom.z - ray_cast->origin.z) * invDirZ;
-    float tMaxZ = (box->top.z - ray_cast->origin.z) * invDirZ;
+    float tMinZ = (box->bottom.z - ray_cast->pos.z) * invDirZ;
+    float tMaxZ = (box->top.z - ray_cast->pos.z) * invDirZ;
 
     if (tMinZ > tMaxZ) {
         float temp = tMinZ;
         tMinZ = tMaxZ;
         tMaxZ = temp;
     }
+    // printf("ray_cast: %f, %f, %f\n", ray_cast->dir.x, ray_cast->dir.y, ray_cast->dir.z);
+    // printf("tMins: %f, %f, %f\n\n", tMinX, tMinY, tMinZ);
 
     float tMin = tMinX > tMinY ? tMinX : tMinY;
     tMin = tMin > tMinZ ? tMin : tMinZ;
 
     float tMax = tMaxX < tMaxY ? tMaxX : tMaxY;
     tMax = tMax < tMaxZ ? tMax : tMaxZ;
-
     return tMin <= tMax;
 
 }
@@ -230,34 +260,59 @@ closest_hit_data get_closest_hit(int index,
                                  int tree_size,
                                  __global rect* rects,
                                  __private ray* ray_cast) {
+    if (get_global_id(0) == 60124) {
+//            printf("INDEX %d\n", index);
+    }
     // should we keep searching?
-    if (index >= tree_size // we are outside of tree
-        || !tree[index]->initialized // we are in uninitialized node of array for tree
-        || (!tree[index]->same && !intersects_box(&(tree[index]), ray_cast))) // we are missed by ray cast
-    {  // Note: ^^ we skip the bounding box check if same=True, this means box is identical to its parent & must hit.
+    // printf("index! %d, %d\n", index, tree_size);
+    // if same is true, the expression will be false
 
+    if (index >= tree_size // we are outside of tree
+        || !tree[index].initialized // we are in uninitialized node of array for tree
+        || (!tree[index].same
+            && !intersects_box(&(tree[index]), ray_cast))) // we are missed by ray cast
+//        ))
+    {  // Note: ^^ we skip the bounding box check if same=True, this means box is identical to its parent & must hit.
         // failed to hit or out of tree, stop searching this branch
+        if (get_global_id(0) == 60124) {
+//            printf("INDEX %d FAILED!!\n", index);
+        }
         closest_hit_data out = {INFINITY, -1};
         return out;
+
     }
+
     // we did hit something, try children if they exist
-    closest_hit_data out = get_closest_hit(index * 2 + 1, tree, rects, ray_cast);
-    closest_hit_data right_tree = get_closest_hit(index * 2 + 2, tree, rects, ray_cast);
+    // if they don't, we get a distance of infinity back from get_closest_hit
+
+    //left
+    closest_hit_data out = get_closest_hit(index * 2 + 1, tree, tree_size, rects, ray_cast);
+    //right
+    closest_hit_data right_tree = get_closest_hit(index * 2 + 2, tree, tree_size, rects, ray_cast);
     if (out.distance > right_tree.distance) {
         out = right_tree;
     }
     // check planes if they are present
-    if (tree[index]->plane1 != -1) {
-        closest_hit_data plane1 = check_intersection(rects, tree[index]->plane1, ray_cast);
+    if (tree[index].plane1 != -1) {
+        if (get_global_id(0) == 60124) {
+//            printf("index %d trying plane: %d\n", index, tree[index].plane1);
+        }
+        closest_hit_data plane1 = check_intersection(rects, tree[index].plane1, ray_cast);
         if (out.distance > plane1.distance) {
             out = plane1;
         }
     }
-    if (tree[index]->plane2 != -1) {
-        closest_hit_data plane2 = check_intersection(rects, tree[index]->plane2, ray_cast)
-        if (out.distance > plane2.distance) {
-            out = plane1;
+    if (tree[index].plane2 != -1) {
+        if (get_global_id(0) == 60124) {
+//            printf("index %d trying plane: %d\n", index, tree[index].plane2);
         }
+        closest_hit_data plane2 = check_intersection(rects, tree[index].plane2, ray_cast);
+        if (out.distance > plane2.distance) {
+            out = plane2;
+        }
+    }
+    if (get_global_id(0) == 60124) {
+//        printf("index %d done \n", index);
     }
     return out;
 }
@@ -270,10 +325,16 @@ __kernel void trace_rays(__global rect* rects,
                          __global material* materials,
                          __global pixel_pos* pixels,
                          __global world_data* world,
-                         __global pixel_color* out
+                         __global pixel_color* out,
                          __global bounding_node* bounding_hierarchy
                         ) {
-
+    // printf("Camera Position: %f, %f, %f\n", camera->position.x, camera->position.y, camera->position.z);
+    // printf("bounding Data: %d %d %d %d\n", bounding_hierarchy[0].initialized, bounding_hierarchy[0].plane1, bounding_hierarchy[0].plane2, bounding_hierarchy[0].same);
+    // printf("Bounding top: %f, %f, %f\n", bounding_hierarchy[0].top.x, bounding_hierarchy[0].top.y, bounding_hierarchy[0].top.z);
+    // printf("Bounding bot: %f, %f, %f\n", bounding_hierarchy[0].bottom.x, bounding_hierarchy[0].bottom.y, bounding_hierarchy[0].bottom.z);
+    if (get_global_id(0) == 60124) {
+//        printf("\n\n\nNEW:\n");
+    }
     __private int global_id = get_global_id(0);
     __private pixel_pos screen_coords = pixels[global_id];
     // forwards vector
@@ -282,6 +343,7 @@ __kernel void trace_rays(__global rect* rects,
     __private vector u = camera->up;
     // up vector
     __private vector r = camera->right;
+
 
     // initialize ray
     __private vector ray_dir = {f.x + u.x * screen_coords.y + r.x * screen_coords.x,
@@ -293,10 +355,19 @@ __kernel void trace_rays(__global rect* rects,
 
     // find closest triangle
     vector origin = camera->position;
-    closest_hit_data hit = get_closest_hit();
+    closest_hit_data hit = get_closest_hit(0, bounding_hierarchy,
+                                           world->bounding_hierarchy_size,
+                                           rects, &ray_cast);
+
+    // index for the closest rectangle hit
     int closest_rect = hit.closest_rect;
     float closest_hit = hit.distance;
-
+    if (global_id == 60124) {
+        out[global_id].r = 255;
+        out[global_id].g = 0;
+        out[global_id].b = 0;
+        return;
+    }
     if (closest_rect != -1) {
         // copy important data to __private scope
         rect rectangle = rects[closest_rect];
@@ -307,7 +378,7 @@ __kernel void trace_rays(__global rect* rects,
         vector intersection_point = ppsum(&origin, &travel_vec);
 
         //get ambient light
-        vector ambient_and_world = (&(world->world_ambient_color), &(mat.ambient_color));
+        vector ambient_and_world = gpmult(&(world->world_ambient_color), &(mat.ambient_color));
         vector light = pCmult(&ambient_and_world, world->world_ambient_intensity);
         //get ambient & specular light
         for (int i = 0; i < world->num_lights; ++i) {

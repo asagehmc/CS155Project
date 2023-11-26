@@ -4,7 +4,7 @@ from numpy import array
 
 class Player:
     def __init__(self, player_block, game_blocks):
-        self.player_block = player_block
+        self.block = player_block
         self.game_blocks = game_blocks
         bot = player_block.bottom_corner
         top = player_block.top_corner
@@ -17,7 +17,7 @@ class Player:
 
     def update_position(self, dt):
         self.pos += self.velocity * dt
-        self.player_block.set_corners(self.pos, self.pos + self.size)
+        self.block.set_corners(self.pos, self.pos + self.size)
         self.velocity[1] += -9.8 * dt
 
 

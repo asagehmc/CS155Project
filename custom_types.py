@@ -32,12 +32,12 @@ material_type = np.dtype([('ambient_color', vector_type),
 camera_data_type = np.dtype([('position', vector_type),
                              ('right', vector_type),
                              ('up', vector_type),
-                             ('forward', vector_type)])  # note: only including this cause it's faster to do once
+                             ('forward', vector_type)])
 
-bounding_node_type = np.dtype([("filled", np.bool),
+bounding_node_type = np.dtype([("filled", np.int32),  # should be a bool, but pyopencl interprets bool as int32
                                ("top", vector_type),  # top corner of bounding box
                                ("bottom", vector_type),  # bottom corner of bounding box
                                ("plane1", np.int32),  # the first of 2 planes contained, -1 if empty
                                ("plane2", np.int32),  # the second of 2 planes contained, -1 if empty
-                               ("same", np.bool)])  # true if the bounding box is identical in size to its parent
+                               ("same", np.int32)])  # (bool), 1 if the bounding box is identical in size to its parent
 

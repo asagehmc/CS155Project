@@ -59,6 +59,7 @@ if __name__ == '__main__':
         # light_data[0]["position"] = (2 * math.sin(x), -2 + 2 * math.cos(x), 3)
         x += 2 * dt
         # prepare device memory for input
+
         rect_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.rects_data)
         light_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.lights_buf)
         camera_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.camera_data_buf)
@@ -66,6 +67,7 @@ if __name__ == '__main__':
         pixel_pos_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=pix_data)
         world_data_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.world_data_buf)
         bounding_volume_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.bounding_hierarchy)
+
         # prepare device memory for output
         out_buf = cl.Buffer(ctx, cl.mem_flags.WRITE_ONLY, out.nbytes)
         # compile kernel code

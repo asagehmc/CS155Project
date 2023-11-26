@@ -20,8 +20,10 @@ class __TreeNode:
 
     def print_self(self, depth):
         return "    " * depth + "NODE: " + str(self.bottom) + ", " + str(self.top) + ", " + str(self.same) \
-                + (("\n" + str(self.left.print_self(depth + 1))) if type(self.left) != int else (" " + str(self.left) + " ")) \
-                + (("\n" + str(self.right.print_self(depth + 1))) if type(self.right) != int else (" " + str(self.right) + " "))
+               + (("\n" + str(self.left.print_self(depth + 1))) if type(self.left) != int else (
+                    " " + str(self.left) + " ")) \
+               + (("\n" + str(self.right.print_self(depth + 1))) if type(self.right) != int else (
+                    " " + str(self.right) + " "))
 
 
 # split the list in half along the given plane x, y, or z
@@ -55,8 +57,7 @@ def get_min_aabb(boxes):
     return minimum, maximum
 
 
-def branch(boxes, axis_index):
-
+def branch(boxes, axis_index, mainSame=False):
     if len(boxes) == 1:
         box = boxes[0]
         # boxes a, b, c, and d are marked "same" since they are all the same size as above
@@ -64,18 +65,18 @@ def branch(boxes, axis_index):
         #      /   \
         #    [a]    [d]
         #    /\     / \
-        #   1 [b]  [c] 6
+        #   0 [b]  [c] 5
         #     /\   /\
-        #    2  3 4 5
+        #    1  2 3 4
         boxB = __TreeNode(((0, 0, 0), (0, 0, 0)),
-                          left=box.get_rect_index(2), right=box.get_rect_index(3), same=True)
+                          left=box.get_rect_index(1), right=box.get_rect_index(2), same=True)
         boxC = __TreeNode(((0, 0, 0), (0, 0, 0)),
-                          left=box.get_rect_index(4), right=box.get_rect_index(5), same=True)
+                          left=box.get_rect_index(3), right=box.get_rect_index(4), same=True)
         boxA = __TreeNode(((0, 0, 0), (0, 0, 0)),
-                          left=box.get_rect_index(1), right=boxB, same=True)
+                          left=box.get_rect_index(0), right=boxB, same=True)
         boxD = __TreeNode(((0, 0, 0), (0, 0, 0)),
-                          left=boxC, right=box.get_rect_index(6), same=True)
-        return __TreeNode(get_min_aabb(boxes), boxA, boxD), 3
+                          left=boxC, right=box.get_rect_index(5), same=True)
+        return __TreeNode(get_min_aabb(boxes), boxA, boxD, same=mainSame), 3
     else:
         low, high = partition(boxes, axis_index)
         left, depth1 = branch(low, (axis_index + 1) % 3)
@@ -98,15 +99,21 @@ def fill_tree_buf(root, buf, root_index):
         root.right if type(root.right) == int else -1,
         root.same
     )
-    print(buf[root_index])
-    print("newval", new_val)
     buf[root_index] = new_val
     fill_tree_buf(root.left, buf, root_index * 2 + 1)
     fill_tree_buf(root.right, buf, root_index * 2 + 2)
 
 
-def generate_bvh_tree(world_rects):
-    root, depth = branch(world_rects, 0)
+def generate_bvh_tree(world_rects, player_box):
+    world_root, depth = branch(world_rects, 0)
+
+    root = __TreeNode(((0, 0, 0), (0, 0, 0)),
+                      left=world_root,  # add a right branch for the world
+                      right=branch([player_box], 0, True)[0],  # add a right branch for the player that is always checked
+                      same=True)  # since we always want to check the first node in the tree,
+    #                               it is marked as Same so we skip bounds checking in trace.cl
+    # depth is either as large as the world or is the size of the player tree
+    depth = max(depth+1, 4)
     # fill with empty values marked as initialized=False
 
     # bvh_tree_buf = np.empty(pow(2, depth) - 1, dtype=bounding_node_type)

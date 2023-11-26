@@ -1,0 +1,2032 @@
+World Ambient Light: 1, 1, 1
+World Background Color: 0, 0, 0
+World Ambient Intensity: 1
+Materials:
+    mat: shiny_gray
+        ambient_color: 0.2, 0.2, 0.2
+        diffuse_color: 0.6, 0.6, 0.6
+        specular_color: 0.3, 0.3, 0.3
+        specular_power: 50
+    mat: matte_gray
+        ambient_color: 0.1, 0.1, 0.1
+        diffuse_color: 0.3, 0.3, 0.3
+        specular_color: 0.2, 0.2, 0.2
+        specular_power: 60
+    mat: PLAYER_MAT
+        ambient_color: 0.03, 0.1, 0.03
+        diffuse_color: 0.1, 0.4, 0.1
+        specular_color: 0.05, 0.4, 0.05
+        specular_power: 20
+Lights:
+    light: light1
+        position: 1, 0.5, 4
+        color: 1, 1, 1
+        intensity: 1
+Blocks:
+    block: PLAYER_BLOCK
+        corner1: 0, 0, 0
+        corner2: 1, 1, 1
+        material: PLAYER_MAT
+block: block0
+        corner1: 13, -2, 0
+        corner2: 17.548281698476252, 2.548281698476252, 4.548281698476252
+        material: matte_gray
+    block: block1
+        corner1: 38, -5, 21
+        corner2: 39.33544347104901, -3.664556528950989, 22.33544347104901
+        material: matte_gray
+    block: block2
+        corner1: -18, -15, -48
+        corner2: -17.572381439102084, -14.572381439102084, -47.57238143910208
+        material: matte_gray
+    block: block3
+        corner1: -48, -9, 19
+        corner2: -43.38743565775236, -4.387435657752359, 23.61256434224764
+        material: matte_gray
+    block: block4
+        corner1: -28, -26, -13
+        corner2: -23.548377953852672, -21.548377953852672, -8.548377953852672
+        material: matte_gray
+    block: block5
+        corner1: -35, -48, 39
+        corner2: -31.35405482168283, -44.35405482168283, 42.64594517831717
+        material: matte_gray
+    block: block6
+        corner1: -19, 44, 26
+        corner2: -17.41211373821214, 45.587886261787865, 27.58788626178786
+        material: matte_gray
+    block: block7
+        corner1: -16, 16, 25
+        corner2: -12.875552145861889, 19.12444785413811, 28.12444785413811
+        material: matte_gray
+    block: block8
+        corner1: -7, -1, -15
+        corner2: -2.0267446230380237, 3.9732553769619763, -10.026744623038024
+        material: matte_gray
+    block: block9
+        corner1: -46, 43, 4
+        corner2: -42.765725279685405, 46.234274720314595, 7.234274720314597
+        material: matte_gray
+    block: block10
+        corner1: 41, -6, 13
+        corner2: 45.66053198837444, -1.339468011625562, 17.660531988374437
+        material: matte_gray
+    block: block11
+        corner1: -33, 11, 4
+        corner2: -29.707723198647205, 14.292276801352793, 7.292276801352793
+        material: matte_gray
+    block: block12
+        corner1: 39, 45, 32
+        corner2: 41.231035978797244, 47.231035978797244, 34.231035978797244
+        material: matte_gray
+    block: block13
+        corner1: -3, 10, 11
+        corner2: 1.7086073941702669, 14.708607394170267, 15.708607394170267
+        material: matte_gray
+    block: block14
+        corner1: 26, -21, 46
+        corner2: 30.41640593092093, -16.58359406907907, 50.41640593092093
+        material: matte_gray
+    block: block15
+        corner1: 16, -11, 27
+        corner2: 18.960228079540684, -8.039771920459316, 29.960228079540684
+        material: matte_gray
+    block: block16
+        corner1: -37, 4, -24
+        corner2: -34.934925525232, 6.065074474767995, -21.934925525232003
+        material: matte_gray
+    block: block17
+        corner1: 41, 29, -38
+        corner2: 44.806789103912735, 32.806789103912735, -34.193210896087265
+        material: matte_gray
+    block: block18
+        corner1: -1, -13, -13
+        corner2: 3.2877918390836918, -8.712208160916308, -8.712208160916308
+        material: matte_gray
+    block: block19
+        corner1: 43, -29, -30
+        corner2: 47.03513272176804, -24.964867278231957, -25.964867278231957
+        material: matte_gray
+    block: block20
+        corner1: -42, 28, 48
+        corner2: -38.03538214057401, 31.964617859425992, 51.96461785942599
+        material: matte_gray
+    block: block21
+        corner1: -36, 31, 16
+        corner2: -32.64311053708985, 34.35688946291015, 19.35688946291015
+        material: matte_gray
+    block: block22
+        corner1: 33, -24, -8
+        corner2: 36.29968431628075, -20.700315683719253, -4.700315683719253
+        material: matte_gray
+    block: block23
+        corner1: 39, 29, 48
+        corner2: 42.35635333163984, 32.35635333163984, 51.35635333163984
+        material: matte_gray
+    block: block24
+        corner1: -12, -17, -43
+        corner2: -9.79427251538478, -14.79427251538478, -40.794272515384776
+        material: matte_gray
+    block: block25
+        corner1: 30, -33, -26
+        corner2: 30.158363736564052, -32.84163626343595, -25.841636263435948
+        material: matte_gray
+    block: block26
+        corner1: 36, -3, -34
+        corner2: 37.17952045512899, -1.8204795448710098, -32.82047954487101
+        material: matte_gray
+    block: block27
+        corner1: -40, -35, -49
+        corner2: -37.98218720218196, -32.98218720218196, -46.98218720218196
+        material: matte_gray
+    block: block28
+        corner1: 37, -23, -10
+        corner2: 40.6036472253796, -19.396352774620397, -6.396352774620398
+        material: matte_gray
+    block: block29
+        corner1: -11, 37, -43
+        corner2: -7.671743342195075, 40.32825665780492, -39.67174334219508
+        material: matte_gray
+    block: block30
+        corner1: 48, -22, -14
+        corner2: 48.03457916926273, -21.96542083073727, -13.96542083073727
+        material: matte_gray
+    block: block31
+        corner1: -42, 30, -7
+        corner2: -40.578032429926445, 31.42196757007355, -5.578032429926448
+        material: matte_gray
+    block: block32
+        corner1: -31, -44, -29
+        corner2: -30.715641664255045, -43.715641664255045, -28.715641664255045
+        material: matte_gray
+    block: block33
+        corner1: -14, -43, 43
+        corner2: -12.192432459178907, -41.1924324591789, 44.8075675408211
+        material: matte_gray
+    block: block34
+        corner1: -50, 17, -47
+        corner2: -45.587998978482396, 21.412001021517604, -42.587998978482396
+        material: matte_gray
+    block: block35
+        corner1: -33, -20, -31
+        corner2: -29.10805754652277, -16.10805754652277, -27.10805754652277
+        material: matte_gray
+    block: block36
+        corner1: -24, 40, 19
+        corner2: -19.023672324762682, 44.97632767523732, 23.976327675237318
+        material: matte_gray
+    block: block37
+        corner1: -1, -18, 33
+        corner2: -0.7740349933994758, -17.774034993399475, 33.225965006600525
+        material: matte_gray
+    block: block38
+        corner1: 18, 1, 49
+        corner2: 18.00173477153649, 1.001734771536492, 49.00173477153649
+        material: matte_gray
+    block: block39
+        corner1: -43, 18, -4
+        corner2: -42.709923850804905, 18.290076149195098, -3.709923850804903
+        material: matte_gray
+    block: block40
+        corner1: -16, -40, 40
+        corner2: -14.650019557431474, -38.65001955743148, 41.34998044256852
+        material: matte_gray
+    block: block41
+        corner1: 23, 40, 8
+        corner2: 27.593926921847295, 44.59392692184729, 12.593926921847295
+        material: matte_gray
+    block: block42
+        corner1: 17, 28, -49
+        corner2: 17.76658511730313, 28.76658511730313, -48.23341488269687
+        material: matte_gray
+    block: block43
+        corner1: 49, 23, -6
+        corner2: 52.15649789859855, 26.156497898598552, -2.843502101401447
+        material: matte_gray
+    block: block44
+        corner1: 21, 44, 2
+        corner2: 23.69903647316708, 46.699036473167084, 4.699036473167081
+        material: matte_gray
+    block: block45
+        corner1: 32, -43, -16
+        corner2: 34.81395289217095, -40.18604710782905, -13.186047107829049
+        material: matte_gray
+    block: block46
+        corner1: -15, -7, 5
+        corner2: -14.53329748701394, -6.533297487013939, 5.466702512986061
+        material: matte_gray
+    block: block47
+        corner1: -32, -36, 22
+        corner2: -28.45889719906971, -32.45889719906971, 25.54110280093029
+        material: matte_gray
+    block: block48
+        corner1: -45, 0, -8
+        corner2: -43.022733054435086, 1.977266945564914, -6.022733054435086
+        material: matte_gray
+    block: block49
+        corner1: -40, 43, -46
+        corner2: -38.59281329904028, 44.40718670095972, -44.59281329904028
+        material: matte_gray
+    block: block50
+        corner1: 45, -33, 16
+        corner2: 46.444518882154775, -31.555481117845225, 17.444518882154775
+        material: matte_gray
+    block: block51
+        corner1: 27, 34, 10
+        corner2: 28.265162743746167, 35.26516274374617, 11.265162743746167
+        material: matte_gray
+    block: block52
+        corner1: 16, 8, 1
+        corner2: 18.26845032606353, 10.26845032606353, 3.2684503260635296
+        material: matte_gray
+    block: block53
+        corner1: 17, -44, 23
+        corner2: 19.427391182104014, -41.57260881789598, 25.427391182104014
+        material: matte_gray
+    block: block54
+        corner1: 9, -28, -22
+        corner2: 10.093485207207483, -26.906514792792517, -20.906514792792517
+        material: matte_gray
+    block: block55
+        corner1: 10, -47, 19
+        corner2: 11.652246269409154, -45.347753730590846, 20.652246269409154
+        material: matte_gray
+    block: block56
+        corner1: -43, 43, -26
+        corner2: -41.93094819267805, 44.06905180732195, -24.930948192678052
+        material: matte_gray
+    block: block57
+        corner1: -14, 41, 30
+        corner2: -11.659914392761173, 43.34008560723883, 32.34008560723883
+        material: matte_gray
+    block: block58
+        corner1: 33, -24, 33
+        corner2: 36.615080245575264, -20.384919754424736, 36.615080245575264
+        material: matte_gray
+    block: block59
+        corner1: -44, 5, 34
+        corner2: -39.85223040608002, 9.147769593919984, 38.14776959391998
+        material: matte_gray
+    block: block60
+        corner1: 18, -25, 2
+        corner2: 22.733946827888783, -20.266053172111217, 6.733946827888783
+        material: matte_gray
+    block: block61
+        corner1: -8, -39, 15
+        corner2: -5.476401515352697, -36.4764015153527, 17.5235984846473
+        material: matte_gray
+    block: block62
+        corner1: 18, -29, -23
+        corner2: 20.080394626815774, -26.919605373184226, -20.919605373184226
+        material: matte_gray
+    block: block63
+        corner1: -21, -14, 30
+        corner2: -20.91363758809453, -13.91363758809453, 30.08636241190547
+        material: matte_gray
+    block: block64
+        corner1: -27, -22, 28
+        corner2: -24.283729115199094, -19.283729115199094, 30.716270884800906
+        material: matte_gray
+    block: block65
+        corner1: -18, -10, -23
+        corner2: -14.69110855705404, -6.691108557054039, -19.69110855705404
+        material: matte_gray
+    block: block66
+        corner1: -48, 33, -24
+        corner2: -45.835735191851306, 35.164264808148694, -21.835735191851306
+        material: matte_gray
+    block: block67
+        corner1: 1, 7, -33
+        corner2: 3.4967426318080763, 9.496742631808075, -30.503257368191925
+        material: matte_gray
+    block: block68
+        corner1: -45, -35, 41
+        corner2: -41.98471655605234, -31.98471655605234, 44.01528344394766
+        material: matte_gray
+    block: block69
+        corner1: 23, 6, 13
+        corner2: 25.106331222910292, 8.106331222910292, 15.106331222910292
+        material: matte_gray
+    block: block70
+        corner1: 39, -40, 17
+        corner2: 42.94874663344271, -36.05125336655729, 20.94874663344271
+        material: matte_gray
+    block: block71
+        corner1: 15, -8, -13
+        corner2: 18.254763515660287, -4.745236484339715, -9.745236484339715
+        material: matte_gray
+    block: block72
+        corner1: 27, -6, 21
+        corner2: 27.894674202207487, -5.105325797792515, 21.894674202207487
+        material: matte_gray
+    block: block73
+        corner1: 19, -31, 30
+        corner2: 21.115224146436347, -28.884775853563653, 32.11522414643635
+        material: matte_gray
+    block: block74
+        corner1: 43, -24, -12
+        corner2: 43.905909401576494, -23.09409059842351, -11.09409059842351
+        material: matte_gray
+    block: block75
+        corner1: -38, -19, 23
+        corner2: -35.915000575958715, -16.91500057595871, 25.08499942404129
+        material: matte_gray
+    block: block76
+        corner1: 5, 21, -36
+        corner2: 8.61066877839608, 24.61066877839608, -32.38933122160392
+        material: matte_gray
+    block: block77
+        corner1: 5, 19, -10
+        corner2: 7.323130762417517, 21.323130762417517, -7.676869237582483
+        material: matte_gray
+    block: block78
+        corner1: 48, -17, 46
+        corner2: 50.303018165742415, -14.696981834257583, 48.303018165742415
+        material: matte_gray
+    block: block79
+        corner1: 22, -35, -37
+        corner2: 23.514400366654815, -33.48559963334518, -35.48559963334518
+        material: matte_gray
+    block: block80
+        corner1: -38, 16, 42
+        corner2: -37.38411271374701, 16.615887286252995, 42.61588728625299
+        material: matte_gray
+    block: block81
+        corner1: -5, 23, -13
+        corner2: -4.970858408722622, 23.02914159127738, -12.970858408722622
+        material: matte_gray
+    block: block82
+        corner1: -47, -2, 41
+        corner2: -43.444064309363206, 1.5559356906367907, 44.555935690636794
+        material: matte_gray
+    block: block83
+        corner1: -45, -41, 36
+        corner2: -41.55068954196366, -37.55068954196366, 39.44931045803634
+        material: matte_gray
+    block: block84
+        corner1: -21, 33, -19
+        corner2: -16.53731736303782, 37.46268263696218, -14.537317363037818
+        material: matte_gray
+    block: block85
+        corner1: 9, 30, 22
+        corner2: 11.233270595678476, 32.233270595678476, 24.233270595678476
+        material: matte_gray
+    block: block86
+        corner1: 20, 36, -23
+        corner2: 23.339785560910038, 39.33978556091004, -19.660214439089962
+        material: matte_gray
+    block: block87
+        corner1: -18, 29, 39
+        corner2: -15.185159080551086, 31.814840919448912, 41.81484091944891
+        material: matte_gray
+    block: block88
+        corner1: -32, 15, 39
+        corner2: -30.375187028393327, 16.624812971606673, 40.62481297160667
+        material: matte_gray
+    block: block89
+        corner1: -9, -40, 7
+        corner2: -5.796221982076803, -36.7962219820768, 10.203778017923197
+        material: matte_gray
+    block: block90
+        corner1: 33, 4, -50
+        corner2: 34.845203869050685, 5.845203869050689, -48.154796130949315
+        material: matte_gray
+    block: block91
+        corner1: -27, -49, -5
+        corner2: -22.179948737595183, -44.17994873759518, -0.17994873759518448
+        material: matte_gray
+    block: block92
+        corner1: 3, -42, 47
+        corner2: 3.5108192894417463, -41.48918071055825, 47.51081928944175
+        material: matte_gray
+    block: block93
+        corner1: -28, -31, 42
+        corner2: -27.615988899522335, -30.615988899522335, 42.384011100477665
+        material: matte_gray
+    block: block94
+        corner1: -37, -34, -14
+        corner2: -33.84131716366625, -30.84131716366625, -10.84131716366625
+        material: matte_gray
+    block: block95
+        corner1: 46, 35, 22
+        corner2: 50.82198799187956, 39.82198799187956, 26.82198799187956
+        material: matte_gray
+    block: block96
+        corner1: 2, -29, -28
+        corner2: 2.1213250226594544, -28.878674977340545, -27.878674977340545
+        material: matte_gray
+    block: block97
+        corner1: -43, 26, -33
+        corner2: -38.27889341783664, 30.721106582163358, -28.278893417836642
+        material: matte_gray
+    block: block98
+        corner1: 26, 44, -20
+        corner2: 28.303881308033727, 46.30388130803373, -17.696118691966273
+        material: matte_gray
+    block: block99
+        corner1: -20, 26, -31
+        corner2: -15.028853795698428, 30.971146204301572, -26.028853795698428
+        material: matte_gray
+    block: block100
+        corner1: 18, -49, -6
+        corner2: 18.56103290750728, -48.438967092492724, -5.438967092492722
+        material: matte_gray
+    block: block101
+        corner1: 49, -13, 31
+        corner2: 50.36107789879515, -11.638922101204848, 32.36107789879515
+        material: matte_gray
+    block: block102
+        corner1: -21, -26, 3
+        corner2: -17.04423527118038, -22.04423527118038, 6.955764728819622
+        material: matte_gray
+    block: block103
+        corner1: 35, 49, 18
+        corner2: 36.56490329733211, 50.56490329733211, 19.564903297332105
+        material: matte_gray
+    block: block104
+        corner1: -36, -37, 11
+        corner2: -34.999740131958184, -35.999740131958184, 12.000259868041812
+        material: matte_gray
+    block: block105
+        corner1: 1, -50, -48
+        corner2: 1.8010042002776563, -49.19899579972235, -47.19899579972235
+        material: matte_gray
+    block: block106
+        corner1: -19, 22, 4
+        corner2: -17.57224178203827, 23.42775821796173, 5.427758217961731
+        material: matte_gray
+    block: block107
+        corner1: -27, 12, 17
+        corner2: -25.06820604776318, 13.931793952236822, 18.93179395223682
+        material: matte_gray
+    block: block108
+        corner1: 3, -33, -28
+        corner2: 6.951477492062745, -29.048522507937257, -24.048522507937257
+        material: matte_gray
+    block: block109
+        corner1: -37, 35, 26
+        corner2: -36.698859092605225, 35.301140907394775, 26.301140907394775
+        material: matte_gray
+    block: block110
+        corner1: -36, -24, 39
+        corner2: -33.59286654880806, -21.59286654880806, 41.40713345119194
+        material: matte_gray
+    block: block111
+        corner1: 6, 19, 32
+        corner2: 9.279567045, 22.279567045, 35.279567045
+        material: matte_gray
+    block: block112
+        corner1: 14, -12, 23
+        corner2: 15.941059194118083, -10.058940805881917, 24.941059194118083
+        material: matte_gray
+    block: block113
+        corner1: -23, 13, -13
+        corner2: -19.20550178708946, 16.79449821291054, -9.205501787089462
+        material: matte_gray
+    block: block114
+        corner1: 33, 0, -12
+        corner2: 37.25163823618425, 4.25163823618425, -7.74836176381575
+        material: matte_gray
+    block: block115
+        corner1: -23, -8, -36
+        corner2: -22.38812851974115, -7.388128519741152, -35.38812851974115
+        material: matte_gray
+    block: block116
+        corner1: 40, 33, 8
+        corner2: 41.16098980797783, 34.16098980797783, 9.160989807977826
+        material: matte_gray
+    block: block117
+        corner1: -2, 31, -35
+        corner2: 2.9596222672577612, 35.959622267257764, -30.04037773274224
+        material: matte_gray
+    block: block118
+        corner1: -21, 3, 22
+        corner2: -16.64741448488941, 7.352585515110589, 26.35258551511059
+        material: matte_gray
+    block: block119
+        corner1: -46, 14, -10
+        corner2: -41.08487941292659, 18.91512058707341, -5.0848794129265915
+        material: matte_gray
+    block: block120
+        corner1: -7, 20, -36
+        corner2: -3.204004978242744, 23.795995021757257, -32.20400497824274
+        material: matte_gray
+    block: block121
+        corner1: -7, 9, -37
+        corner2: -5.833209723175916, 10.166790276824084, -35.83320972317592
+        material: matte_gray
+    block: block122
+        corner1: -12, 30, 31
+        corner2: -9.119267767193145, 32.88073223280686, 33.88073223280686
+        material: matte_gray
+    block: block123
+        corner1: -23, -24, 15
+        corner2: -21.92291082202452, -22.92291082202452, 16.07708917797548
+        material: matte_gray
+    block: block124
+        corner1: -25, 2, -5
+        corner2: -23.88900833670998, 3.110991663290018, -3.889008336709982
+        material: matte_gray
+    block: block125
+        corner1: 39, 43, 45
+        corner2: 40.80789463006294, 44.80789463006294, 46.80789463006294
+        material: matte_gray
+    block: block126
+        corner1: 8, -44, -10
+        corner2: 9.414777642849343, -42.585222357150656, -8.585222357150657
+        material: matte_gray
+    block: block127
+        corner1: 34, -20, 34
+        corner2: 38.6314072329841, -15.368592767015897, 38.6314072329841
+        material: matte_gray
+    block: block128
+        corner1: 11, -21, 8
+        corner2: 14.019529195938517, -17.980470804061483, 11.019529195938517
+        material: matte_gray
+    block: block129
+        corner1: -27, 37, -38
+        corner2: -24.424532709081372, 39.575467290918624, -35.424532709081376
+        material: matte_gray
+    block: block130
+        corner1: 10, -13, -26
+        corner2: 14.96933982257038, -8.03066017742962, -21.03066017742962
+        material: matte_gray
+    block: block131
+        corner1: -30, -17, -21
+        corner2: -29.3574848169388, -16.3574848169388, -20.3574848169388
+        material: matte_gray
+    block: block132
+        corner1: 31, 23, 5
+        corner2: 34.95902381028818, 26.95902381028818, 8.95902381028818
+        material: matte_gray
+    block: block133
+        corner1: -35, -38, -20
+        corner2: -33.84991788166333, -36.84991788166333, -18.84991788166333
+        material: matte_gray
+    block: block134
+        corner1: 34, -37, 12
+        corner2: 36.35551382116561, -34.64448617883439, 14.355513821165609
+        material: matte_gray
+    block: block135
+        corner1: -7, -49, -33
+        corner2: -3.734694678516842, -45.734694678516846, -29.734694678516842
+        material: matte_gray
+    block: block136
+        corner1: -49, -26, -10
+        corner2: -46.161958710943644, -23.161958710943644, -7.161958710943642
+        material: matte_gray
+    block: block137
+        corner1: 33, -14, -30
+        corner2: 34.31240753375739, -12.687592466242615, -28.687592466242613
+        material: matte_gray
+    block: block138
+        corner1: 23, -10, -44
+        corner2: 23.566734797468445, -9.433265202531556, -43.43326520253156
+        material: matte_gray
+    block: block139
+        corner1: 39, 41, -20
+        corner2: 39.86015284639527, 41.86015284639527, -19.13984715360473
+        material: matte_gray
+    block: block140
+        corner1: 4, 46, 22
+        corner2: 5.107740237999176, 47.107740237999174, 23.107740237999174
+        material: matte_gray
+    block: block141
+        corner1: 12, 5, 18
+        corner2: 16.667196072150997, 9.667196072150997, 22.667196072150997
+        material: matte_gray
+    block: block142
+        corner1: 23, 7, 45
+        corner2: 26.713559864334094, 10.713559864334094, 48.713559864334094
+        material: matte_gray
+    block: block143
+        corner1: -1, -22, -20
+        corner2: -0.47186306632489206, -21.471863066324893, -19.471863066324893
+        material: matte_gray
+    block: block144
+        corner1: 34, -16, 34
+        corner2: 37.41488641173658, -12.585113588263415, 37.41488641173658
+        material: matte_gray
+    block: block145
+        corner1: -15, -40, 47
+        corner2: -10.956668091742621, -35.95666809174262, 51.04333190825738
+        material: matte_gray
+    block: block146
+        corner1: -33, 39, 41
+        corner2: -30.864641756251622, 41.13535824374838, 43.13535824374838
+        material: matte_gray
+    block: block147
+        corner1: 40, -2, 36
+        corner2: 44.50930799183075, 2.5093079918307524, 40.50930799183075
+        material: matte_gray
+    block: block148
+        corner1: 21, -13, 22
+        corner2: 25.96230062275314, -8.03769937724686, 26.96230062275314
+        material: matte_gray
+    block: block149
+        corner1: 21, -5, 9
+        corner2: 23.335067644096927, -2.6649323559030718, 11.335067644096927
+        material: matte_gray
+    block: block150
+        corner1: -45, 19, -1
+        corner2: -43.72929114991084, 20.270708850089157, 0.2707088500891568
+        material: matte_gray
+    block: block151
+        corner1: -21, -13, 3
+        corner2: -19.93805750150657, -11.938057501506568, 4.061942498493432
+        material: matte_gray
+    block: block152
+        corner1: 35, -44, -47
+        corner2: 36.920479713398244, -42.079520286601756, -45.079520286601756
+        material: matte_gray
+    block: block153
+        corner1: 49, 2, -4
+        corner2: 53.017521404739824, 6.017521404739827, 0.017521404739826885
+        material: matte_gray
+    block: block154
+        corner1: 19, -36, 22
+        corner2: 20.206446777218385, -34.79355322278161, 23.206446777218385
+        material: matte_gray
+    block: block155
+        corner1: 41, 5, -45
+        corner2: 43.21376970937425, 7.213769709374244, -42.78623029062575
+        material: matte_gray
+    block: block156
+        corner1: 4, 39, 27
+        corner2: 5.279426616395652, 40.279426616395654, 28.279426616395654
+        material: matte_gray
+    block: block157
+        corner1: 17, 13, 5
+        corner2: 20.261150131158118, 16.261150131158118, 8.26115013115812
+        material: matte_gray
+    block: block158
+        corner1: 13, 4, -16
+        corner2: 16.786127348720264, 7.786127348720266, -12.213872651279734
+        material: matte_gray
+    block: block159
+        corner1: 23, 1, 32
+        corner2: 25.74283145858425, 3.742831458584247, 34.74283145858425
+        material: matte_gray
+    block: block160
+        corner1: 40, 40, -48
+        corner2: 40.463384575183284, 40.463384575183284, -47.536615424816716
+        material: matte_gray
+    block: block161
+        corner1: -21, -38, -43
+        corner2: -18.43424504124095, -35.43424504124095, -40.43424504124095
+        material: matte_gray
+    block: block162
+        corner1: 43, 31, 19
+        corner2: 47.90478944515224, 35.90478944515224, 23.90478944515224
+        material: matte_gray
+    block: block163
+        corner1: 49, -41, -27
+        corner2: 52.051300922186556, -37.948699077813444, -23.94869907781344
+        material: matte_gray
+    block: block164
+        corner1: 12, -18, -29
+        corner2: 16.031807366331545, -13.968192633668455, -24.968192633668455
+        material: matte_gray
+    block: block165
+        corner1: 30, -49, -17
+        corner2: 30.936769800242416, -48.063230199757584, -16.063230199757584
+        material: matte_gray
+    block: block166
+        corner1: -2, -32, -37
+        corner2: -1.1157094953705886, -31.115709495370588, -36.11570949537059
+        material: matte_gray
+    block: block167
+        corner1: -21, 10, -18
+        corner2: -19.265933881986225, 11.734066118013775, -16.265933881986225
+        material: matte_gray
+    block: block168
+        corner1: -37, 21, 30
+        corner2: -36.324268332858146, 21.675731667141857, 30.675731667141857
+        material: matte_gray
+    block: block169
+        corner1: 28, -6, -37
+        corner2: 29.838789418214756, -4.1612105817852445, -35.16121058178524
+        material: matte_gray
+    block: block170
+        corner1: -34, -21, -8
+        corner2: -33.95347260156407, -20.95347260156407, -7.95347260156407
+        material: matte_gray
+    block: block171
+        corner1: -6, -21, 16
+        corner2: -3.3419934627496004, -18.3419934627496, 18.6580065372504
+        material: matte_gray
+    block: block172
+        corner1: 22, 3, -23
+        corner2: 24.369650989567283, 5.369650989567285, -20.630349010432717
+        material: matte_gray
+    block: block173
+        corner1: -48, 6, -47
+        corner2: -47.833848709266206, 6.1661512907337945, -46.833848709266206
+        material: matte_gray
+    block: block174
+        corner1: -4, 35, 22
+        corner2: 0.3645057116076895, 39.36450571160769, 26.36450571160769
+        material: matte_gray
+    block: block175
+        corner1: -20, -13, -11
+        corner2: -16.207443156997577, -9.207443156997577, -7.207443156997578
+        material: matte_gray
+    block: block176
+        corner1: -31, -1, -48
+        corner2: -28.109937223754724, 1.8900627762452769, -45.10993722375472
+        material: matte_gray
+    block: block177
+        corner1: 43, -41, -13
+        corner2: 47.767198818294524, -36.232801181705476, -8.232801181705476
+        material: matte_gray
+    block: block178
+        corner1: 14, -27, -38
+        corner2: 16.639409929046572, -24.360590070953428, -35.36059007095343
+        material: matte_gray
+    block: block179
+        corner1: 46, 20, 0
+        corner2: 49.09077677981227, 23.090776779812273, 3.0907767798122734
+        material: matte_gray
+    block: block180
+        corner1: 24, 45, 31
+        corner2: 26.998282591615524, 47.99828259161552, 33.99828259161552
+        material: matte_gray
+    block: block181
+        corner1: -30, 23, -44
+        corner2: -26.01169463025241, 26.98830536974759, -40.01169463025241
+        material: matte_gray
+    block: block182
+        corner1: 46, -8, 40
+        corner2: 47.88065862278122, -6.119341377218779, 41.88065862278122
+        material: matte_gray
+    block: block183
+        corner1: -32, -32, -34
+        corner2: -27.67424773188623, -27.67424773188623, -29.67424773188623
+        material: matte_gray
+    block: block184
+        corner1: -47, 9, -39
+        corner2: -44.058135293561335, 11.941864706438668, -36.058135293561335
+        material: matte_gray
+    block: block185
+        corner1: 2, 35, 42
+        corner2: 4.798024672571508, 37.79802467257151, 44.79802467257151
+        material: matte_gray
+    block: block186
+        corner1: -50, 24, -18
+        corner2: -48.350985471026135, 25.64901452897387, -16.35098547102613
+        material: matte_gray
+    block: block187
+        corner1: -29, 31, 25
+        corner2: -27.67128013741038, 32.32871986258962, 26.32871986258962
+        material: matte_gray
+    block: block188
+        corner1: 22, 0, -16
+        corner2: 26.744534160143534, 4.744534160143533, -11.255465839856466
+        material: matte_gray
+    block: block189
+        corner1: 32, -42, 46
+        corner2: 33.7297525715859, -40.2702474284141, 47.7297525715859
+        material: matte_gray
+    block: block190
+        corner1: 20, 37, 49
+        corner2: 20.699822963995274, 37.699822963995274, 49.699822963995274
+        material: matte_gray
+    block: block191
+        corner1: 37, 26, 44
+        corner2: 39.592308896512854, 28.592308896512854, 46.592308896512854
+        material: matte_gray
+    block: block192
+        corner1: -16, 23, 13
+        corner2: -15.627445114131291, 23.37255488586871, 13.372554885868709
+        material: matte_gray
+    block: block193
+        corner1: -40, -16, -4
+        corner2: -39.06825592970111, -15.068255929701108, -3.0682559297011074
+        material: matte_gray
+    block: block194
+        corner1: 7, 16, -43
+        corner2: 7.111247394998339, 16.11124739499834, -42.88875260500166
+        material: matte_gray
+    block: block195
+        corner1: 7, 27, 23
+        corner2: 11.546898583451114, 31.546898583451114, 27.546898583451114
+        material: matte_gray
+    block: block196
+        corner1: 45, -49, 39
+        corner2: 49.95848916391608, -44.04151083608392, 43.95848916391608
+        material: matte_gray
+    block: block197
+        corner1: 47, 38, -25
+        corner2: 51.9604920429068, 42.9604920429068, -20.0395079570932
+        material: matte_gray
+    block: block198
+        corner1: 9, 11, -38
+        corner2: 11.262997426511173, 13.262997426511173, -35.73700257348883
+        material: matte_gray
+    block: block199
+        corner1: 41, -8, -29
+        corner2: 43.76874337303135, -5.231256626968651, -26.23125662696865
+        material: matte_gray
+    block: block200
+        corner1: -48, -25, 48
+        corner2: -45.82886246056867, -22.828862460568676, 50.17113753943133
+        material: matte_gray
+    block: block201
+        corner1: 36, -21, 24
+        corner2: 39.02994230686306, -17.970057693136937, 27.029942306863063
+        material: matte_gray
+    block: block202
+        corner1: -29, -45, 24
+        corner2: -26.26279146303681, -42.262791463036805, 26.73720853696319
+        material: matte_gray
+    block: block203
+        corner1: -13, -49, -27
+        corner2: -9.769314846530511, -45.76931484653051, -23.769314846530513
+        material: matte_gray
+    block: block204
+        corner1: 47, -27, -3
+        corner2: 51.426054120829164, -22.57394587917084, 1.4260541208291606
+        material: matte_gray
+    block: block205
+        corner1: 39, 17, -15
+        corner2: 41.60601435214514, 19.606014352145134, -12.393985647854866
+        material: matte_gray
+    block: block206
+        corner1: -21, -13, -23
+        corner2: -19.444241517265006, -11.444241517265006, -21.444241517265006
+        material: matte_gray
+    block: block207
+        corner1: 19, 46, 37
+        corner2: 21.086222760711603, 48.08622276071161, 39.08622276071161
+        material: matte_gray
+    block: block208
+        corner1: -26, 49, 14
+        corner2: -22.269912431732354, 52.73008756826764, 17.730087568267646
+        material: matte_gray
+    block: block209
+        corner1: -43, 44, 23
+        corner2: -42.352757767662624, 44.647242232337376, 23.647242232337376
+        material: matte_gray
+    block: block210
+        corner1: 16, 30, 30
+        corner2: 17.665364905533917, 31.665364905533917, 31.665364905533917
+        material: matte_gray
+    block: block211
+        corner1: -5, 49, 19
+        corner2: -2.5520968011863343, 51.44790319881366, 21.447903198813666
+        material: matte_gray
+    block: block212
+        corner1: 12, 49, -1
+        corner2: 14.81935365116134, 51.819353651161336, 1.8193536511613395
+        material: matte_gray
+    block: block213
+        corner1: 28, 35, -4
+        corner2: 29.163480050768065, 36.163480050768065, -2.836519949231934
+        material: matte_gray
+    block: block214
+        corner1: 25, -38, -30
+        corner2: 27.593034015154096, -35.406965984845904, -27.406965984845904
+        material: matte_gray
+    block: block215
+        corner1: 8, 26, 43
+        corner2: 12.377650330073456, 30.377650330073457, 47.37765033007346
+        material: matte_gray
+    block: block216
+        corner1: 14, 33, -21
+        corner2: 18.667539487871046, 37.667539487871046, -16.332460512128954
+        material: matte_gray
+    block: block217
+        corner1: -44, 0, -50
+        corner2: -40.03589325156052, 3.9641067484394736, -46.03589325156052
+        material: matte_gray
+    block: block218
+        corner1: -6, -2, 32
+        corner2: -1.5684459775461779, 2.431554022453822, 36.431554022453824
+        material: matte_gray
+    block: block219
+        corner1: 30, 23, -15
+        corner2: 33.91366613933135, 26.913666139331347, -11.086333860668653
+        material: matte_gray
+    block: block220
+        corner1: 13, -14, -45
+        corner2: 17.748674440642205, -9.251325559357795, -40.251325559357795
+        material: matte_gray
+    block: block221
+        corner1: 1, 25, 47
+        corner2: 4.962369931273495, 28.962369931273493, 50.96236993127349
+        material: matte_gray
+    block: block222
+        corner1: 5, -36, -35
+        corner2: 8.309359417685178, -32.69064058231482, -31.69064058231482
+        material: matte_gray
+    block: block223
+        corner1: -4, 24, -22
+        corner2: 0.32759620143471313, 28.327596201434712, -17.672403798565288
+        material: matte_gray
+    block: block224
+        corner1: -19, -10, -17
+        corner2: -18.48319973437984, -9.483199734379843, -16.48319973437984
+        material: matte_gray
+    block: block225
+        corner1: -26, 19, 34
+        corner2: -21.974537739824097, 23.025462260175903, 38.0254622601759
+        material: matte_gray
+    block: block226
+        corner1: -21, -39, -45
+        corner2: -18.958580619810807, -36.9585806198108, -42.9585806198108
+        material: matte_gray
+    block: block227
+        corner1: 40, 20, 42
+        corner2: 40.94440247550334, 20.944402475503335, 42.94440247550334
+        material: matte_gray
+    block: block228
+        corner1: -38, 45, 43
+        corner2: -33.346851086916814, 49.653148913083186, 47.653148913083186
+        material: matte_gray
+    block: block229
+        corner1: -42, 48, 34
+        corner2: -40.814170163075225, 49.185829836924775, 35.185829836924775
+        material: matte_gray
+    block: block230
+        corner1: -26, -2, 35
+        corner2: -22.603960610340682, 1.3960393896593173, 38.396039389659315
+        material: matte_gray
+    block: block231
+        corner1: 30, 42, 7
+        corner2: 34.35239693303268, 46.35239693303268, 11.35239693303268
+        material: matte_gray
+    block: block232
+        corner1: 32, -45, -35
+        corner2: 33.11627605977984, -43.88372394022016, -33.88372394022016
+        material: matte_gray
+    block: block233
+        corner1: -24, -20, 49
+        corner2: -21.970421056219244, -17.970421056219244, 51.029578943780756
+        material: matte_gray
+    block: block234
+        corner1: 45, 26, 3
+        corner2: 48.540929781624065, 29.54092978162407, 6.540929781624068
+        material: matte_gray
+    block: block235
+        corner1: 44, 37, -45
+        corner2: 45.19042087462765, 38.19042087462765, -43.80957912537235
+        material: matte_gray
+    block: block236
+        corner1: -44, -50, 27
+        corner2: -39.365818843227494, -45.365818843227494, 31.634181156772506
+        material: matte_gray
+    block: block237
+        corner1: 20, 34, -49
+        corner2: 21.874708468628647, 35.87470846862865, -47.12529153137135
+        material: matte_gray
+    block: block238
+        corner1: 35, 20, 36
+        corner2: 37.58961271234114, 22.589612712341143, 38.58961271234114
+        material: matte_gray
+    block: block239
+        corner1: 41, -11, -4
+        corner2: 43.993157640716724, -8.00684235928328, -1.0068423592832785
+        material: matte_gray
+    block: block240
+        corner1: -26, 17, -26
+        corner2: -24.015570016422174, 18.984429983577826, -24.015570016422174
+        material: matte_gray
+    block: block241
+        corner1: -6, -9, -49
+        corner2: -2.326153732068293, -5.326153732068293, -45.32615373206829
+        material: matte_gray
+    block: block242
+        corner1: 23, 30, -40
+        corner2: 25.461317153688718, 32.46131715368872, -37.53868284631128
+        material: matte_gray
+    block: block243
+        corner1: -36, -43, 30
+        corner2: -35.33758088961629, -42.33758088961629, 30.662419110383706
+        material: matte_gray
+    block: block244
+        corner1: 23, 6, 6
+        corner2: 26.54707504864227, 9.54707504864227, 9.54707504864227
+        material: matte_gray
+    block: block245
+        corner1: 29, -48, 18
+        corner2: 33.358446395881195, -43.641553604118805, 22.358446395881195
+        material: matte_gray
+    block: block246
+        corner1: -26, -29, -27
+        corner2: -22.952449576646373, -25.952449576646373, -23.952449576646373
+        material: matte_gray
+    block: block247
+        corner1: -32, -24, -28
+        corner2: -29.9398300925628, -21.9398300925628, -25.9398300925628
+        material: matte_gray
+    block: block248
+        corner1: -22, -34, -14
+        corner2: -20.7222958177534, -32.7222958177534, -12.7222958177534
+        material: matte_gray
+    block: block249
+        corner1: -47, -4, -30
+        corner2: -44.699875314966995, -1.6998753149669952, -27.699875314966995
+        material: matte_gray
+    block: block250
+        corner1: -12, -43, -37
+        corner2: -7.435569994927063, -38.435569994927064, -32.435569994927064
+        material: matte_gray
+    block: block251
+        corner1: 39, 3, -3
+        corner2: 39.498147372694575, 3.498147372694575, -2.501852627305425
+        material: matte_gray
+    block: block252
+        corner1: -29, -31, 23
+        corner2: -24.496072068742812, -26.496072068742812, 27.503927931257188
+        material: matte_gray
+    block: block253
+        corner1: 42, 9, -18
+        corner2: 42.705373651078276, 9.705373651078279, -17.29462634892172
+        material: matte_gray
+    block: block254
+        corner1: -21, -39, 12
+        corner2: -19.86241883056535, -37.86241883056535, 13.13758116943465
+        material: matte_gray
+    block: block255
+        corner1: -30, -14, -19
+        corner2: -27.75544433989585, -11.755444339895849, -16.75544433989585
+        material: matte_gray
+    block: block256
+        corner1: -3, 18, -44
+        corner2: 0.4696187186969403, 21.46961871869694, -40.53038128130306
+        material: matte_gray
+    block: block257
+        corner1: -19, 3, -44
+        corner2: -14.114235264637248, 7.885764735362753, -39.114235264637244
+        material: matte_gray
+    block: block258
+        corner1: 5, 23, 19
+        corner2: 6.043956736043855, 24.043956736043857, 20.043956736043857
+        material: matte_gray
+    block: block259
+        corner1: 35, 31, -47
+        corner2: 35.58222834732678, 31.58222834732678, -46.41777165267322
+        material: matte_gray
+    block: block260
+        corner1: -41, -45, 8
+        corner2: -37.04046737818755, -41.04046737818755, 11.959532621812446
+        material: matte_gray
+    block: block261
+        corner1: -45, -8, 23
+        corner2: -43.12286856377337, -6.122868563773375, 24.877131436226623
+        material: matte_gray
+    block: block262
+        corner1: -14, -13, -19
+        corner2: -11.908152275551352, -10.908152275551352, -16.908152275551352
+        material: matte_gray
+    block: block263
+        corner1: -3, -21, 39
+        corner2: -0.20285676422874488, -18.202856764228745, 41.79714323577126
+        material: matte_gray
+    block: block264
+        corner1: -29, 44, 21
+        corner2: -25.27634674974833, 47.72365325025167, 24.72365325025167
+        material: matte_gray
+    block: block265
+        corner1: -46, 35, -3
+        corner2: -44.47827245939836, 36.52172754060164, -1.478272459398365
+        material: matte_gray
+    block: block266
+        corner1: 16, -6, -7
+        corner2: 18.269709399570214, -3.730290600429786, -4.730290600429786
+        material: matte_gray
+    block: block267
+        corner1: 25, -34, 0
+        corner2: 29.369151507716253, -29.630848492283747, 4.369151507716252
+        material: matte_gray
+    block: block268
+        corner1: -18, -19, -19
+        corner2: -14.125838070249578, -15.125838070249578, -15.125838070249578
+        material: matte_gray
+    block: block269
+        corner1: -25, -32, -10
+        corner2: -23.29049279405412, -30.29049279405412, -8.29049279405412
+        material: matte_gray
+    block: block270
+        corner1: 28, -19, -45
+        corner2: 30.520683635083962, -16.479316364916038, -42.47931636491604
+        material: matte_gray
+    block: block271
+        corner1: -3, -38, 11
+        corner2: -0.6754496820689266, -35.67544968206893, 13.324550317931074
+        material: matte_gray
+    block: block272
+        corner1: 2, -44, -29
+        corner2: 4.892412588208725, -41.10758741179127, -26.107587411791275
+        material: matte_gray
+    block: block273
+        corner1: -35, -42, -34
+        corner2: -30.09561545814438, -37.09561545814438, -29.09561545814438
+        material: matte_gray
+    block: block274
+        corner1: 34, 33, -19
+        corner2: 35.39577896725243, 34.39577896725243, -17.60422103274757
+        material: matte_gray
+    block: block275
+        corner1: 25, 35, -16
+        corner2: 26.056584971594813, 36.056584971594816, -14.943415028405187
+        material: matte_gray
+    block: block276
+        corner1: -11, -48, -40
+        corner2: -7.769983876231588, -44.769983876231585, -36.769983876231585
+        material: matte_gray
+    block: block277
+        corner1: 31, -28, 11
+        corner2: 34.58312692090536, -24.416873079094646, 14.583126920905354
+        material: matte_gray
+    block: block278
+        corner1: 16, -23, -2
+        corner2: 17.217848597796483, -21.782151402203517, -0.7821514022035174
+        material: matte_gray
+    block: block279
+        corner1: -2, -26, 17
+        corner2: -0.037711384150100224, -24.0377113841501, 18.9622886158499
+        material: matte_gray
+    block: block280
+        corner1: 8, 28, 34
+        corner2: 11.156098511077364, 31.156098511077364, 37.15609851107737
+        material: matte_gray
+    block: block281
+        corner1: -39, 5, 9
+        corner2: -34.21498025416765, 9.785019745832352, 13.785019745832352
+        material: matte_gray
+    block: block282
+        corner1: -8, -40, 47
+        corner2: -3.722519635541481, -35.72251963554148, 51.27748036445852
+        material: matte_gray
+    block: block283
+        corner1: -35, -23, -44
+        corner2: -32.901754870398, -20.901754870398005, -41.901754870398
+        material: matte_gray
+    block: block284
+        corner1: -37, -27, 20
+        corner2: -36.08953105547203, -26.089531055472033, 20.910468944527967
+        material: matte_gray
+    block: block285
+        corner1: 39, 44, -13
+        corner2: 40.78480659291484, 45.78480659291484, -11.215193407085156
+        material: matte_gray
+    block: block286
+        corner1: 40, 9, -42
+        corner2: 40.99053339209433, 9.990533392094324, -41.00946660790567
+        material: matte_gray
+    block: block287
+        corner1: 46, 13, 8
+        corner2: 47.392686401532785, 14.392686401532782, 9.392686401532782
+        material: matte_gray
+    block: block288
+        corner1: 23, -44, 34
+        corner2: 24.073769047931336, -42.926230952068664, 35.073769047931336
+        material: matte_gray
+    block: block289
+        corner1: 34, -16, 38
+        corner2: 36.75785520044784, -13.242144799552156, 40.75785520044784
+        material: matte_gray
+    block: block290
+        corner1: -6, -11, 17
+        corner2: -5.030837758708325, -10.030837758708325, 17.969162241291674
+        material: matte_gray
+    block: block291
+        corner1: -14, 15, -18
+        corner2: -13.789795687336621, 15.210204312663379, -17.78979568733662
+        material: matte_gray
+    block: block292
+        corner1: -18, 14, -19
+        corner2: -14.989413665436041, 17.01058633456396, -15.989413665436041
+        material: matte_gray
+    block: block293
+        corner1: 8, -48, -26
+        corner2: 8.74981859817538, -47.25018140182462, -25.25018140182462
+        material: matte_gray
+    block: block294
+        corner1: 47, -43, -13
+        corner2: 48.51275123708941, -41.48724876291059, -11.487248762910589
+        material: matte_gray
+    block: block295
+        corner1: -14, -23, 16
+        corner2: -11.090455958350814, -20.090455958350816, 18.909544041649184
+        material: matte_gray
+    block: block296
+        corner1: -7, 35, 40
+        corner2: -2.806604967631772, 39.19339503236823, 44.19339503236823
+        material: matte_gray
+    block: block297
+        corner1: 35, -38, 18
+        corner2: 35.69821560629513, -37.30178439370487, 18.69821560629513
+        material: matte_gray
+    block: block298
+        corner1: -18, 39, -37
+        corner2: -16.236797496428085, 40.76320250357192, -35.23679749642808
+        material: matte_gray
+    block: block299
+        corner1: -39, -50, 43
+        corner2: -37.17608292782933, -48.17608292782933, 44.82391707217067
+        material: matte_gray
+    block: block300
+        corner1: -36, -3, 10
+        corner2: -31.39689836026382, 1.6031016397361828, 14.603101639736183
+        material: matte_gray
+    block: block301
+        corner1: 26, -13, -44
+        corner2: 28.692880181763407, -10.307119818236593, -41.30711981823659
+        material: matte_gray
+    block: block302
+        corner1: -34, -35, 21
+        corner2: -31.260504171893608, -32.26050417189361, 23.739495828106392
+        material: matte_gray
+    block: block303
+        corner1: -47, -10, 36
+        corner2: -45.62530787167649, -8.62530787167649, 37.37469212832351
+        material: matte_gray
+    block: block304
+        corner1: 6, -21, 24
+        corner2: 8.564076293347867, -18.435923706652133, 26.564076293347867
+        material: matte_gray
+    block: block305
+        corner1: -17, 21, -1
+        corner2: -12.910530937858146, 25.089469062141852, 3.0894690621418537
+        material: matte_gray
+    block: block306
+        corner1: -50, 40, -3
+        corner2: -47.277398650013666, 42.722601349986334, -0.27739865001366226
+        material: matte_gray
+    block: block307
+        corner1: -39, -20, -14
+        corner2: -34.6909403136783, -15.6909403136783, -9.6909403136783
+        material: matte_gray
+    block: block308
+        corner1: -38, 39, -31
+        corner2: -36.61532292154865, 40.38467707845135, -29.615322921548653
+        material: matte_gray
+    block: block309
+        corner1: 46, 38, -8
+        corner2: 48.81483798369237, 40.81483798369237, -5.185162016307629
+        material: matte_gray
+    block: block310
+        corner1: -44, -37, 36
+        corner2: -42.72056407783738, -35.72056407783738, 37.27943592216262
+        material: matte_gray
+    block: block311
+        corner1: -5, 5, -46
+        corner2: -1.9964653620153228, 8.003534637984677, -42.99646536201532
+        material: matte_gray
+    block: block312
+        corner1: -40, 49, -38
+        corner2: -36.345920188151304, 52.654079811848696, -34.345920188151304
+        material: matte_gray
+    block: block313
+        corner1: 27, -50, 16
+        corner2: 29.319281664832488, -47.68071833516751, 18.319281664832488
+        material: matte_gray
+    block: block314
+        corner1: 25, 37, 37
+        corner2: 27.728974450572487, 39.72897445057249, 39.72897445057249
+        material: matte_gray
+    block: block315
+        corner1: 35, 3, -5
+        corner2: 36.62864773801306, 4.6286477380130595, -3.37135226198694
+        material: matte_gray
+    block: block316
+        corner1: -29, 36, 35
+        corner2: -26.452649977777217, 38.54735002222278, 37.54735002222278
+        material: matte_gray
+    block: block317
+        corner1: 29, 47, -7
+        corner2: 30.662162060397993, 48.66216206039799, -5.337837939602009
+        material: matte_gray
+    block: block318
+        corner1: -42, 15, 30
+        corner2: -37.03029122945378, 19.969708770546223, 34.96970877054622
+        material: matte_gray
+    block: block319
+        corner1: -35, 10, 47
+        corner2: -30.6293509761291, 14.3706490238709, 51.3706490238709
+        material: matte_gray
+    block: block320
+        corner1: 41, -28, -18
+        corner2: 45.72528173581833, -23.274718264181672, -13.274718264181672
+        material: matte_gray
+    block: block321
+        corner1: -10, -37, -38
+        corner2: -5.767901464364239, -32.767901464364236, -33.767901464364236
+        material: matte_gray
+    block: block322
+        corner1: -50, -5, 11
+        corner2: -45.51813571623384, -0.5181357162338447, 15.481864283766155
+        material: matte_gray
+    block: block323
+        corner1: -7, -42, -5
+        corner2: -2.239675701600042, -37.23967570160004, -0.23967570160004215
+        material: matte_gray
+    block: block324
+        corner1: 25, 14, 18
+        corner2: 29.312513550682063, 18.312513550682063, 22.312513550682063
+        material: matte_gray
+    block: block325
+        corner1: -47, 3, 1
+        corner2: -43.38906816930765, 6.610931830692353, 4.610931830692353
+        material: matte_gray
+    block: block326
+        corner1: -21, -49, -12
+        corner2: -16.073332074653067, -44.07333207465307, -7.073332074653065
+        material: matte_gray
+    block: block327
+        corner1: 20, 24, -8
+        corner2: 20.545964674863505, 24.545964674863505, -7.454035325136497
+        material: matte_gray
+    block: block328
+        corner1: -15, -45, 32
+        corner2: -13.484143974221743, -43.484143974221745, 33.515856025778255
+        material: matte_gray
+    block: block329
+        corner1: -20, -8, -35
+        corner2: -15.567710219544132, -3.5677102195441313, -30.567710219544132
+        material: matte_gray
+    block: block330
+        corner1: 32, -16, -19
+        corner2: 34.59648709203767, -13.403512907962327, -16.403512907962327
+        material: matte_gray
+    block: block331
+        corner1: 49, 36, -48
+        corner2: 53.59930980486588, 40.59930980486588, -43.40069019513412
+        material: matte_gray
+    block: block332
+        corner1: -25, 39, 13
+        corner2: -23.455522707638444, 40.544477292361556, 14.544477292361554
+        material: matte_gray
+    block: block333
+        corner1: 35, -44, -28
+        corner2: 35.87765467977402, -43.12234532022598, -27.122345320225982
+        material: matte_gray
+    block: block334
+        corner1: 9, 49, 28
+        corner2: 13.690059109264702, 53.6900591092647, 32.6900591092647
+        material: matte_gray
+    block: block335
+        corner1: -45, -2, -6
+        corner2: -41.929776786278396, 1.070223213721608, -2.929776786278392
+        material: matte_gray
+    block: block336
+        corner1: 22, -14, 41
+        corner2: 24.03523618417977, -11.96476381582023, 43.035236184179766
+        material: matte_gray
+    block: block337
+        corner1: -38, 27, -26
+        corner2: -33.02788447951916, 31.972115520480838, -21.027884479519162
+        material: matte_gray
+    block: block338
+        corner1: 25, -6, -12
+        corner2: 26.37481281548914, -4.625187184510861, -10.62518718451086
+        material: matte_gray
+    block: block339
+        corner1: -19, 20, -14
+        corner2: -15.177397053500552, 23.822602946499448, -10.177397053500552
+        material: matte_gray
+    block: block340
+        corner1: 10, -22, 17
+        corner2: 13.673594761393131, -18.32640523860687, 20.67359476139313
+        material: matte_gray
+    block: block341
+        corner1: -47, -37, -32
+        corner2: -42.82941852740337, -32.82941852740337, -27.82941852740337
+        material: matte_gray
+    block: block342
+        corner1: -30, 44, -25
+        corner2: -29.92262238247277, 44.07737761752723, -24.92262238247277
+        material: matte_gray
+    block: block343
+        corner1: -25, -38, -34
+        corner2: -23.641784143795345, -36.64178414379534, -32.64178414379534
+        material: matte_gray
+    block: block344
+        corner1: 16, -30, 33
+        corner2: 17.76544385868605, -28.23455614131395, 34.76544385868605
+        material: matte_gray
+    block: block345
+        corner1: 39, -2, 10
+        corner2: 39.26000524807158, -1.7399947519284242, 10.260005248071575
+        material: matte_gray
+    block: block346
+        corner1: -4, -36, -29
+        corner2: -3.8264849065295152, -35.826484906529515, -28.826484906529515
+        material: matte_gray
+    block: block347
+        corner1: 7, 23, 47
+        corner2: 9.109491334311244, 25.109491334311244, 49.109491334311244
+        material: matte_gray
+    block: block348
+        corner1: -8, 37, 32
+        corner2: -5.761678294155097, 39.2383217058449, 34.2383217058449
+        material: matte_gray
+    block: block349
+        corner1: 13, 25, 36
+        corner2: 15.587654507160272, 27.587654507160273, 38.58765450716027
+        material: matte_gray
+    block: block350
+        corner1: -23, 19, 36
+        corner2: -18.263756882200756, 23.736243117799244, 40.73624311779924
+        material: matte_gray
+    block: block351
+        corner1: -24, 3, -20
+        corner2: -22.218657701279714, 4.781342298720286, -18.218657701279714
+        material: matte_gray
+    block: block352
+        corner1: 31, 40, -36
+        corner2: 34.96599540328803, 43.96599540328803, -32.03400459671197
+        material: matte_gray
+    block: block353
+        corner1: -3, -10, -1
+        corner2: 0.47742740396916217, -6.522572596030837, 2.477427403969162
+        material: matte_gray
+    block: block354
+        corner1: 18, 23, 43
+        corner2: 20.33820567396233, 25.33820567396233, 45.338205673962335
+        material: matte_gray
+    block: block355
+        corner1: 1, 38, -31
+        corner2: 2.040780726463624, 39.04078072646362, -29.959219273536377
+        material: matte_gray
+    block: block356
+        corner1: -32, -50, 38
+        corner2: -29.884690290137783, -47.88469029013778, 40.11530970986222
+        material: matte_gray
+    block: block357
+        corner1: -46, 44, -11
+        corner2: -44.774978360758595, 45.225021639241405, -9.774978360758599
+        material: matte_gray
+    block: block358
+        corner1: -23, 16, 29
+        corner2: -22.445480388929425, 16.554519611070575, 29.554519611070575
+        material: matte_gray
+    block: block359
+        corner1: 38, 8, 4
+        corner2: 38.59355481550767, 8.593554815507671, 4.593554815507671
+        material: matte_gray
+    block: block360
+        corner1: -7, 27, 35
+        corner2: -6.041571581068222, 27.958428418931778, 35.95842841893178
+        material: matte_gray
+    block: block361
+        corner1: 29, 18, 8
+        corner2: 29.206647640999986, 18.206647640999986, 8.206647640999986
+        material: matte_gray
+    block: block362
+        corner1: -26, -11, 43
+        corner2: -24.508312141166545, -9.508312141166545, 44.49168785883345
+        material: matte_gray
+    block: block363
+        corner1: 4, -23, 5
+        corner2: 8.107102824945589, -18.89289717505441, 9.107102824945589
+        material: matte_gray
+    block: block364
+        corner1: 5, -41, 12
+        corner2: 5.07119586439152, -40.92880413560848, 12.07119586439152
+        material: matte_gray
+    block: block365
+        corner1: -46, -25, 40
+        corner2: -43.01277867056799, -22.01277867056799, 42.98722132943201
+        material: matte_gray
+    block: block366
+        corner1: 32, -35, 24
+        corner2: 36.645942206398495, -30.354057793601505, 28.645942206398495
+        material: matte_gray
+    block: block367
+        corner1: 2, -26, 26
+        corner2: 5.99861302606344, -22.00138697393656, 29.99861302606344
+        material: matte_gray
+    block: block368
+        corner1: 31, -13, -32
+        corner2: 35.09972722021095, -8.900272779789049, -27.90027277978905
+        material: matte_gray
+    block: block369
+        corner1: -3, 46, -8
+        corner2: -2.652047787231441, 46.34795221276856, -7.6520477872314405
+        material: matte_gray
+    block: block370
+        corner1: 47, -20, -14
+        corner2: 50.09850108578588, -16.901498914214127, -10.901498914214125
+        material: matte_gray
+    block: block371
+        corner1: 35, 14, 7
+        corner2: 36.39828488209264, 15.39828488209264, 8.39828488209264
+        material: matte_gray
+    block: block372
+        corner1: 46, 8, -5
+        corner2: 47.35919221306492, 9.359192213064924, -3.640807786935075
+        material: matte_gray
+    block: block373
+        corner1: -16, 39, 38
+        corner2: -14.972431725799805, 40.02756827420019, 39.02756827420019
+        material: matte_gray
+    block: block374
+        corner1: 35, -48, -50
+        corner2: 35.71553695984173, -47.28446304015827, -49.28446304015827
+        material: matte_gray
+    block: block375
+        corner1: -26, -41, 28
+        corner2: -22.773289026563756, -37.77328902656375, 31.226710973436244
+        material: matte_gray
+    block: block376
+        corner1: -31, -10, 28
+        corner2: -29.616595389995904, -8.616595389995906, 29.383404610004096
+        material: matte_gray
+    block: block377
+        corner1: 48, -11, -48
+        corner2: 52.80609356859813, -6.193906431401867, -43.19390643140187
+        material: matte_gray
+    block: block378
+        corner1: 15, 0, -25
+        corner2: 17.513426299036876, 2.513426299036876, -22.486573700963124
+        material: matte_gray
+    block: block379
+        corner1: -8, -19, 1
+        corner2: -4.888100173783997, -15.888100173783997, 4.111899826216003
+        material: matte_gray
+    block: block380
+        corner1: 27, -20, 29
+        corner2: 29.176560665483002, -17.823439334516998, 31.176560665483002
+        material: matte_gray
+    block: block381
+        corner1: 42, 25, 43
+        corner2: 46.69081740783041, 29.69081740783041, 47.69081740783041
+        material: matte_gray
+    block: block382
+        corner1: 47, 27, -20
+        corner2: 48.58542143625363, 28.58542143625363, -18.41457856374637
+        material: matte_gray
+    block: block383
+        corner1: 0, 43, -34
+        corner2: 0.2682739493610825, 43.26827394936108, -33.73172605063892
+        material: matte_gray
+    block: block384
+        corner1: 29, 29, -27
+        corner2: 33.99567455470442, 33.99567455470442, -22.004325445295574
+        material: matte_gray
+    block: block385
+        corner1: 10, -12, -33
+        corner2: 10.81153373948768, -11.18846626051232, -32.18846626051232
+        material: matte_gray
+    block: block386
+        corner1: -16, 47, 0
+        corner2: -13.092110380232743, 49.90788961976726, 2.907889619767258
+        material: matte_gray
+    block: block387
+        corner1: -11, 14, 32
+        corner2: -10.824064769748034, 14.175935230251966, 32.175935230251966
+        material: matte_gray
+    block: block388
+        corner1: -5, -27, 16
+        corner2: -3.5187392370239143, -25.518739237023915, 17.481260762976085
+        material: matte_gray
+    block: block389
+        corner1: 1, 42, 31
+        corner2: 3.1056463982070435, 44.10564639820704, 33.10564639820704
+        material: matte_gray
+    block: block390
+        corner1: 30, 44, -11
+        corner2: 30.176378866779338, 44.17637886677934, -10.823621133220662
+        material: matte_gray
+    block: block391
+        corner1: 11, -40, -13
+        corner2: 15.795726910908348, -35.20427308909165, -8.204273089091652
+        material: matte_gray
+    block: block392
+        corner1: 11, -15, 33
+        corner2: 11.43801224049672, -14.56198775950328, 33.43801224049672
+        material: matte_gray
+    block: block393
+        corner1: 20, 29, 4
+        corner2: 23.248107940950224, 32.24810794095023, 7.248107940950225
+        material: matte_gray
+    block: block394
+        corner1: -12, 13, -49
+        corner2: -8.89672942735727, 16.103270572642728, -45.89672942735727
+        material: matte_gray
+    block: block395
+        corner1: 36, 15, 46
+        corner2: 38.88612565615616, 17.886125656156164, 48.88612565615616
+        material: matte_gray
+    block: block396
+        corner1: -13, 7, -47
+        corner2: -9.679478497564293, 10.320521502435707, -43.6794784975643
+        material: matte_gray
+    block: block397
+        corner1: 41, 44, -25
+        corner2: 43.882554311728, 46.882554311728, -22.117445688272
+        material: matte_gray
+    block: block398
+        corner1: 28, -25, -38
+        corner2: 31.41243320829179, -21.58756679170821, -34.58756679170821
+        material: matte_gray
+    block: block399
+        corner1: -41, -21, -41
+        corner2: -39.147080812546186, -19.14708081254619, -39.147080812546186
+        material: matte_gray
+    block: block400
+        corner1: -47, 12, 13
+        corner2: -45.52825928481311, 13.471740715186892, 14.471740715186892
+        material: matte_gray
+    block: block401
+        corner1: 29, -28, 31
+        corner2: 31.94558578799895, -25.05441421200105, 33.94558578799895
+        material: matte_gray
+    block: block402
+        corner1: -8, 23, 11
+        corner2: -7.117196090181128, 23.882803909818872, 11.882803909818872
+        material: matte_gray
+    block: block403
+        corner1: -37, -1, -13
+        corner2: -35.396351982946236, 0.603648017053767, -11.396351982946232
+        material: matte_gray
+    block: block404
+        corner1: -21, -48, 17
+        corner2: -16.708326888794716, -43.708326888794716, 21.291673111205284
+        material: matte_gray
+    block: block405
+        corner1: 31, 3, 40
+        corner2: 32.84350582188304, 4.843505821883046, 41.84350582188304
+        material: matte_gray
+    block: block406
+        corner1: -32, 8, -31
+        corner2: -30.700127048218476, 9.299872951781524, -29.700127048218476
+        material: matte_gray
+    block: block407
+        corner1: -38, 0, 19
+        corner2: -36.2605621498512, 1.7394378501488035, 20.739437850148803
+        material: matte_gray
+    block: block408
+        corner1: -42, 19, 18
+        corner2: -40.19179491633705, 20.808205083662948, 19.808205083662948
+        material: matte_gray
+    block: block409
+        corner1: -39, -43, 26
+        corner2: -37.74968131796433, -41.74968131796433, 27.25031868203567
+        material: matte_gray
+    block: block410
+        corner1: 46, 44, 28
+        corner2: 46.02552703984156, 44.02552703984156, 28.025527039841563
+        material: matte_gray
+    block: block411
+        corner1: 48, 45, 48
+        corner2: 52.685672420236365, 49.685672420236365, 52.685672420236365
+        material: matte_gray
+    block: block412
+        corner1: -42, -31, -6
+        corner2: -37.36116193522464, -26.361161935224636, -1.3611619352246382
+        material: matte_gray
+    block: block413
+        corner1: 20, -45, -46
+        corner2: 20.602019466724833, -44.39798053327517, -45.39798053327517
+        material: matte_gray
+    block: block414
+        corner1: -6, -44, 32
+        corner2: -5.939613590033041, -43.93961359003304, 32.06038640996696
+        material: matte_gray
+    block: block415
+        corner1: -19, -49, -13
+        corner2: -17.193056968557972, -47.193056968557975, -11.193056968557972
+        material: matte_gray
+    block: block416
+        corner1: -47, 37, -7
+        corner2: -42.351240770827516, 41.648759229172484, -2.3512407708275136
+        material: matte_gray
+    block: block417
+        corner1: -24, 38, 34
+        corner2: -19.90701402316067, 42.09298597683933, 38.09298597683933
+        material: matte_gray
+    block: block418
+        corner1: 2, -40, -16
+        corner2: 3.9595860520511605, -38.04041394794884, -14.040413947948839
+        material: matte_gray
+    block: block419
+        corner1: -1, 44, 17
+        corner2: 2.5696551947838957, 47.5696551947839, 20.569655194783895
+        material: matte_gray
+    block: block420
+        corner1: 49, 43, 5
+        corner2: 49.58974383432379, 43.58974383432379, 5.589743834323792
+        material: matte_gray
+    block: block421
+        corner1: -11, 4, -2
+        corner2: -9.839166071787316, 5.160833928212685, -0.8391660717873155
+        material: matte_gray
+    block: block422
+        corner1: -35, -36, -8
+        corner2: -33.51802905620496, -34.51802905620496, -6.518029056204958
+        material: matte_gray
+    block: block423
+        corner1: -22, -24, 18
+        corner2: -19.220765780140855, -21.220765780140855, 20.779234219859145
+        material: matte_gray
+    block: block424
+        corner1: -47, 25, -30
+        corner2: -44.65675172081024, 27.34324827918976, -27.65675172081024
+        material: matte_gray
+    block: block425
+        corner1: 32, 10, -13
+        corner2: 32.01030998492747, 10.010309984927463, -12.989690015072537
+        material: matte_gray
+    block: block426
+        corner1: 48, -33, -28
+        corner2: 51.08573663519618, -29.914263364803823, -24.914263364803823
+        material: matte_gray
+    block: block427
+        corner1: -29, 20, -41
+        corner2: -26.86356803072796, 22.13643196927204, -38.86356803072796
+        material: matte_gray
+    block: block428
+        corner1: 31, 49, 14
+        corner2: 34.754953793052564, 52.754953793052564, 17.754953793052564
+        material: matte_gray
+    block: block429
+        corner1: 38, -14, 39
+        corner2: 41.37846359966418, -10.621536400335819, 42.37846359966418
+        material: matte_gray
+    block: block430
+        corner1: -39, 8, 13
+        corner2: -36.0926441126247, 10.907355887375306, 15.907355887375306
+        material: matte_gray
+    block: block431
+        corner1: -20, 48, 38
+        corner2: -16.300741346959093, 51.69925865304091, 41.69925865304091
+        material: matte_gray
+    block: block432
+        corner1: -13, 34, -39
+        corner2: -12.487357090217778, 34.51264290978222, -38.48735709021778
+        material: matte_gray
+    block: block433
+        corner1: 45, 2, -6
+        corner2: 46.5948997835345, 3.594899783534502, -4.405100216465498
+        material: matte_gray
+    block: block434
+        corner1: 22, -19, -28
+        corner2: 23.024172853653912, -17.975827146346088, -26.975827146346088
+        material: matte_gray
+    block: block435
+        corner1: -49, 3, 34
+        corner2: -47.57833231621594, 4.42166768378406, 35.42166768378406
+        material: matte_gray
+    block: block436
+        corner1: 38, 32, 22
+        corner2: 39.16027669370932, 33.16027669370932, 23.16027669370932
+        material: matte_gray
+    block: block437
+        corner1: -44, -28, -14
+        corner2: -39.24433994590578, -23.24433994590578, -9.244339945905777
+        material: matte_gray
+    block: block438
+        corner1: 49, 45, -32
+        corner2: 50.344558659075645, 46.344558659075645, -30.655441340924355
+        material: matte_gray
+    block: block439
+        corner1: -28, 33, 24
+        corner2: -25.873603453985375, 35.126396546014625, 26.126396546014625
+        material: matte_gray
+    block: block440
+        corner1: -22, 4, -29
+        corner2: -17.77945798753767, 8.22054201246233, -24.77945798753767
+        material: matte_gray
+    block: block441
+        corner1: 19, -9, 36
+        corner2: 22.248527429378072, -5.751472570621928, 39.24852742937807
+        material: matte_gray
+    block: block442
+        corner1: 18, 24, 12
+        corner2: 20.82052974322528, 26.82052974322528, 14.82052974322528
+        material: matte_gray
+    block: block443
+        corner1: 32, 22, -20
+        corner2: 34.93824319376298, 24.938243193762982, -17.061756806237018
+        material: matte_gray
+    block: block444
+        corner1: 6, 8, -1
+        corner2: 8.541461554090148, 10.541461554090148, 1.541461554090148
+        material: matte_gray
+    block: block445
+        corner1: 8, 22, 47
+        corner2: 11.751999592221892, 25.751999592221892, 50.75199959222189
+        material: matte_gray
+    block: block446
+        corner1: -47, -43, -28
+        corner2: -44.96933488891146, -40.96933488891146, -25.96933488891146
+        material: matte_gray
+    block: block447
+        corner1: 41, 23, -44
+        corner2: 41.12330206735314, 23.123302067353137, -43.87669793264686
+        material: matte_gray
+    block: block448
+        corner1: -45, -7, -12
+        corner2: -41.983001821049186, -3.983001821049189, -8.98300182104919
+        material: matte_gray
+    block: block449
+        corner1: 49, -39, 40
+        corner2: 50.739010212139405, -37.260989787860595, 41.739010212139405
+        material: matte_gray
+    block: block450
+        corner1: -22, 18, -11
+        corner2: -18.83164815829343, 21.16835184170657, -7.831648158293431
+        material: matte_gray
+    block: block451
+        corner1: -31, 29, -23
+        corner2: -27.98523164569245, 32.01476835430755, -19.98523164569245
+        material: matte_gray
+    block: block452
+        corner1: 22, 22, 11
+        corner2: 25.38121299364099, 25.38121299364099, 14.38121299364099
+        material: matte_gray
+    block: block453
+        corner1: 15, 10, -31
+        corner2: 15.283671106354122, 10.283671106354122, -30.716328893645876
+        material: matte_gray
+    block: block454
+        corner1: -13, 2, 14
+        corner2: -9.43604362892887, 5.56395637107113, 17.563956371071132
+        material: matte_gray
+    block: block455
+        corner1: -15, 23, -30
+        corner2: -14.673101923816038, 23.326898076183962, -29.673101923816038
+        material: matte_gray
+    block: block456
+        corner1: -13, -1, 25
+        corner2: -12.104253466761318, -0.10425346676131841, 25.895746533238682
+        material: matte_gray
+    block: block457
+        corner1: 32, -15, -41
+        corner2: 36.13701078052479, -10.86298921947521, -36.86298921947521
+        material: matte_gray
+    block: block458
+        corner1: 14, -49, -43
+        corner2: 15.548552077481515, -47.45144792251848, -41.45144792251848
+        material: matte_gray
+    block: block459
+        corner1: -21, -21, -39
+        corner2: -18.65876273033836, -18.65876273033836, -36.65876273033836
+        material: matte_gray
+    block: block460
+        corner1: 33, 18, -2
+        corner2: 33.82732445070814, 18.827324450708137, -1.1726755492918632
+        material: matte_gray
+    block: block461
+        corner1: 33, -28, -7
+        corner2: 37.27541965416665, -23.72458034583335, -2.72458034583335
+        material: matte_gray
+    block: block462
+        corner1: -36, -20, -21
+        corner2: -35.041836621930585, -19.04183662193059, -20.04183662193059
+        material: matte_gray
+    block: block463
+        corner1: -23, 31, -43
+        corner2: -20.337579472129843, 33.662420527870154, -40.337579472129846
+        material: matte_gray
+    block: block464
+        corner1: 36, -25, 11
+        corner2: 36.88195446327013, -24.118045536729873, 11.881954463270128
+        material: matte_gray
+    block: block465
+        corner1: -32, 3, 34
+        corner2: -28.629955168969346, 6.370044831030654, 37.370044831030654
+        material: matte_gray
+    block: block466
+        corner1: -30, -36, -8
+        corner2: -25.29403316180609, -31.29403316180609, -3.29403316180609
+        material: matte_gray
+    block: block467
+        corner1: 41, -50, 32
+        corner2: 42.18633335872688, -48.81366664127312, 33.18633335872688
+        material: matte_gray
+    block: block468
+        corner1: 1, 14, -36
+        corner2: 2.032577900192781, 15.03257790019278, -34.967422099807216
+        material: matte_gray
+    block: block469
+        corner1: 13, 44, 39
+        corner2: 15.768892662553137, 46.768892662553135, 41.768892662553135
+        material: matte_gray
+    block: block470
+        corner1: 15, -5, -39
+        corner2: 15.652924642351298, -4.347075357648703, -38.347075357648706
+        material: matte_gray
+    block: block471
+        corner1: 42, 24, 4
+        corner2: 44.927654382858016, 26.927654382858012, 6.927654382858013
+        material: matte_gray
+    block: block472
+        corner1: 36, 41, -2
+        corner2: 36.332175826574286, 41.332175826574286, -1.6678241734257142
+        material: matte_gray
+    block: block473
+        corner1: -41, 33, 26
+        corner2: -37.96069651552141, 36.03930348447859, 29.03930348447859
+        material: matte_gray
+    block: block474
+        corner1: -1, -46, 7
+        corner2: 1.3746090801405244, -43.62539091985948, 9.374609080140525
+        material: matte_gray
+    block: block475
+        corner1: -27, -15, 23
+        corner2: -25.04239073140676, -13.042390731406758, 24.95760926859324
+        material: matte_gray
+    block: block476
+        corner1: -8, 33, 5
+        corner2: -5.910615315417811, 35.08938468458219, 7.089384684582189
+        material: matte_gray
+    block: block477
+        corner1: 35, 42, 44
+        corner2: 35.15376767160668, 42.15376767160668, 44.15376767160668
+        material: matte_gray
+    block: block478
+        corner1: 10, -20, 19
+        corner2: 13.177871749010404, -16.822128250989596, 22.177871749010404
+        material: matte_gray
+    block: block479
+        corner1: -13, -5, -17
+        corner2: -10.661028087175868, -2.661028087175868, -14.661028087175868
+        material: matte_gray
+    block: block480
+        corner1: -16, 34, 25
+        corner2: -11.45477433664512, 38.545225663354884, 29.54522566335488
+        material: matte_gray
+    block: block481
+        corner1: 10, -48, 4
+        corner2: 10.118779769334383, -47.88122023066562, 4.118779769334383
+        material: matte_gray
+    block: block482
+        corner1: 19, -14, 31
+        corner2: 21.225131066669725, -11.774868933330277, 33.225131066669725
+        material: matte_gray
+    block: block483
+        corner1: -45, -18, 28
+        corner2: -42.75368877349642, -15.753688773496421, 30.24631122650358
+        material: matte_gray
+    block: block484
+        corner1: 48, -38, 49
+        corner2: 48.79877437959119, -37.20122562040881, 49.79877437959119
+        material: matte_gray
+    block: block485
+        corner1: 32, -47, -39
+        corner2: 36.25237911191973, -42.74762088808027, -34.74762088808027
+        material: matte_gray
+    block: block486
+        corner1: 42, 5, -17
+        corner2: 42.46048929275616, 5.460489292756155, -16.539510707243846
+        material: matte_gray
+    block: block487
+        corner1: -33, -25, -16
+        corner2: -29.77867218708422, -21.77867218708422, -12.77867218708422
+        material: matte_gray
+    block: block488
+        corner1: -49, 0, -20
+        corner2: -47.944898298454845, 1.0551017015451531, -18.944898298454845
+        material: matte_gray
+    block: block489
+        corner1: -39, 37, 7
+        corner2: -34.58497444552064, 41.41502555447936, 11.415025554479353
+        material: matte_gray
+    block: block490
+        corner1: 21, 32, -18
+        corner2: 21.415395994955112, 32.41539599495511, -17.584604005044888
+        material: matte_gray
+    block: block491
+        corner1: -46, -13, -32
+        corner2: -45.005155129281064, -12.005155129281064, -31.005155129281064
+        material: matte_gray
+    block: block492
+        corner1: -36, 18, -50
+        corner2: -33.569087954222084, 20.430912045777916, -47.569087954222084
+        material: matte_gray
+    block: block493
+        corner1: 27, -49, 4
+        corner2: 31.69729597380598, -44.30270402619402, 8.697295973805979
+        material: matte_gray
+    block: block494
+        corner1: 24, 46, -18
+        corner2: 25.003404629593, 47.003404629593, -16.996595370407
+        material: matte_gray
+    block: block495
+        corner1: 18, 34, -11
+        corner2: 18.87644609626714, 34.87644609626714, -10.123553903732859
+        material: matte_gray
+    block: block496
+        corner1: -30, -45, 29
+        corner2: -25.224173112885754, -40.22417311288575, 33.77582688711425
+        material: matte_gray
+    block: block497
+        corner1: 4, -34, 11
+        corner2: 6.533460307138625, -31.466539692861375, 13.533460307138625
+        material: matte_gray
+    block: block498
+        corner1: -47, -36, 35
+        corner2: -44.12101926591848, -33.12101926591848, 37.87898073408152
+        material: matte_gray
+    block: block499
+        corner1: 13, -18, 17
+        corner2: 15.479333356431004, -15.520666643568996, 19.479333356431002
+        material: matte_gray
+
+
+
