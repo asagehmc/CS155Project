@@ -28,8 +28,8 @@ Blocks:
         corner2: 1, 1, 1
         material: PLAYER_MAT
 block: block0
-        corner1: 13, -2, 0
-        corner2: 17.548281698476252, 2.548281698476252, 4.548281698476252
+        corner1: -2, -2, -2
+        corner2: -1, -1, -1
         material: matte_gray
     block: block1
         corner1: 38, -5, 21
@@ -66,10 +66,6 @@ block: block0
     block: block9
         corner1: -46, 43, 4
         corner2: -42.765725279685405, 46.234274720314595, 7.234274720314597
-        material: matte_gray
-    block: block10
-        corner1: 41, -6, 13
-        corner2: 45.66053198837444, -1.339468011625562, 17.660531988374437
         material: matte_gray
 
 
