@@ -259,55 +259,48 @@ bool intersects_box(__global bounding_node* box, __private ray* ray_cast) {
 closest_hit_data get_closest_hit(int i,
                                  __global bounding_node* tree,
                                  int tree_size,
-                                 int, tree_height,
+                                 int tree_height,
                                  __global rect* rects,
                                  __private ray* ray_cast) {
     int index = 0;
+    int prev_index = -1;
     int current_depth = 0;
     closest_hit_data out = {INFINITY, -1};
-    int stack[tree_height];
-    for (int stack_idx = 0; i < tree_height; i++) {
-        stack[stack_idx] = 0;
-    }
+
 
     while (index != tree_size) {
 
-        if (stack[current_depth] = 2;
-
+        if (prev_index == index * 2 + 2 //if we are coming from a right branch
             || index >= tree_size // we are outside of tree
             || !tree[index].initialized // we are in uninitialized node of array for tree
             || (!tree[index].same
                 && !intersects_box(&(tree[index]), ray_cast))) // we are missed by ray cast
         {
+            prev_index = index;
             index = (index - 1) / 2; //step back up the tree
             --current_depth;
             continue;
         }
-        if (out.distance > right_tree.distance) {
-            out = right_tree;
-        }
         // check planes if they are present, but only the first time through
-        if (tree[index].plane1 != -1 && stack[current_depth] == 0) {
+        if (tree[index].plane1 != -1 && prev_index < index) {
             closest_hit_data plane1 = check_intersection(rects, tree[index].plane1, ray_cast);
             if (out.distance > plane1.distance) {
                 out = plane1;
             }
         }
-        if (tree[index].plane2 != -1 && stack[current_depth] == 0) {
+        if (tree[index].plane2 != -1 && prev_index < index) {
             closest_hit_data plane2 = check_intersection(rects, tree[index].plane2, ray_cast);
             if (out.distance > plane2.distance) {
                 out = plane2;
             }
         }
-
-        if (stack[current_depth] == 0) { //we go left
+        if (prev_index < index) { //if coming from a parent node, we go left
+            prev_index = index;
             index = index * 2 + 1;
-            stack[current_depth] = 1;
-        } else if (stack[current_depth] == 1) { //we go right
+        } else if (prev_index == index * 2 + 1) { //if coming from a left node, go right
+            prev_index = index;
             index = index * 2 + 2;
-            stack[current_depth] = 2;
         }
-        ++current_depth;
 
     }
     return out;
@@ -346,7 +339,7 @@ __kernel void trace_rays(__global rect* rects,
     // find closest triangle
     vector origin = camera->position;
     closest_hit_data hit = get_closest_hit(0, bounding_hierarchy,
-                                           world->bounding_hierarchy_size, world_bounding_hierarchy_height,
+                                           world->bounding_hierarchy_size, world->bounding_hierarchy_height,
                                            rects, &ray_cast);
 //
 //    // index for the closest rectangle hit
