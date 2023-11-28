@@ -12,6 +12,7 @@ typedef struct {
 typedef struct {
     int num_rects;
     int bounding_hierarchy_size;
+    int bounding_hierarchy_height;
     int num_lights;
     vector world_ambient_color;
     vector world_background_color;
@@ -81,7 +82,7 @@ vector gpmult(__global vector* v1, __private vector* v2);
 vector ppmult(__private vector* v1, __private vector* v2);
 vector pCmult(__private vector* v1, float f);
 vector ppsum(__private vector* v1, __private vector* v2);
-closest_hit_data get_closest_hit(int index, __global bounding_node* tree, int tree_size,
+closest_hit_data get_closest_hit(int index, __global bounding_node* tree, int tree_size, int tree_height,
                                  __global rect* rects, __private ray* ray_cast);
 closest_hit_data check_intersection(__global rect* rects, int index, __private ray* ray_cast);
 bool intersects_box(__global bounding_node* box, __private ray* ray_cast);
@@ -255,64 +256,59 @@ bool intersects_box(__global bounding_node* box, __private ray* ray_cast) {
 
 }
 
-closest_hit_data get_closest_hit(int index,
+closest_hit_data get_closest_hit(int i,
                                  __global bounding_node* tree,
                                  int tree_size,
+                                 int, tree_height,
                                  __global rect* rects,
                                  __private ray* ray_cast) {
-    if (get_global_id(0) == 60124) {
-//            printf("INDEX %d\n", index);
-    }
-    // should we keep searching?
-    // printf("index! %d, %d\n", index, tree_size);
-    // if same is true, the expression will be false
-
-    if (index >= tree_size // we are outside of tree
-        || !tree[index].initialized // we are in uninitialized node of array for tree
-        || (!tree[index].same
-            && !intersects_box(&(tree[index]), ray_cast))) // we are missed by ray cast
-//        ))
-    {  // Note: ^^ we skip the bounding box check if same=True, this means box is identical to its parent & must hit.
-        // failed to hit or out of tree, stop searching this branch
-        if (get_global_id(0) == 60124) {
-//            printf("INDEX %d FAILED!!\n", index);
-        }
-        closest_hit_data out = {INFINITY, -1};
-        return out;
-
+    int index = 0;
+    int current_depth = 0;
+    closest_hit_data out = {INFINITY, -1};
+    int stack[tree_height];
+    for (int stack_idx = 0; i < tree_height; i++) {
+        stack[stack_idx] = 0;
     }
 
-    // we did hit something, try children if they exist
-    // if they don't, we get a distance of infinity back from get_closest_hit
+    while (index != tree_size) {
 
-    //left
-    closest_hit_data out = get_closest_hit(index * 2 + 1, tree, tree_size, rects, ray_cast);
-    //right
-    closest_hit_data right_tree = get_closest_hit(index * 2 + 2, tree, tree_size, rects, ray_cast);
-    if (out.distance > right_tree.distance) {
-        out = right_tree;
-    }
-    // check planes if they are present
-    if (tree[index].plane1 != -1) {
-        if (get_global_id(0) == 60124) {
-//            printf("index %d trying plane: %d\n", index, tree[index].plane1);
+        if (stack[current_depth] = 2;
+
+            || index >= tree_size // we are outside of tree
+            || !tree[index].initialized // we are in uninitialized node of array for tree
+            || (!tree[index].same
+                && !intersects_box(&(tree[index]), ray_cast))) // we are missed by ray cast
+        {
+            index = (index - 1) / 2; //step back up the tree
+            --current_depth;
+            continue;
         }
-        closest_hit_data plane1 = check_intersection(rects, tree[index].plane1, ray_cast);
-        if (out.distance > plane1.distance) {
-            out = plane1;
+        if (out.distance > right_tree.distance) {
+            out = right_tree;
         }
-    }
-    if (tree[index].plane2 != -1) {
-        if (get_global_id(0) == 60124) {
-//            printf("index %d trying plane: %d\n", index, tree[index].plane2);
+        // check planes if they are present, but only the first time through
+        if (tree[index].plane1 != -1 && stack[current_depth] == 0) {
+            closest_hit_data plane1 = check_intersection(rects, tree[index].plane1, ray_cast);
+            if (out.distance > plane1.distance) {
+                out = plane1;
+            }
         }
-        closest_hit_data plane2 = check_intersection(rects, tree[index].plane2, ray_cast);
-        if (out.distance > plane2.distance) {
-            out = plane2;
+        if (tree[index].plane2 != -1 && stack[current_depth] == 0) {
+            closest_hit_data plane2 = check_intersection(rects, tree[index].plane2, ray_cast);
+            if (out.distance > plane2.distance) {
+                out = plane2;
+            }
         }
-    }
-    if (get_global_id(0) == 60124) {
-//        printf("index %d done \n", index);
+
+        if (stack[current_depth] == 0) { //we go left
+            index = index * 2 + 1;
+            stack[current_depth] = 1;
+        } else if (stack[current_depth] == 1) { //we go right
+            index = index * 2 + 2;
+            stack[current_depth] = 2;
+        }
+        ++current_depth;
+
     }
     return out;
 }
@@ -328,13 +324,7 @@ __kernel void trace_rays(__global rect* rects,
                          __global pixel_color* out,
                          __global bounding_node* bounding_hierarchy
                         ) {
-    // printf("Camera Position: %f, %f, %f\n", camera->position.x, camera->position.y, camera->position.z);
-    // printf("bounding Data: %d %d %d %d\n", bounding_hierarchy[0].initialized, bounding_hierarchy[0].plane1, bounding_hierarchy[0].plane2, bounding_hierarchy[0].same);
-    // printf("Bounding top: %f, %f, %f\n", bounding_hierarchy[0].top.x, bounding_hierarchy[0].top.y, bounding_hierarchy[0].top.z);
-    // printf("Bounding bot: %f, %f, %f\n", bounding_hierarchy[0].bottom.x, bounding_hierarchy[0].bottom.y, bounding_hierarchy[0].bottom.z);
-    if (get_global_id(0) == 60124) {
-//        printf("\n\n\nNEW:\n");
-    }
+
     __private int global_id = get_global_id(0);
     __private pixel_pos screen_coords = pixels[global_id];
     // forwards vector
@@ -356,59 +346,54 @@ __kernel void trace_rays(__global rect* rects,
     // find closest triangle
     vector origin = camera->position;
     closest_hit_data hit = get_closest_hit(0, bounding_hierarchy,
-                                           world->bounding_hierarchy_size,
+                                           world->bounding_hierarchy_size, world_bounding_hierarchy_height,
                                            rects, &ray_cast);
+//
+//    // index for the closest rectangle hit
+//    int closest_rect = hit.closest_rect;
+//    float closest_hit = hit.distance;
 
-    // index for the closest rectangle hit
-    int closest_rect = hit.closest_rect;
-    float closest_hit = hit.distance;
-    if (global_id == 60124) {
-        out[global_id].r = 255;
-        out[global_id].g = 0;
-        out[global_id].b = 0;
-        return;
-    }
-    if (closest_rect != -1) {
-        // copy important data to __private scope
-        rect rectangle = rects[closest_rect];
-        vector normal = rectangle.normal;
-        material mat = materials[rectangle.mat];
-
-        vector travel_vec = pCmult(&(ray_cast.dir), closest_hit);
-        vector intersection_point = ppsum(&origin, &travel_vec);
-
-        //get ambient light
-        vector ambient_and_world = gpmult(&(world->world_ambient_color), &(mat.ambient_color));
-        vector light = pCmult(&ambient_and_world, world->world_ambient_intensity);
-        //get ambient & specular light
-        for (int i = 0; i < world->num_lights; ++i) {
-            // setup required vector data
-            vector light_color = lights[i].color;
-            vector light_pos = lights[i].position;
-            vector to_light = ppminus(&light_pos, &intersection_point);
-            pnormalize(&to_light);
-
-            // get diffuse color
-            vector diffuse = pCmult(&light_color, fmax(ppdot(&normal, &to_light), 0));
-            diffuse = ppmult(&mat.diffuse_color, &diffuse);
-
-            // construct the reflection vector
-            vector reflected = pCmult(&normal, ppdot(&to_light, &normal));
-            reflected = pCmult(&reflected, 2);
-            reflected = ppminus(&reflected, &to_light);
-
-            vector specular = pCmult(&light_color, pow(fmax(-ppdot(&ray_cast.dir, &reflected), 0), mat.specular_power));
-            specular = ppmult(&mat.specular_color, &specular);
-
-            light = ppsum(&diffuse, &light);
-            light = ppsum(&specular, &light);
-        }
-        out[global_id].r = fmin(light.x, 1) * 255;
-        out[global_id].g = fmin(light.y, 1) * 255;
-        out[global_id].b = fmin(light.z, 1) * 255;
-        return;
-    }
-    out[global_id].r = world->world_background_color.x * 255;
-    out[global_id].g = world->world_background_color.y * 255;
-    out[global_id].b = world->world_background_color.z * 255;
+//    if (closest_rect != -1) {
+//        // copy important data to __private scope
+//        rect rectangle = rects[closest_rect];
+//        vector normal = rectangle.normal;
+//        material mat = materials[rectangle.mat];
+//
+//        vector travel_vec = pCmult(&(ray_cast.dir), closest_hit);
+//        vector intersection_point = ppsum(&origin, &travel_vec);
+//
+//        //get ambient light
+//        vector ambient_and_world = gpmult(&(world->world_ambient_color), &(mat.ambient_color));
+//        vector light = pCmult(&ambient_and_world, world->world_ambient_intensity);
+//        //get ambient & specular light
+//        for (int i = 0; i < world->num_lights; ++i) {
+//            // setup required vector data
+//            vector light_color = lights[i].color;
+//            vector light_pos = lights[i].position;
+//            vector to_light = ppminus(&light_pos, &intersection_point);
+//            pnormalize(&to_light);
+//
+//            // get diffuse color
+//            vector diffuse = pCmult(&light_color, fmax(ppdot(&normal, &to_light), 0));
+//            diffuse = ppmult(&mat.diffuse_color, &diffuse);
+//
+//            // construct the reflection vector
+//            vector reflected = pCmult(&normal, ppdot(&to_light, &normal));
+//            reflected = pCmult(&reflected, 2);
+//            reflected = ppminus(&reflected, &to_light);
+//
+//            vector specular = pCmult(&light_color, pow(fmax(-ppdot(&ray_cast.dir, &reflected), 0), mat.specular_power));
+//            specular = ppmult(&mat.specular_color, &specular);
+//
+//            light = ppsum(&diffuse, &light);
+//            light = ppsum(&specular, &light);
+//        }
+//        out[global_id].r = fmin(light.x, 1) * 255;
+//        out[global_id].g = fmin(light.y, 1) * 255;
+//        out[global_id].b = fmin(light.z, 1) * 255;
+//        return;
+//    }
+//    out[global_id].r = world->world_background_color.x * 255;
+//    out[global_id].g = world->world_background_color.y * 255;
+//    out[global_id].b = world->world_background_color.z * 255;
 }
