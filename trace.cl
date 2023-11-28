@@ -265,14 +265,7 @@ closest_hit_data get_closest_hit(int i,
     int index = 0;
     int prev_index = -1;
     closest_hit_data out = {INFINITY, -1};
-    int max = 60;
-    int num_iterations = 0;
-
     while (index != tree_size) {
-        ++num_iterations;
-        if (num_iterations > max) {
-            break;
-        }
         if (prev_index == index * 2 + 2 //if we are coming from a right branch
             || index >= tree_size // we are outside of tree
             || !tree[index].initialized // we are in uninitialized node of array for tree
