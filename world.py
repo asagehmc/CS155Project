@@ -1,3 +1,5 @@
+from numpy import sqrt
+
 import block
 import bvh_generator
 from camera import Camera
@@ -126,6 +128,7 @@ class World:
         self.bounding_hierarchy = bvh_generator.generate_bvh_tree(list(self.game_blocks.values()), self.player.block)
         self.world_data_buf = np.array([(self.num_rects,
                                          self.bounding_hierarchy.shape[0],
+                                         sqrt(self.bounding_hierarchy.shape[0] + 1),
                                          self.num_lights_added,
                                          self.world_ambient_color,
                                          self.world_background_color,
