@@ -42,6 +42,9 @@ if __name__ == '__main__':
     # create context
     ctx = cl.create_some_context()
 
+    # build program
+    prg = cl.Program(ctx, kernels).build()
+
     # create command queue
     queue = cl.CommandQueue(ctx, properties=cl.command_queue_properties.PROFILING_ENABLE)
     x = 0
@@ -71,7 +74,6 @@ if __name__ == '__main__':
         # prepare device memory for output
         out_buf = cl.Buffer(ctx, cl.mem_flags.WRITE_ONLY, out.nbytes)
         # compile kernel code
-        prg = cl.Program(ctx, kernels).build()
         time_kernel_compilation = time.time()
 
         # execute kernel programs

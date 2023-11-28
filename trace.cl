@@ -265,7 +265,7 @@ closest_hit_data get_closest_hit(int i,
     int index = 0;
     int prev_index = -1;
     closest_hit_data out = {INFINITY, -1};
-    int max = 1000;
+    int max = 60;
     int num_iterations = 0;
 
     while (index != tree_size) {
