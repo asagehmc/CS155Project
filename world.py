@@ -133,7 +133,7 @@ class World:
                                          self.world_ambient_color,
                                          self.world_background_color,
                                          self.world_ambient_intensity)], dtype=world_data_type)
-        self.player.assign_world_hierarchy(self.world_data_buf)
+        self.player.assign_world_bufs(self.rects_data, self.world_data_buf)
 
     def create_block(self, name, corner1, corner2, mat):
         # get the vertex indices for each of the 12 triangles for the block
@@ -156,7 +156,7 @@ class World:
             self.game_blocks[name] = block.Block(self.rects_data, self.num_rects_added)
         else:
             player_block = block.Block(self.rects_data, self.num_rects_added)
-            self.player = Player(player_block, self.game_blocks)
+            self.player = Player(player_block)
         self.num_rects_added += 6
 
     def create_mat(self, name, ambient, diffuse, specular, spec_power):
