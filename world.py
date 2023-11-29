@@ -133,6 +133,7 @@ class World:
                                          self.world_ambient_color,
                                          self.world_background_color,
                                          self.world_ambient_intensity)], dtype=world_data_type)
+        self.player.assign_world_hierarchy(self.world_data_buf)
 
     def create_block(self, name, corner1, corner2, mat):
         # get the vertex indices for each of the 12 triangles for the block

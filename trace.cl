@@ -184,10 +184,6 @@ closest_hit_data check_intersection(__global rect* rects, int index, __private r
 
 // credit to chatgpt
 bool intersects_box(__global bounding_node* box, __private ray* ray_cast) {
-    // printf("box_data: %d, %d\n", box->initialized, box->same);
-    // printf("low: %f, %f, %f\n", box->bottom.x, box->bottom.y, box->bottom.z);
-    // printf("high: %f, %f, %f\n", box->top.x, box->top.y, box->top.z);
-
 
     // Check if the ray is parallel to the axes
     if (ray_cast->dir.x == 0.0) {
@@ -213,12 +209,8 @@ bool intersects_box(__global bounding_node* box, __private ray* ray_cast) {
     float invDirZ = (ray_cast->dir.z != 0.0f) ? 1.0f / ray_cast->dir.z : INFINITY;
 
 
-
     float tMinX = (box->bottom.x - ray_cast->pos.x) * invDirX;
     float tMaxX = (box->top.x - ray_cast->pos.x) * invDirX;
-    // printf("x_low: %f %f %f =  %f\n", box->bottom.x, ray_cast->pos.x, invDirX, tMinX);
-    // printf("x_high: %f %f %f = %f\n", box->top.x, ray_cast->pos.x, invDirX, tMaxX);
-
 
 
     if (tMinX > tMaxX) {
@@ -244,8 +236,6 @@ bool intersects_box(__global bounding_node* box, __private ray* ray_cast) {
         tMinZ = tMaxZ;
         tMaxZ = temp;
     }
-    // printf("ray_cast: %f, %f, %f\n", ray_cast->dir.x, ray_cast->dir.y, ray_cast->dir.z);
-    // printf("tMins: %f, %f, %f\n\n", tMinX, tMinY, tMinZ);
 
     float tMin = tMinX > tMinY ? tMinX : tMinY;
     tMin = tMin > tMinZ ? tMin : tMinZ;
@@ -265,7 +255,7 @@ closest_hit_data get_closest_hit(int i,
     int index = 0;
     int prev_index = -1;
     closest_hit_data out = {INFINITY, -1};
-    while (index != tree_size) {
+    while (1) {
         if (prev_index == index * 2 + 2 //if we are coming from a right branch
             || index >= tree_size // we are outside of tree
             || !tree[index].initialized // we are in uninitialized node of array for tree
@@ -276,7 +266,7 @@ closest_hit_data get_closest_hit(int i,
                 break;
             }
             prev_index = index;
-            index = (index - 1) / 2; //step back up the tree
+            index = (index - 1) >> 1; //step back up the tree
             continue;
         }
         // check planes if they are present, but only the first time through

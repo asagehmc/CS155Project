@@ -20,11 +20,11 @@ def generate_rects(corner1, corner2):
     # btb, ttb, btt, ttt: top 4 vertices in block
 
     return [
-        (bottom, (top[0], bottom[1], top[2]), (0, -1, 0)),  # bottom rect
+        (bottom, (top[0], bottom[1], top[2]), (0, -1, 0)),  # -y bottom rect
         (bottom, (top[0], top[1], bottom[2]), (0, 0, -1)),  # -z face
         (bottom, (bottom[0], top[1], top[2]), (-1, 0, 0)),  # -x face
 
-        ((bottom[0], top[1], bottom[2]), top, (0, 1, 0)),  # top rect
+        ((bottom[0], top[1], bottom[2]), top, (0, 1, 0)),  # y top rect
         ((bottom[0], bottom[1], top[2]), top, (0, 0, 1)),  # z face
         ((top[0], bottom[1], bottom[2]), top, (1, 0, 0)),  # x face
     ]
