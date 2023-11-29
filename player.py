@@ -2,12 +2,19 @@ import numpy as np
 from numpy import array
 
 
+# an annoying side effect of custom data types needing to be indexed by name only
+# wonder if there is a way to not need this function?
+def add_to_vector_type(v_type, v2):
+    return v_type.x + v2[0], v_type.y + v2[1], v_type.z + v2[2]
+
+
 # generated using chatgpt
-def are_blocks_intersecting(rect1, rect2):
+# axis to ignore is used to avoid floating point error issues for plane-plane intersection
+def are_blocks_intersecting(rect1, rect2, axis_to_ignore=-1):
     # Check for intersection along each axis
-    x_intersect = (rect1[0][0] <= rect2[1][0] and rect1[1][0] >= rect2[0][0])
-    y_intersect = (rect1[0][1] <= rect2[1][1] and rect1[1][1] >= rect2[0][1])
-    z_intersect = (rect1[0][2] <= rect2[1][2] and rect1[1][2] >= rect2[0][2])
+    x_intersect = (rect1[0][0] <= rect2[1][0] and rect1[1][0] >= rect2[0][0]) or axis_to_ignore == 0
+    y_intersect = (rect1[0][1] <= rect2[1][1] and rect1[1][1] >= rect2[0][1]) or axis_to_ignore == 1
+    z_intersect = (rect1[0][2] <= rect2[1][2] and rect1[1][2] >= rect2[0][2]) or axis_to_ignore == 2
 
     # If there is an intersection along all three axes, the rectangles intersect
     return x_intersect and y_intersect and z_intersect
@@ -41,10 +48,14 @@ class Player:
         self.rects = None
 
     def update_position(self, dt):
-        self.pos += self.velocity * dt
+        self.move(self.velocity * dt)
         self.block.set_corners(self.pos, self.pos + self.size)
         self.velocity[1] += -9.8 * dt
 
+    def move(self, move_vec, limit=3):
+        # failsafe to prevent hangs
+        if limit == 0:
+            return
         # get the index for the player front rect face rect based on the direction (leading edges)
         x_player_wall_index = 2 if self.velocity[0] < 0 else 5
         y_player_wall_index = 0 if self.velocity[1] < 0 else 3
@@ -64,17 +75,42 @@ class Player:
 
         moving_rect = (self.pos - bot_shift, self.pos + self.size + top_shift)
         axis_planes = self.find_planes(moving_rect)
+        closest_hit_dist_sq = float("inf")
+        closest_hit_axis_v = 0
+        closest_hit_axis = -1
+        closest_hit_scalar = -1
 
         for axis in range(3):
             if self.velocity[axis] == 0:
                 continue
-            inv_axis = self.velocity[axis]
+            inv_axis = 1 / self.velocity[axis]
             player_leading_edge = self.rects[player_wall_indexes[axis]].top[self.axis_names[axis]]
             for plane in axis_planes[axis]:
                 plane_pos = plane.top[self.axis_names[axis]]
                 dist_to_travel = plane_pos - player_leading_edge
+                move_vec_scalar = inv_axis * dist_to_travel
+                move_vec = self.velocity * move_vec_scalar
+                travel_dist_sq = np.dot(move_vec, move_vec)
+                # if this movement is further than a collision we already have, skip it.
+                if travel_dist_sq > closest_hit_dist_sq:
+                    continue
+                # if there's a corner hit, tiebreak by whichever axis velocity is faster
+                if travel_dist_sq == closest_hit_dist_sq and closest_hit_axis_v > self.velocity[axis]:
+                    continue
+                new_projected_plane = (add_to_vector_type(player_leading_edge.bottom, move_vec),
+                                       add_to_vector_type(player_leading_edge.top, move_vec))
+                if are_blocks_intersecting(new_projected_plane, plane_pos, axis):
+                    closest_hit_dist_sq = travel_dist_sq
+                    closest_hit_axis_v = self.velocity[axis]
+                    closest_hit_axis = axis
+                    closest_hit_scalar = move_vec_scalar
 
-
+        if closest_hit_axis != -1:
+            self.pos = self.pos + move_vec * closest_hit_scalar
+            move_vec[closest_hit_axis] = 0
+            # do a little bit of a bounce
+            self.velocity[closest_hit_axis] *= -.2
+            self.move(move_vec, limit-1)
 
     def assign_world_bufs(self, rects, hierarchy):
         self.rects = rects
@@ -84,7 +120,7 @@ class Player:
     # (find all planes that exist in a bounding box which intersects with the players movement rect)
     def find_planes(self, moving_rect):
         # using in-place traversal method as trace.cl
-        x_planes = [] # an x-plane is one which is normal to the x axis
+        x_planes = []  # an x-plane is one which is normal to the x axis
         y_planes = []
         z_planes = []
         index = 1  # start at left 1 in order to skip player rect
@@ -104,10 +140,10 @@ class Player:
             if self.world_hierarchy[index].plane1 != -1:
                 # pass in the rectangle pointed to by plane1
                 check_plane(self.rects[self.world_hierarchy[index].plane1],
-                                 moving_rect, x_planes, y_planes, z_planes)
+                            moving_rect, x_planes, y_planes, z_planes)
             if self.world_hierarchy[index].plane2 != -1:
                 check_plane(self.rects[self.world_hierarchy[index].plane2],
-                                 moving_rect, x_planes, y_planes, z_planes)
+                            moving_rect, x_planes, y_planes, z_planes)
             if prev_index < index:  # coming from parent node, go left
                 prev_index = index
                 index = index * 2 + 1
