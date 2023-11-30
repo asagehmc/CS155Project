@@ -1,3 +1,4 @@
+import keyboard as keyboard
 import numpy as np
 from numpy import array
 from custom_types import TOP, BOTTOM, NORMAL
@@ -58,7 +59,16 @@ class Player:
 
         # ground check done by finding intersection of Y plane with very small slab below player
         on_ground = len(self.find_planes((self.pos - [0, 0.01, 0], self.pos + [self.size[X], 0, self.size[Z]]))[Y]) > 1
-
+        if keyboard.is_pressed("a"):
+            self.velocity[X] += 10 * dt
+        if keyboard.is_pressed("d"):
+            self.velocity[X] += -10 * dt
+        if keyboard.is_pressed("w"):
+            self.velocity[Z] += 10 * dt
+        if keyboard.is_pressed("s"):
+            self.velocity[Z] += -10 * dt
+        if keyboard.is_pressed("space") and on_ground:
+            self.velocity[Y] = 5
         self.velocity[Y] += -9.8 * dt
 
     def move(self, move_vec, limit=3):
@@ -175,3 +185,6 @@ class Player:
                 prev_index = index
                 index = index * 2 + 2
         return x_planes, y_planes, z_planes
+
+    def get_center(self):
+        return self.pos + self.size / 2

@@ -6,7 +6,7 @@ from camera import Camera
 from custom_types import *
 from light import Light
 from player import Player
-
+C_GLIDE = 6
 
 def begins_with(line, prefix):
     return len(line) > len(prefix) and line[0:len(prefix)] == prefix
@@ -15,6 +15,10 @@ def begins_with(line, prefix):
 def string_to_3tuple(line):
     split = line.split(",")
     return float(split[0].strip()), float(split[1].strip()), float(split[2].strip())
+
+
+def subtract(v1, v2):
+    return np.array([v1[0] - v2[0], v1[1] - v2[1], v1[2] - v2[2]])
 
 
 class World:
@@ -120,7 +124,8 @@ class World:
                     self.create_light(data[0], data[1], data[2], data[3])
                     data = []
 
-        self.camera_data_buf = np.array([((-1.9934121, 0.3613965, 2.241943), (2.241943, 0., 1.9934121), (0.23841369, 2.9784663, -0.26813817), (0.65970117, -0.1196008, -0.74195015))],
+        self.camera_data_buf = np.array([((-1.9934121, 0.3613965, 2.241943), (2.241943, 0., 1.9934121),
+                                          (0.23841369, 2.9784663, -0.26813817), (0.65970117, -0.1196008, -0.74195015))],
                                         dtype=camera_data_type)
         self.camera = Camera(self.camera_data_buf)
         if self.player is None:
@@ -177,7 +182,11 @@ class World:
 
     def update(self, dt):
         self.player.update_position(dt)
-        # pass
-
-
-
+        target = self.player.get_center()
+        current = self.camera.get_position()
+        shift = subtract(target, current)
+        # TODO: move this functionality to camera
+        self.camera.set_position(current[0] + shift[0] / C_GLIDE,
+                                 current[1] + shift[1] / C_GLIDE + 4,
+                                 current[2] + shift[2] / C_GLIDE - 2)
+        self.camera.set_direction(0, -1, 1)
