@@ -5,7 +5,7 @@ from custom_types import TOP, BOTTOM, NORMAL
 X = 0
 Y = 1
 Z = 2
-BOUNCE = 1  # 0 to 1 with 1 being highest
+BOUNCE = 0.3  # 0 to 1 with 1 being highest
 
 
 # an annoying side effect of void types not adding nicely
@@ -53,7 +53,12 @@ class Player:
 
     def update_position(self, dt):
         self.move(self.velocity * dt)
+        # update graphics positions
         self.block.set_corners(self.pos, self.pos + self.size)
+
+        # ground check done by finding intersection of Y plane with very small slab below player
+        on_ground = len(self.find_planes((self.pos - [0, 0.01, 0], self.pos + [self.size[X], 0, self.size[Z]]))[Y]) > 1
+
         self.velocity[Y] += -9.8 * dt
 
     def move(self, move_vec, limit=3):
@@ -84,7 +89,6 @@ class Player:
         closest_hit_axis = -1
         closest_hit_scalar = -1
         closest_hit_pos = 0
-
         for axis in range(3):
             if move_vec[axis] == 0:
                 continue
@@ -122,10 +126,7 @@ class Player:
             self.pos[closest_hit_axis] = closest_hit_pos -\
                 (self.size[closest_hit_axis] if closest_hit_axis_v > 0 else 0)  # if we're traveling in a + direction,
             #                                                                     set front to plane, not back
-            print("MOVING TO", self.pos)
-            print("LIMIT!", limit)
             move_vec *= (move_vec[closest_hit_axis] - 1)  # "reflect" the remaining velocity
-            print(move_vec)
             # do a little bit of a bounce
             self.velocity[closest_hit_axis] *= -BOUNCE
             self.move(move_vec, limit - 1)
