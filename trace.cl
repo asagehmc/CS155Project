@@ -262,12 +262,12 @@ closest_hit_data get_closest_hit(int i,
             || (!tree[index].same
                 && !intersects_box(&(tree[index]), ray_cast))) // we are missed by ray cast
         {
-
-            prev_index = index;
-            index = (index - 1) >> 1; //step back up the tree
             if (index == 0) {
                 break;
             }
+            prev_index = index;
+            index = (index - 1) >> 1; //step back up the tree
+
             continue;
         }
         // check planes if they are present, but only the first time through

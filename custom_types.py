@@ -3,6 +3,10 @@ import numpy as np
 # vector struct
 vector_type = np.dtype([('x', np.float32), ('y', np.float32), ('z', np.float32)])
 
+BOTTOM = 0
+TOP = 1
+NORMAL = 2
+
 # triangle struct, 3 vertex indexes, 3 floats for normal vector, 1 material index
 rect_type = np.dtype([('bot', vector_type), ('top', vector_type), ('normal', vector_type), ('mat', np.uint32)])
 

@@ -24,49 +24,20 @@ Lights:
         intensity: 1
 Blocks:
     block: PLAYER_BLOCK
-        corner1: 0, 0, 0
-        corner2: 1, 1, 1
+        corner1: 0.0, 0.0, 0.0
+        corner2: 1.0, 1.0, 1.0
         material: PLAYER_MAT
 block: block0
-        corner1: -2, -2, -2
-        corner2: -1, -1, -1
+        corner1: -5, -2, -5
+        corner2: 5, -0.5, 5
         material: matte_gray
-    block: block1
-        corner1: 38, -5, 21
-        corner2: 39.33544347104901, -3.664556528950989, 22.33544347104901
+block: block0
+        corner1: 0, -0.5, 2
+        corner2: 1, 2, 3
         material: matte_gray
-    block: block2
-        corner1: -18, -15, -48
-        corner2: -17.572381439102084, -14.572381439102084, -47.57238143910208
-        material: matte_gray
-    block: block3
-        corner1: -48, -9, 19
-        corner2: -43.38743565775236, -4.387435657752359, 23.61256434224764
-        material: matte_gray
-    block: block4
-        corner1: -28, -26, -13
-        corner2: -23.548377953852672, -21.548377953852672, -8.548377953852672
-        material: matte_gray
-    block: block5
-        corner1: -35, -48, 39
-        corner2: -31.35405482168283, -44.35405482168283, 42.64594517831717
-        material: matte_gray
-    block: block6
-        corner1: -19, 44, 26
-        corner2: -17.41211373821214, 45.587886261787865, 27.58788626178786
-        material: matte_gray
-    block: block7
-        corner1: -16, 16, 25
-        corner2: -12.875552145861889, 19.12444785413811, 28.12444785413811
-        material: matte_gray
-    block: block8
-        corner1: -7, -1, -15
-        corner2: -2.0267446230380237, 3.9732553769619763, -10.026744623038024
-        material: matte_gray
-    block: block9
-        corner1: -46, 43, 4
-        corner2: -42.765725279685405, 46.234274720314595, 7.234274720314597
-        material: matte_gray
+
+
+
 
 
 

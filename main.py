@@ -56,8 +56,10 @@ if __name__ == '__main__':
         dt = 1/clock.get_fps() if clock.get_fps() > 0 else 0
 
         world.game_lights["light1"].set_position(2 * math.sin(x), 0, 2 * math.cos(x))
-        world.camera.set_position(3 * math.sin(x), 2 * math.cos(x/4), 3 * math.cos(x))
-        world.camera.set_direction(-3 * math.sin(x), -2 * math.cos(x/4), -3 * math.cos(x))
+        # world.camera.set_position(3 * math.sin(x), 2 * math.cos(x/4), 3 * math.cos(x))
+        # world.camera.set_direction(-3 * math.sin(x), -2 * math.cos(x/4), -3 * math.cos(x))
+        world.camera.set_position(3 * math.sin(x), 2, 3 * math.cos(x))
+        world.camera.set_direction(-3 * math.sin(x), -2, -3 * math.cos(x))
 
         # light_data[0]["position"] = (2 * math.sin(x), -2 + 2 * math.cos(x), 3)
         x += 2 * dt
