@@ -1,12 +1,19 @@
+import math
+
 import keyboard as keyboard
 import numpy as np
+import pygame
 from numpy import array
 from custom_types import TOP, BOTTOM, NORMAL
 
 X = 0
 Y = 1
 Z = 2
-BOUNCE = 0.3  # 0 to 1 with 1 being highest
+BOUNCE = 0.1  # 0 to 1 with 1 being highest
+XZ_SPEED = 3
+JUMP_SPEED = 3
+SPEED_DECAY = 0.99
+BOUNCE_VELOCITY_THRESHOLD = 0.01
 
 
 # an annoying side effect of void types not adding nicely
@@ -48,28 +55,36 @@ class Player:
         z_width = top[Z] - bot[Z]
         self.size = array([x_width, height, z_width], dtype=np.float64)
         self.pos = array([bot[X], bot[Y], bot[Z]], dtype=np.float64)
-        self.velocity = array([0, 3, 1], dtype=np.float64)
+        self.velocity = array([0, 0, 1], dtype=np.float64)
         self.world_hierarchy = None
         self.rects = None
+        self.touched_ground_last_frame = False
 
     def update_position(self, dt):
-        self.move(self.velocity * dt)
+        # on_ground = len(self.find_planes((self.pos - [0, 0.3, 0], self.pos + [self.size[X], 0, self.size[Z]]))[Y]) > 1
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_d]:
+            self.velocity[X] += -XZ_SPEED * dt
+        if keys[pygame.K_a]:
+            self.velocity[X] += XZ_SPEED * dt
+        if keys[pygame.K_w]:
+            self.velocity[Z] += XZ_SPEED * dt
+        if keys[pygame.K_s]:
+            self.velocity[Z] += -XZ_SPEED * dt
+        if keys[pygame.K_SPACE] and self.touched_ground_last_frame:
+            self.velocity[Y] = JUMP_SPEED
+        self.touched_ground_last_frame = False
+        self.move(self.velocity * np.sqrt(dt))
         # update graphics positions
         self.block.set_corners(self.pos, self.pos + self.size)
-
+        for i in range(0, 3):
+            self.velocity[i] *= math.pow(0.2, dt)
         # ground check done by finding intersection of Y plane with very small slab below player
-        on_ground = len(self.find_planes((self.pos - [0, 0.01, 0], self.pos + [self.size[X], 0, self.size[Z]]))[Y]) > 1
-        if keyboard.is_pressed("a"):
-            self.velocity[X] += 10 * dt
-        if keyboard.is_pressed("d"):
-            self.velocity[X] += -10 * dt
-        if keyboard.is_pressed("w"):
-            self.velocity[Z] += 10 * dt
-        if keyboard.is_pressed("s"):
-            self.velocity[Z] += -10 * dt
-        if keyboard.is_pressed("space") and on_ground:
-            self.velocity[Y] = 5
-        self.velocity[Y] += -9.8 * dt
+
+        # if we're not already on the ground with velocity 0,
+        if not self.touched_ground_last_frame or abs(self.velocity[Y]) > 0.001:
+            self.velocity[Y] += -9.8 * dt
 
     def move(self, move_vec, limit=3):
         # failsafe to prevent hangs
@@ -99,6 +114,7 @@ class Player:
         closest_hit_axis = -1
         closest_hit_scalar = -1
         closest_hit_pos = 0
+        closest_y_hit_dist_sq = -1
         for axis in range(3):
             if move_vec[axis] == 0:
                 continue
@@ -114,6 +130,8 @@ class Player:
                     continue
                 travel_vec = move_vec * move_vec_scalar
                 travel_dist_sq = np.dot(travel_vec, travel_vec)
+                if axis == 1 and closest_y_hit_dist_sq < travel_dist_sq + 0.0001:
+                    closest_y_hit_dist_sq = travel_dist_sq
                 # if this movement is further than a collision we already have, skip it.
                 if travel_dist_sq > closest_hit_dist_sq:
                     continue
@@ -136,12 +154,19 @@ class Player:
             self.pos[closest_hit_axis] = closest_hit_pos -\
                 (self.size[closest_hit_axis] if closest_hit_axis_v > 0 else 0)  # if we're traveling in a + direction,
             #                                                                     set front to plane, not back
-            move_vec *= (move_vec[closest_hit_axis] - 1)  # "reflect" the remaining velocity
-            # do a little bit of a bounce
-            self.velocity[closest_hit_axis] *= -BOUNCE
-            self.move(move_vec, limit - 1)
+            if self.velocity[closest_hit_axis] >= BOUNCE_VELOCITY_THRESHOLD:
+                move_vec *= (move_vec[closest_hit_axis] - 1)  # "reflect" the remaining velocity
+                # do a little bit of a bounce
+                self.velocity[closest_hit_axis] *= -BOUNCE
+                self.move(move_vec, limit - 1)
+            else:
+                self.velocity[closest_hit_axis] = 0
+                move_vec[closest_hit_axis] = 0
+                self.move(move_vec, limit - 1)
         else:
             self.pos = self.pos + move_vec
+        if closest_y_hit_dist_sq != -1 and closest_y_hit_dist_sq <= closest_hit_dist_sq + 0.0001:
+            self.touched_ground_last_frame = True
 
     def assign_world_bufs(self, rects, hierarchy):
         self.rects = rects

@@ -182,11 +182,11 @@ class World:
 
     def update(self, dt):
         self.player.update_position(dt)
-        target = self.player.get_center()
+        target = self.player.get_center() + [self.player.size[0]/2, 4, -2]
         current = self.camera.get_position()
         shift = subtract(target, current)
         # TODO: move this functionality to camera
         self.camera.set_position(current[0] + shift[0] / C_GLIDE,
-                                 current[1] + shift[1] / C_GLIDE + 4,
-                                 current[2] + shift[2] / C_GLIDE - 2)
+                                 current[1] + shift[1] / C_GLIDE,
+                                 current[2] + shift[2] / C_GLIDE)
         self.camera.set_direction(0, -1, 1)
