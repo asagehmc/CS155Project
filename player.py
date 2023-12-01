@@ -9,11 +9,12 @@ from custom_types import TOP, BOTTOM, NORMAL
 X = 0
 Y = 1
 Z = 2
-BOUNCE = 0.1  # 0 to 1 with 1 being highest
-XZ_SPEED = 3
-JUMP_SPEED = 3
-SPEED_DECAY = 0.99
+BOUNCE = 0.3  # 0 to 1 with 1 being highest
+XZ_SPEED = 30
+JUMP_SPEED = 60  #
+SPEED_DECAY = 0.05  # closer to zero is faster decay
 BOUNCE_VELOCITY_THRESHOLD = 0.01
+GRAVITY = 150
 
 
 # an annoying side effect of void types not adding nicely
@@ -26,9 +27,9 @@ def add_void_to_vector(v1, v2):
 # axis to ignore is used to avoid floating point error issues for plane-plane intersection
 def are_blocks_overlapping(rect1, rect2, axis_to_ignore=-1):
     # Check for intersection along each axis
-    x_intersect = (rect1[BOTTOM][X] <= rect2[TOP][X] and rect1[TOP][X] >= rect2[BOTTOM][X]) or axis_to_ignore == X
-    y_intersect = (rect1[BOTTOM][Y] <= rect2[TOP][Y] and rect1[TOP][Y] >= rect2[BOTTOM][Y]) or axis_to_ignore == Y
-    z_intersect = (rect1[BOTTOM][Z] <= rect2[TOP][Z] and rect1[TOP][Z] >= rect2[BOTTOM][Z]) or axis_to_ignore == Z
+    x_intersect = (rect1[BOTTOM][X] < rect2[TOP][X] and rect1[TOP][X] > rect2[BOTTOM][X]) or axis_to_ignore == X
+    y_intersect = (rect1[BOTTOM][Y] < rect2[TOP][Y] and rect1[TOP][Y] > rect2[BOTTOM][Y]) or axis_to_ignore == Y
+    z_intersect = (rect1[BOTTOM][Z] < rect2[TOP][Z] and rect1[TOP][Z] > rect2[BOTTOM][Z]) or axis_to_ignore == Z
 
     # If there is an intersection along all three axes, the rectangles intersect
     return x_intersect and y_intersect and z_intersect
@@ -61,7 +62,6 @@ class Player:
         self.touched_ground_last_frame = False
 
     def update_position(self, dt):
-        # on_ground = len(self.find_planes((self.pos - [0, 0.3, 0], self.pos + [self.size[X], 0, self.size[Z]]))[Y]) > 1
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_d]:
@@ -75,16 +75,16 @@ class Player:
         if keys[pygame.K_SPACE] and self.touched_ground_last_frame:
             self.velocity[Y] = JUMP_SPEED
         self.touched_ground_last_frame = False
-        self.move(self.velocity * np.sqrt(dt))
+        self.move(self.velocity * dt)
         # update graphics positions
         self.block.set_corners(self.pos, self.pos + self.size)
         for i in range(0, 3):
-            self.velocity[i] *= math.pow(0.2, dt)
+            self.velocity[i] *= math.pow(SPEED_DECAY, dt)
         # ground check done by finding intersection of Y plane with very small slab below player
 
-        # if we're not already on the ground with velocity 0,
+        # if we're not already on the ground with velocity 0, do gravity
         if not self.touched_ground_last_frame or abs(self.velocity[Y]) > 0.001:
-            self.velocity[Y] += -9.8 * dt
+            self.velocity[Y] += -GRAVITY * dt
 
     def move(self, move_vec, limit=3):
         # failsafe to prevent hangs
@@ -135,9 +135,9 @@ class Player:
                 # if this movement is further than a collision we already have, skip it.
                 if travel_dist_sq > closest_hit_dist_sq:
                     continue
-                # if there's a corner hit, tiebreak by whichever axis velocity is faster
-                if travel_dist_sq == closest_hit_dist_sq and closest_hit_axis_v > move_vec[axis]:
-                    continue
+                # # if there's a corner hit, tiebreak by whichever axis velocity is faster
+                # if travel_dist_sq == closest_hit_dist_sq and abs(closest_hit_axis_v) > abs(move_vec[axis]):
+                #     continue
 
                 new_projected_plane = (add_void_to_vector(player_leading_edge[BOTTOM], travel_vec),
                                        add_void_to_vector(player_leading_edge[TOP], travel_vec))
@@ -147,15 +147,14 @@ class Player:
                     closest_hit_axis = axis
                     closest_hit_scalar = move_vec_scalar
                     closest_hit_pos = plane_pos
-
         if closest_hit_axis != -1:
             self.pos = self.pos + move_vec * closest_hit_scalar
             # lock this position to exactly the collision location to fix for floating pt error
             self.pos[closest_hit_axis] = closest_hit_pos -\
                 (self.size[closest_hit_axis] if closest_hit_axis_v > 0 else 0)  # if we're traveling in a + direction,
             #                                                                     set front to plane, not back
-            if self.velocity[closest_hit_axis] >= BOUNCE_VELOCITY_THRESHOLD:
-                move_vec *= (move_vec[closest_hit_axis] - 1)  # "reflect" the remaining velocity
+            if abs(self.velocity[closest_hit_axis]) >= BOUNCE_VELOCITY_THRESHOLD:
+                move_vec[closest_hit_axis] *= (move_vec[closest_hit_axis] - 1)  # "reflect" the remaining velocity
                 # do a little bit of a bounce
                 self.velocity[closest_hit_axis] *= -BOUNCE
                 self.move(move_vec, limit - 1)
