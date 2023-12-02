@@ -11,9 +11,10 @@ typedef struct {
 
 typedef struct {
     int num_rects;
+    float max_view_distance;
     int bounding_hierarchy_size;
-    int bounding_hierarchy_height;
     int num_lights;
+    int show_shadows;
     vector world_ambient_color;
     vector world_background_color;
     float world_ambient_intensity;
@@ -76,14 +77,14 @@ typedef struct {
 float ppdot(__private vector* v1, __private vector* v2);
 float pgdot(__private vector* v1, __global vector* v2);
 vector ppminus(__private vector* v1, __private vector* v2);
-void pnormalize(__private vector* v);
+float pnormalize(__private vector* v);
 float pmagnitude(__private vector* v);
 vector gpmult(__global vector* v1, __private vector* v2);
 vector ppmult(__private vector* v1, __private vector* v2);
 vector pCmult(__private vector* v1, float f);
 vector ppsum(__private vector* v1, __private vector* v2);
-closest_hit_data get_closest_hit(int index, __global bounding_node* tree, int tree_size, int tree_height,
-                                 __global rect* rects, __private ray* ray_cast);
+closest_hit_data get_closest_hit(int index, __global bounding_node* tree, int tree_size,
+                                 __global rect* rects, __private ray* ray_cast, float max_dist, bool find_any);
 closest_hit_data check_intersection(__global rect* rects, int index, __private ray* ray_cast);
 bool intersects_box(__global bounding_node* box, __private ray* ray_cast);
 
@@ -99,11 +100,13 @@ float pmagnitude(__private vector* v) {
     return sqrt(v->x * v->x + v->y * v->y + v->z * v->z);
 }
 
-void pnormalize(__private vector* v) {
+float pnormalize(__private vector* v) {
     float mag = pmagnitude(v);
-    v->x = v->x / mag;
-    v->y = v->y / mag;
-    v->z = v->z / mag;
+    float inv_mag = 1 / mag;
+    v->x = v->x * inv_mag;
+    v->y = v->y * inv_mag;
+    v->z = v->z * inv_mag;
+    return mag;
 }
 
 vector ppminus(__private vector* v1, __private vector* v2) {
@@ -249,9 +252,11 @@ bool intersects_box(__global bounding_node* box, __private ray* ray_cast) {
 closest_hit_data get_closest_hit(int i,
                                  __global bounding_node* tree,
                                  int tree_size,
-                                 int tree_height,
                                  __global rect* rects,
-                                 __private ray* ray_cast) {
+                                 __private ray* ray_cast,
+                                 float max_dist,
+                                 bool find_any
+                                 ) {
     int index = 0;
     int prev_index = -1;
     closest_hit_data out = {INFINITY, -1};
@@ -273,14 +278,20 @@ closest_hit_data get_closest_hit(int i,
         // check planes if they are present, but only the first time through
         if (tree[index].plane1 != -1 && prev_index < index) {
             closest_hit_data plane1 = check_intersection(rects, tree[index].plane1, ray_cast);
-            if (out.distance > plane1.distance) {
+            if (out.distance > plane1.distance && plane1.distance <= max_dist) {
                 out = plane1;
+                if (find_any) {
+                    return out;
+                }
             }
         }
         if (tree[index].plane2 != -1 && prev_index < index) {
             closest_hit_data plane2 = check_intersection(rects, tree[index].plane2, ray_cast);
-            if (out.distance > plane2.distance) {
+            if (out.distance > plane2.distance && plane2.distance <= max_dist) {
                 out = plane2;
+                if (find_any) {
+                    return out;
+                }
             }
         }
         if (prev_index < index) { //if coming from a parent node, we go left
@@ -296,7 +307,6 @@ closest_hit_data get_closest_hit(int i,
 }
 
 
-
 __kernel void trace_rays(__global rect* rects,
                          __global light* lights,
                          __global camera_data* camera,
@@ -306,6 +316,8 @@ __kernel void trace_rays(__global rect* rects,
                          __global pixel_color* out,
                          __global bounding_node* bounding_hierarchy
                         ) {
+
+
 
     __private int global_id = get_global_id(0);
     __private pixel_pos screen_coords = pixels[global_id];
@@ -323,13 +335,15 @@ __kernel void trace_rays(__global rect* rects,
                       f.z + u.z * screen_coords.y + r.z * screen_coords.x
                      };
     pnormalize(&ray_dir);
-    __private ray ray_cast = {camera->position, ray_dir};
+    ray ray_cast = {camera->position, ray_dir};
 
     // find closest triangle
     vector origin = camera->position;
     closest_hit_data hit = get_closest_hit(0, bounding_hierarchy,
-                                           world->bounding_hierarchy_size, world->bounding_hierarchy_height,
-                                           rects, &ray_cast);
+                                           world->bounding_hierarchy_size,
+                                           rects, &ray_cast, world->max_view_distance, false);
+
+
 
     // index for the closest rectangle hit
     int closest_rect = hit.closest_rect;
@@ -353,22 +367,41 @@ __kernel void trace_rays(__global rect* rects,
             vector light_color = lights[i].color;
             vector light_pos = lights[i].position;
             vector to_light = ppminus(&light_pos, &intersection_point);
-            pnormalize(&to_light);
+            float magnitude = pnormalize(&to_light);
 
-            // get diffuse color
-            vector diffuse = pCmult(&light_color, fmax(ppdot(&normal, &to_light), 0));
-            diffuse = ppmult(&mat.diffuse_color, &diffuse);
 
-            // construct the reflection vector
-            vector reflected = pCmult(&normal, ppdot(&to_light, &normal));
-            reflected = pCmult(&reflected, 2);
-            reflected = ppminus(&reflected, &to_light);
+            bool do_specular_diffuse = true;
+            if (world->show_shadows) {
+                // check for shadows a (bit) in front of the plane to avoid floating error of colliding with one's own wall
+                vector mini_normal = pCmult(&normal, 0.001);
+                vector front_plane = ppsum(&intersection_point, &mini_normal);
+                ray ray_cast = {front_plane, to_light};
 
-            vector specular = pCmult(&light_color, pow(fmax(-ppdot(&ray_cast.dir, &reflected), 0), mat.specular_power));
-            specular = ppmult(&mat.specular_color, &specular);
+                closest_hit_data shadow_hit = get_closest_hit(0, bounding_hierarchy,
+                                                              world->bounding_hierarchy_size,
+                                                              rects, &ray_cast, magnitude, true);
+                if (shadow_hit.closest_rect != -1) {
+                    do_specular_diffuse = false;
+                }
+            }
 
-            light = ppsum(&diffuse, &light);
-            light = ppsum(&specular, &light);
+            if (do_specular_diffuse) {
+                // get diffuse color
+                vector diffuse = pCmult(&light_color, fmax(ppdot(&normal, &to_light), 0));
+                diffuse = ppmult(&mat.diffuse_color, &diffuse);
+
+                // construct the reflection vector
+                vector reflected = pCmult(&normal, ppdot(&to_light, &normal));
+                reflected = pCmult(&reflected, 2);
+                reflected = ppminus(&reflected, &to_light);
+
+                vector specular = pCmult(&light_color, pow(fmax(-ppdot(&ray_cast.dir, &reflected), 0), mat.specular_power));
+                specular = ppmult(&mat.specular_color, &specular);
+
+                light = ppsum(&diffuse, &light);
+                light = ppsum(&specular, &light);
+            }
+
         }
         out[global_id].r = fmin(light.x, 1) * 255;
         out[global_id].g = fmin(light.y, 1) * 255;

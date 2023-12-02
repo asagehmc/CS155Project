@@ -70,7 +70,6 @@ if __name__ == '__main__':
         pixel_pos_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=pix_data)
         world_data_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.world_data_buf)
         bounding_volume_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.bounding_hierarchy)
-
         # prepare device memory for output
         out_buf = cl.Buffer(ctx, cl.mem_flags.WRITE_ONLY, out.nbytes)
         # compile kernel code

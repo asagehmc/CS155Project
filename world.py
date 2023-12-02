@@ -8,6 +8,7 @@ from light import Light
 from player import Player
 C_GLIDE = 6
 
+
 def begins_with(line, prefix):
     return len(line) > len(prefix) and line[0:len(prefix)] == prefix
 
@@ -25,6 +26,8 @@ class World:
     world_ambient_color = (1, 1, 1)
     world_background_color = (0, 0, 0)
     world_ambient_intensity = 0
+    SHOW_SHADOWS = True
+    MAX_VIEW_DISTANCE = 30
 
     # buffer for world triangles
     rects_data = np.array([], dtype=rect_type)
@@ -132,9 +135,10 @@ class World:
             raise Exception("No player block was initialized! \n Create a PLAYER_BLOCK block in world.txt")
         self.bounding_hierarchy = bvh_generator.generate_bvh_tree(list(self.game_blocks.values()), self.player.block)
         self.world_data_buf = np.array([(self.num_rects,
+                                         self.MAX_VIEW_DISTANCE,
                                          self.bounding_hierarchy.shape[0],
-                                         sqrt(self.bounding_hierarchy.shape[0] + 1),
                                          self.num_lights_added,
+                                         self.SHOW_SHADOWS,
                                          self.world_ambient_color,
                                          self.world_background_color,
                                          self.world_ambient_intensity)], dtype=world_data_type)
@@ -185,7 +189,7 @@ class World:
         target = self.player.get_center() + [self.player.size[0]/2, 4, -2]
         current = self.camera.get_position()
         shift = subtract(target, current)
-        # TODO: move this functionality to camera
+        # TODO: move this functionality to camera, make it dt smooth
         self.camera.set_position(current[0] + shift[0] / C_GLIDE,
                                  current[1] + shift[1] / C_GLIDE,
                                  current[2] + shift[2] / C_GLIDE)

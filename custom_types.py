@@ -17,9 +17,10 @@ light_type = np.dtype([('position', vector_type),
 
 # world data struct
 world_data_type = np.dtype([('num_rects', np.int32),
+                            ('max_view_dist', np.float32),
                             ('bounding_hierarchy_size', np.int32),
-                            ('bounding_hierarchy_height', np.int32),
                             ('num_lights', np.int32),
+                            ('do_shadows', np.int32),
                             ('world_ambient_color', vector_type),
                             ('world_background_color', vector_type),
                             ('world_ambient_intensity', np.float32)])
