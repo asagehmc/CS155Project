@@ -11,10 +11,11 @@ Y = 1
 Z = 2
 BOUNCE = 0.3  # 0 to 1 with 1 being highest
 XZ_SPEED = 30
-JUMP_SPEED = 60  #
-SPEED_DECAY = 0.05  # closer to zero is faster decay
-BOUNCE_VELOCITY_THRESHOLD = 0.01
-GRAVITY = 150
+JUMP_SPEED = 30  #
+SPEED_DECAY = [0.05, 0.999, 0.05]  # closer to zero is faster decay
+SPEED_DECAY_SHIFTED = [0.0001, 0.999, 0.0001]  # closer to zero is faster decay
+
+GRAVITY = 100
 
 
 # an annoying side effect of void types not adding nicely
@@ -59,7 +60,7 @@ class Player:
         self.velocity = array([0, 0, 1], dtype=np.float64)
         self.world_hierarchy = None
         self.rects = None
-        self.touched_ground_last_frame = False
+        self.touch_directions = [False, False, False]
 
     def update_position(self, dt):
         keys = pygame.key.get_pressed()
@@ -72,21 +73,21 @@ class Player:
             self.velocity[Z] += XZ_SPEED * dt
         if keys[pygame.K_s]:
             self.velocity[Z] += -XZ_SPEED * dt
-        if keys[pygame.K_SPACE] and self.touched_ground_last_frame:
+        if keys[pygame.K_SPACE] and self.touch_directions[Y] < 0:
             self.velocity[Y] = JUMP_SPEED
-        self.touched_ground_last_frame = False
-        self.move(self.velocity * dt)
+        self.velocity[Y] += -GRAVITY * dt
+
+        # determine if we should ever "bounce" in a direction (in case frames go low and we get a high dt force)
+        prev_touch_directions = self.touch_directions
+        self.touch_directions = [0, 0, 0]
+        self.move(self.velocity * dt, prev_touch_directions, dt)
         # update graphics positions
         self.block.set_corners(self.pos, self.pos + self.size)
         for i in range(0, 3):
-            self.velocity[i] *= math.pow(SPEED_DECAY, dt)
-        # ground check done by finding intersection of Y plane with very small slab below player
+            # slow the player down a bit, more if shifting
+            self.velocity[i] *= math.pow((SPEED_DECAY_SHIFTED if keys[pygame.K_LSHIFT] else SPEED_DECAY)[i], dt)
 
-        # if we're not already on the ground with velocity 0, do gravity
-        if not self.touched_ground_last_frame or abs(self.velocity[Y]) > 0.001:
-            self.velocity[Y] += -GRAVITY * dt
-
-    def move(self, move_vec, limit=3):
+    def move(self, move_vec, last_touch_directions, dt, limit=3, ):
         # failsafe to prevent hangs
         if limit == 0:
             return
@@ -153,19 +154,18 @@ class Player:
             self.pos[closest_hit_axis] = closest_hit_pos -\
                 (self.size[closest_hit_axis] if closest_hit_axis_v > 0 else 0)  # if we're traveling in a + direction,
             #                                                                     set front to plane, not back
-            if abs(self.velocity[closest_hit_axis]) >= BOUNCE_VELOCITY_THRESHOLD:
-                move_vec[closest_hit_axis] *= (move_vec[closest_hit_axis] - 1)  # "reflect" the remaining velocity
-                # do a little bit of a bounce
+            # should we bounce? Only if speed is above threshold and we weren't touching that axis/dir last frame.
+            self.touch_directions[closest_hit_axis] = self.velocity[closest_hit_axis]
+            if last_touch_directions[closest_hit_axis] * self.velocity[closest_hit_axis] <= 0:
                 self.velocity[closest_hit_axis] *= -BOUNCE
-                self.move(move_vec, limit - 1)
             else:
                 self.velocity[closest_hit_axis] = 0
-                move_vec[closest_hit_axis] = 0
-                self.move(move_vec, limit - 1)
+
+            move_vec[closest_hit_axis] = 0
+            self.move(move_vec, last_touch_directions, dt, limit - 1)
+
         else:
             self.pos = self.pos + move_vec
-        if closest_y_hit_dist_sq != -1 and closest_y_hit_dist_sq <= closest_hit_dist_sq + 0.0001:
-            self.touched_ground_last_frame = True
 
     def assign_world_bufs(self, rects, hierarchy):
         self.rects = rects

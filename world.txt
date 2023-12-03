@@ -29,7 +29,7 @@ Blocks:
         material: PLAYER_MAT
 block: block0
         corner1: -5, -2, -5
-        corner2: 5, -0.5, 5
+        corner2: 5, 0, 5
         material: matte_gray
 block: block0
         corner1: 0, -0.5, 2
