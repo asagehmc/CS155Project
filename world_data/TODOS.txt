@@ -1,5 +1,6 @@
 
-
+Move world data reading out of materials and into world_data.txt
+Move player constants into world_data.txt? (maybe)
 Make camera follow player more dt accurately (right now it is done roughly)
 Make the light follow the player
 Make the light get dimmer when the player "dies"

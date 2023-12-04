@@ -339,15 +339,28 @@ __kernel void trace_rays(__global rect* rects,
 
     // find closest triangle
     vector origin = camera->position;
+
+    // index for the closest rectangle hit
+    int closest_rect = -1;
+    float closest_hit = INFINITY;
+    // always check the player's rectangles
+    for (int i = 0; i < 6; i++) {
+        closest_hit_data player_rect_hit = check_intersection(rects, i, &ray_cast);
+        if (player_rect_hit.distance < closest_hit) {
+            closest_rect = i;
+            closest_hit = player_rect_hit.distance;
+        }
+    }
+
     closest_hit_data hit = get_closest_hit(0, bounding_hierarchy,
                                            world->bounding_hierarchy_size,
                                            rects, &ray_cast, world->max_view_distance, false);
+    if (hit.distance < closest_hit) {
+        closest_rect = hit.closest_rect;
+        closest_hit = hit.distance;
+    }
 
 
-
-    // index for the closest rectangle hit
-    int closest_rect = hit.closest_rect;
-    float closest_hit = hit.distance;
 
     if (closest_rect != -1) {
         // copy important data to __private scope

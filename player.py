@@ -180,8 +180,8 @@ class Player:
         x_planes = []  # an x-plane is one which is normal to the x axis
         y_planes = []
         z_planes = []
-        index = 1  # start at left 1 in order to skip player rect
-        prev_index = 0
+        index = 0  # start at left 1 in order to skip player rect
+        prev_index = -1
         tree_size = self.world_hierarchy.shape[0]
         while True:
             if ((prev_index == index * 2 + 2)  # we are coming from right child
@@ -193,7 +193,8 @@ class Player:
                                                                  self.world_hierarchy["top"][index])))):
                 prev_index = index
                 index = (index - 1) >> 1
-                if index == 0:
+                print(index, prev_index)
+                if index == -1:
                     break
             if self.world_hierarchy["plane1"][index] != -1:
                 # pass in the rectangle pointed to by plane1

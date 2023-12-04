@@ -25,6 +25,19 @@ class __TreeNode:
                + (("\n" + str(self.right.print_self(depth + 1))) if type(self.right) != int else (
                     " " + str(self.right) + " "))
 
+# class BVH_Generator:
+#
+#     def __init__(self):
+#         empty = (True, (0, 0, 0), (0, 0, 0), -1, -1, True)
+#
+#         bvh_tree_buf = np.array([empty,
+#
+#
+#
+#
+#
+#         ], dtype=bounding_node_type)
+
 
 # split the list in half along the given plane x, y, or z
 def partition(tree_list, axis_index):
@@ -57,7 +70,7 @@ def get_min_aabb(boxes):
     return minimum, maximum
 
 
-def branch(boxes, axis_index, mainSame=False):
+def branch(boxes, axis_index):
     if len(boxes) == 1:
         box = boxes[0]
         # boxes a, b, c, and d are marked "same" since they are all the same size as above
@@ -76,7 +89,7 @@ def branch(boxes, axis_index, mainSame=False):
                           left=box.get_rect_index(0), right=boxB, same=True)
         boxD = __TreeNode(((0, 0, 0), (0, 0, 0)),
                           left=boxC, right=box.get_rect_index(5), same=True)
-        return __TreeNode(get_min_aabb(boxes), boxA, boxD, same=mainSame), 3
+        return __TreeNode(get_min_aabb(boxes), boxA, boxD, False), 3
     else:
         low, high = partition(boxes, axis_index)
         left, depth1 = branch(low, (axis_index + 1) % 3)
@@ -107,19 +120,8 @@ def fill_tree_buf(root, buf, root_index):
 def generate_bvh_tree(world_rects, player_box):
     world_root, depth = branch(world_rects, 0)
 
-    root = __TreeNode(((0, 0, 0), (0, 0, 0)),
-                      left=world_root,  # add a right branch for the world
-                      right=branch([player_box], 0, True)[0],  # add a right branch for the player that is always checked
-                      same=True)  # since we always want to check the first node in the tree,
-    #                               it is marked as Same so we skip bounds checking in trace.cl
-    # depth is either as large as the world or is the size of the player tree
-    depth = max(depth+1, 4)
-    # fill with empty values marked as initialized=False
-
-    # bvh_tree_buf = np.empty(pow(2, depth) - 1, dtype=bounding_node_type)
     value_to_fill = (False, (0, 0, 0), (0, 0, 0), -1, -1, False)
-    # pow(2, depth) - 1,
     bvh_tree_buf = np.array(value_to_fill, dtype=bounding_node_type)
     bvh_tree_buf = np.repeat(bvh_tree_buf, pow(2, depth) - 1)
-    fill_tree_buf(root, bvh_tree_buf, 0)
+    fill_tree_buf(world_root, bvh_tree_buf, 0)
     return bvh_tree_buf

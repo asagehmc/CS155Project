@@ -23,15 +23,11 @@ Lights:
         color: 1, 1, 1
         intensity: 1
 Blocks:
-    block: PLAYER_BLOCK
-        corner1: 0.0, 0.0, 0.0
-        corner2: 1.0, 1.0, 1.0
-        material: PLAYER_MAT
-block: block0
+    block: block0
         corner1: -5, -2, -5
         corner2: 5, 0, 5
         material: matte_gray
-block: block0
+    block: block0
         corner1: 0, -0.5, 2
         corner2: 1, 2, 3
         material: matte_gray

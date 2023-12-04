@@ -70,8 +70,9 @@ class World:
         for line in world_lines:
             if begins_with(line, "block:"):
                 self.num_rects += 6
+        # for the player
+        self.num_rects += 6
 
-        self.rects_data = np.empty(self.num_rects, dtype=rect_type)
         self.materials_buf = np.empty(self.num_materials, dtype=material_type)
         for line in mat_lines:
 
@@ -94,6 +95,10 @@ class World:
                 data.append(int(line.split(":")[1].strip()))
                 self.create_mat(data[0], data[1], data[2], data[3], data[4])
                 data = []
+
+        self.rects_data = np.empty(self.num_rects, dtype=rect_type)
+        self.create_block("PLAYER_BLOCK", (0, 0, 0), (1, 1, 1), "PLAYER_MAT")
+        self.num_rects_added = 6
 
         for line in world_lines:
             if begins_with(line, "block:"):
