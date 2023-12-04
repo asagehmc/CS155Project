@@ -22,7 +22,7 @@ pygame.font.init()
 font = pygame.font.SysFont('courier', 30)
 
 if __name__ == '__main__':
-    world = World("./world.txt")
+    world = World()
 
     # initialize pixel data array, an array of indexes for each pixel's position on the screen, starting at top right.
     frac = SCREEN_HEIGHT / SCREEN_WIDTH
@@ -55,7 +55,7 @@ if __name__ == '__main__':
                 running = False
         dt = 1/clock.get_fps() if clock.get_fps() > 0 else 0
 
-        world.game_lights["light1"].set_position(2 * math.sin(x), 5, 2 * math.cos(x))
+        world.game_lights[0].set_position(5 * math.sin(x), 5, 5 * math.cos(x))
         # world.camera.set_position(3 * math.sin(x), 2 * math.cos(x/4), 3 * math.cos(x))
         # world.camera.set_direction(-3 * math.sin(x), -2 * math.cos(x/4), -3 * math.cos(x))
 

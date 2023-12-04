@@ -1,0 +1,6 @@
+# to add later
+World Ambient Light: 1, 1, 1
+World Background Color: 0, 0, 0
+World Ambient Intensity: 1
+
+s
