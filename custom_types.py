@@ -16,8 +16,7 @@ light_type = np.dtype([('position', vector_type),
                        ('intensity', np.float32)])
 
 # world data struct
-world_data_type = np.dtype([('num_rects', np.int32),
-                            ('max_view_dist', np.float32),
+world_data_type = np.dtype([('max_view_dist', np.float32),
                             ('bounding_hierarchy_size', np.int32),
                             ('num_lights', np.int32),
                             ('do_shadows', np.int32),

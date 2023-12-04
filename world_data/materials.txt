@@ -17,3 +17,18 @@ Materials:
         diffuse_color: 0.1, 0.4, 0.1
         specular_color: 0.05, 0.4, 0.05
         specular_power: 20
+    mat: red
+        ambient_color: 0.2, 0, 0
+        diffuse_color: 0.6, 0.0, 0.0
+        specular_color: 0.2, 0.2, 0.2
+        specular_power: 60
+    mat: blue
+        ambient_color: 0.0, 0, 0.2
+        diffuse_color: 0.0, 0.0, 0.6
+        specular_color: 0.2, 0.2, 0.2
+        specular_power: 60
+    mat: green
+        ambient_color: 0.0, 0.2, 0.0
+        diffuse_color: 0.0, 0.6, 0.0
+        specular_color: 0.2, 0.2, 0.2
+        specular_power: 60

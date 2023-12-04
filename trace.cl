@@ -10,7 +10,6 @@ typedef struct {
 } ray;
 
 typedef struct {
-    int num_rects;
     float max_view_distance;
     int bounding_hierarchy_size;
     int num_lights;

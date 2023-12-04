@@ -1,36 +1,7 @@
-World Ambient Light: 1, 1, 1
-World Background Color: 0, 0, 0
-World Ambient Intensity: 1
-Materials:
-    mat: shiny_gray
-        ambient_color: 0.2, 0.2, 0.2
-        diffuse_color: 0.6, 0.6, 0.6
-        specular_color: 0.3, 0.3, 0.3
-        specular_power: 50
-    mat: matte_gray
-        ambient_color: 0.1, 0.1, 0.1
-        diffuse_color: 0.3, 0.3, 0.3
-        specular_color: 0.2, 0.2, 0.2
-        specular_power: 60
-    mat: PLAYER_MAT
-        ambient_color: 0.03, 0.1, 0.03
-        diffuse_color: 0.1, 0.4, 0.1
-        specular_color: 0.05, 0.4, 0.05
-        specular_power: 20
-Lights:
-    light: light1
-        position: 1, 0.5, 4
-        color: 1, 1, 1
-        intensity: 1
-Blocks:
-    block: PLAYER_BLOCK
-        corner1: 0.0, 0.0, 0.0
-        corner2: 1.0, 1.0, 1.0
-        material: PLAYER_MAT
 block: block0
         corner1: -5, -2, -5
         corner2: 5, 0, 5
-        material: matte_gray
+        material: blue
 block: block0
         corner1: 0, -0.5, 2
         corner2: 1, 2, 3

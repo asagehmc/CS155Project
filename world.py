@@ -1,22 +1,16 @@
 import block
-import bvh_generator
+import level_generator
+from level_generator import LevelGenerator
+from buffer_wrapper import BufferWrap
 from camera import Camera
 from custom_types import *
 from light import Light
 from player import Player
+from util import string_to_3tuple, begins_with
 
 C_GLIDE = 6
 MAT_PATH = "./world_data/materials.txt"
 LEVEL_PATH = "./world_data/1/world.txt"
-
-
-def begins_with(line, prefix):
-    return len(line) > len(prefix) and line[0:len(prefix)] == prefix
-
-
-def string_to_3tuple(line):
-    split = line.split(",")
-    return float(split[0].strip()), float(split[1].strip()), float(split[2].strip())
 
 
 def subtract(v1, v2):
@@ -49,7 +43,6 @@ class World:
     def __init__(self):
         data = []
         self.num_rects = 0
-        self.num_rects_added = 0
 
         self.num_materials = 0
         self.num_materials_added = 0
@@ -60,10 +53,7 @@ class World:
         with open(MAT_PATH, 'r') as file:
             for line in file:
                 mat_lines.append(line.strip())
-        world_lines = []
-        with open(LEVEL_PATH, 'r') as file:
-            for line in file:
-                world_lines.append(line.strip())
+
         for line in mat_lines:
             if begins_with(line, "mat:"):
                 self.num_materials += 1
@@ -96,21 +86,16 @@ class World:
                 self.create_mat(data[0], data[1], data[2], data[3], data[4])
                 data = []
 
-        self.rects_data = np.empty(self.num_rects, dtype=rect_type)
-        self.create_block("PLAYER_BLOCK", (0, 0, 0), (1, 1, 1), "PLAYER_MAT")
-        self.num_rects_added = 6
+        # generate world bufs:
 
-        for line in world_lines:
-            if begins_with(line, "block:"):
-                data.append(line.split(":")[1].strip())
-            if begins_with(line, "corner1:"):
-                data.append(string_to_3tuple(line.split(":")[1].strip()))
-            if begins_with(line, "corner2:"):
-                data.append(string_to_3tuple(line.split(":")[1].strip()))
-            if begins_with(line, "material:"):
-                data.append(line.split(":")[1].strip())
-                self.create_block(data[0], data[1], data[2], data[3])
-                data = []
+        # 1 box for the player and then a set amount per level
+        rects_data = np.empty(6 * (1 + 2 ** (level_generator.MAX_TREE_DEPTH_PER_LEVEL + 2)), dtype=rect_type)
+
+        # buffer for the world bounding volume hierarchy (4 branches of max depth)
+        hierarchy_data = np.empty((level_generator.MAX_TREE_DEPTH_PER_LEVEL + 2) ** 2, dtype=bounding_node_type)
+
+        self.buf_wrap = BufferWrap(rects_data, hierarchy_data)
+        self.create_block("PLAYER_BLOCK", (0, 0, 0), (1, 1, 1), "PLAYER_MAT")
 
         # functionality is left in here to have 2+ lights, but we'll leave it at 1 for performance
         self.num_lights = 1
@@ -122,40 +107,22 @@ class World:
         self.camera = Camera(self.camera_data_buf)
         if self.player is None:
             raise Exception("No player block was initialized! \n Create a PLAYER_BLOCK block in world.txt")
-        self.bounding_hierarchy = bvh_generator.generate_bvh_tree(list(self.game_blocks.values()), self.player.block)
-        self.world_data_buf = np.array([(self.num_rects,
-                                         self.MAX_VIEW_DISTANCE,
-                                         self.bounding_hierarchy.shape[0],
+        # get
+        buffer_wrapper = BufferWrap(rects_data, None)
+        generator = LevelGenerator(self.material_name_index, buffer_wrapper)
+
+        bounding_hierarchy, rects_data = bvh_generator.generate_bvh_tree(list(self.game_blocks.values()), self.player.block)
+        self.buf_wrap.bounding_hierarchy = bounding_hierarchy
+        self.buf_wrap.rects_data = rects_data
+        self.world_data_buf = np.array([(self.MAX_VIEW_DISTANCE,
+                                         self.buf_wrap.bounding_hierarchy.shape[0],
                                          self.num_lights,
                                          self.SHOW_SHADOWS,
                                          self.world_ambient_color,
                                          self.world_background_color,
                                          self.world_ambient_intensity)], dtype=world_data_type)
-        self.player.assign_world_bufs(self.rects_data, self.bounding_hierarchy)
+        self.player.assign_world_bufs(self.buf_wrap)
 
-    def create_block(self, name, corner1, corner2, mat):
-        # get the vertex indices for each of the 12 triangles for the block
-        new_rects = block.generate_rects(corner1, corner2)
-        # add material data to each triangle indexes to create whole tri structs, append them to triangle buffer
-        mat_index = self.material_name_index[mat]
-        new_rects = np.array([x + (mat_index,) for x in new_rects], dtype=rect_type)
-        self.rects_data[self.num_rects_added: self.num_rects_added + 6] = new_rects
-
-        # WORLD work:
-        # if 2 blocks have the same name, just rename until it fits
-        if name in self.game_blocks:
-            short_name = name
-            num = 2
-            while name in self.game_blocks:
-                name = short_name + str(num)
-                num += 1
-        if name != "PLAYER_BLOCK":
-            # pass in the triangle and vertex buffers, and the start references for their data locations in buffers
-            self.game_blocks[name] = block.Block(self.rects_data, self.num_rects_added)
-        else:
-            player_block = block.Block(self.rects_data, self.num_rects_added)
-            self.player = Player(player_block)
-        self.num_rects_added += 6
 
     def create_mat(self, name, ambient, diffuse, specular, spec_power):
         self.materials_buf[self.num_materials_added] = (ambient, diffuse, specular, spec_power)
