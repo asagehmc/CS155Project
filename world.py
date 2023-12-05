@@ -1,7 +1,7 @@
 import block
 import level_generator
 from level_generator import LevelGenerator
-from buffer_wrapper import BufferWrap
+from buf_wrap import BufferWrap
 from camera import Camera
 from custom_types import *
 from light import Light
@@ -111,7 +111,7 @@ class World:
         buffer_wrapper = BufferWrap(rects_data, None)
         generator = LevelGenerator(self.material_name_index, buffer_wrapper)
 
-        bounding_hierarchy, rects_data = bvh_generator.generate_bvh_tree(list(self.game_blocks.values()), self.player.block)
+        bounding_hierarchy, rects_data = generator.initialize_world()
         self.buf_wrap.bounding_hierarchy = bounding_hierarchy
         self.buf_wrap.rects_data = rects_data
         self.world_data_buf = np.array([(self.MAX_VIEW_DISTANCE,
