@@ -3,6 +3,7 @@ import random
 import statistics
 
 import block
+from block import Block
 import custom_types
 from util import string_to_3tuple, begins_with
 
@@ -37,6 +38,7 @@ class LevelGenerator:
             bvh_tree_buf = self.generate_new_level(i, buf_wrap, materials)
 
     def generate_new_level(self, level_idx, buf_wrap, materials):
+        subtree_size = 2 ** MAX_TREE_DEPTH_PER_LEVEL
         # make a copy since we don't want to affect these until completion
         bvh_tree_buf_copy = np.copy(buf_wrap.hierarchy)
         rect_buf_copy = np.copy(buf_wrap.rect_buf)
@@ -60,9 +62,9 @@ class LevelGenerator:
                 if begins_with(line, "block:"):
                     num_rects += 6
         data = []
-        rects = []
+        blocks = []
         blocks_start = 0
-        rect_start_index = 6 * (1 + 2 ** MAX_TREE_DEPTH_PER_LEVEL * subtree_to_replace)
+        rect_start_index = 6 * (1 + subtree_size * subtree_to_replace)
         num_rects_initialized = 0
         for line in lines:
             if begins_with(line, "block:"):
@@ -76,10 +78,11 @@ class LevelGenerator:
 
                 new_rects = block.generate_rects(data[1], data[2])
                 mat_index = materials[data[3]]
-                rects.append(Block(bu))
+                blocks.append(
+                    block.Block(buf_wrap, rect_start_index + num_rects_initialized * 6, data[1], data[2], mat_index))
                 data = []
         # generate the subtree
-        subtree = generate_bvh_tree(temp_rects)
+        subtree = generate_bvh_tree(blocks)
 
         # copy subtree data into larger tree
         for i in range(subtree.shape[0]):
@@ -87,29 +90,17 @@ class LevelGenerator:
             new_pos = 4 * i + 3 + subtree_to_replace
             bvh_tree_buf_copy[new_pos] = subtree[i]
         # copy new rect data into rect buf
-
-
-
-
-
-        return bvh_tree_buf_copy, rect_buf_copy, rects_start, rects_end
-
-
-
-
+        start = 6 + subtree_size * subtree_to_replace
+        for i in range(len(blocks)):
+            block_rects = block.generate_rects(blocks[i].generated_rects())
+            rect_buf_copy[i] = subtree_size[i + start]
 
 
 
 
 
 
-
-
-
-
-
-
-
+        return bvh_tree_buf_copy, rect_buf_copy
 
 
 

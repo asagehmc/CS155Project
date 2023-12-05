@@ -39,6 +39,9 @@ class Block:
         self.bottom_corner = bottom_corner
         self.material = material
 
+    def generate_rects(self):
+        return generate_rects(self.bottom_corner, self.top_corner)
+
     def __get_material(self):
         # all triangles in the block should have the same material
         return self.buf_wrap.rect_buf["mat"][self.rect_start]
