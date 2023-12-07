@@ -61,8 +61,8 @@ typedef struct {
 
 typedef struct {
     int initialized;
-    vector top;
     vector bottom;
+    vector top;
     int plane1;
     int plane2;
     int same;
@@ -134,6 +134,10 @@ vector ppsum(__private vector* v1, __private vector* v2) {
 }
 
 closest_hit_data check_intersection(__global rect* rects, int index, __private ray* ray_cast) {
+//    if (get_global_id(0) == 24914) {
+//        printf("%d", index);
+//    }
+
     vector top = rects[index].top;
     vector bot = rects[index].bot;
     vector normal = rects[index].normal;
@@ -146,6 +150,15 @@ closest_hit_data check_intersection(__global rect* rects, int index, __private r
         if (d >= 0) {
             vector travel_vec = pCmult(&(ray_cast->dir), d);
             vector intersection_point = ppsum(&(ray_cast->pos), &travel_vec);
+            if (index == 6 && get_global_id(0) == 74748) {
+//                printf("AAAAAA%d", get_global_id(0));
+//                printf("%f, %f, %f", intersection_point.x, intersection_point.y, intersection_point.z);
+//                printf("D %f,", d);
+//
+//                printf("BOT: %f, %f, %f", bot.x, bot.y, bot.z);
+//                printf("TOP: %f, %f, %f\n\n", top.x, top.y, top.z);
+
+            }
             float bot1;
             float bot2;
             float top1;
@@ -176,6 +189,10 @@ closest_hit_data check_intersection(__global rect* rects, int index, __private r
             }
             if (bot1 < intersect1 && intersect1 < top1 && bot2 < intersect2 && intersect2 < top2) {
                 closest_hit_data out = {d, index};
+                if (index == 6 && get_global_id(0) == 84626) {
+                    printf("OUT!! %f", out.distance);
+                }
+
                 return out;
             }
         }
@@ -187,6 +204,13 @@ closest_hit_data check_intersection(__global rect* rects, int index, __private r
 // credit to chatgpt
 bool intersects_box(__global bounding_node* box, __private ray* ray_cast) {
 
+    if (get_global_id(0) == 74748) {
+        printf("BOX BOTTOM: %f %f %f", box->bottom.x, box->bottom.y, box->bottom.z);
+        printf("BOX TOP: %f %f %f", box->top.x, box->top.y, box->top.z);
+        printf("Ray DIR: %f %f %f", ray_cast->dir.x, ray_cast->dir.y, ray_cast->dir.z);
+        printf("BOX POS: %f %f %f", ray_cast->pos.x, ray_cast->pos.y, ray_cast->pos.z);
+
+    }
     // Check if the ray is parallel to the axes
     if (ray_cast->dir.x == 0.0) {
         if (ray_cast->pos.x < box->bottom.x || ray_cast->pos.x > box->top.x) {
@@ -259,13 +283,25 @@ closest_hit_data get_closest_hit(int i,
     int index = 0;
     int prev_index = -1;
     closest_hit_data out = {INFINITY, -1};
+    if (get_global_id(0) == 74748) {
+        printf("\n\n");
+    }
     while (1) {
+        if (get_global_id(0) == 74748) {
+            printf("AAA %d", index);
+            printf("$%d, %d, %d, %d", prev_index == index * 2 + 2, index >= tree_size, !tree[index].initialized, !tree[index].same);
+
+        }
+
         if (prev_index == index * 2 + 2 //if we are coming from a right branch
             || index >= tree_size // we are outside of tree
             || !tree[index].initialized // we are in uninitialized node of array for tree
             || (!tree[index].same
                 && !intersects_box(&(tree[index]), ray_cast))) // we are missed by ray cast
         {
+            if (get_global_id(0) == 74748) {
+                printf("BREAKING!");
+            }
             if (index == 0) {
                 break;
             }

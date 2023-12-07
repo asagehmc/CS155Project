@@ -40,8 +40,8 @@ camera_data_type = np.dtype([('position', vector_type),
                              ('forward', vector_type)])
 
 bounding_node_type = np.dtype([("filled", np.int32),  # should be a bool, but pyopencl interprets bool as int32
-                               ("top", vector_type),  # top corner of bounding box
-                               ("bottom", vector_type),  # bottom corner of bounding box
+                               ("bottom", vector_type),  # top corner of bounding box
+                               ("top", vector_type),  # bottom corner of bounding box
                                ("plane1", np.int32),  # the first of 2 planes contained, -1 if empty
                                ("plane2", np.int32),  # the second of 2 planes contained, -1 if empty
                                ("same", np.int32)])  # (bool), 1 if the bounding box is identical in size to its parent

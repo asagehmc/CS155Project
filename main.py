@@ -50,6 +50,7 @@ if __name__ == '__main__':
     x = 0
     running = True
     while running:
+
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False
@@ -63,13 +64,15 @@ if __name__ == '__main__':
         x += 2 * dt
         # prepare device memory for input
 
-        rect_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.rects_data)
+        rect_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.buf_wrap.rects)
         light_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.lights_buf)
         camera_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.camera_data_buf)
         material_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.materials_buf)
         pixel_pos_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=pix_data)
-        world_data_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.world_data_buf)
-        bounding_volume_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.bounding_hierarchy)
+        world_data_buf = \
+            cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.world_data_buf)
+        bounding_volume_buf = \
+            cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.buf_wrap.hierarchy)
         # prepare device memory for output
         out_buf = cl.Buffer(ctx, cl.mem_flags.WRITE_ONLY, out.nbytes)
         # compile kernel code
@@ -82,7 +85,6 @@ if __name__ == '__main__':
         world.update(dt)
         before = int(datetime.timestamp(datetime.now()) * 1000)
         evt.wait()
-        # print(int(datetime.timestamp(datetime.now()) * 1000) - before)
 
         cl.enqueue_copy(queue, out, out_buf).wait()
         pygame.surfarray.blit_array(screen, out)

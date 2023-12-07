@@ -3,16 +3,15 @@ import random
 import statistics
 
 import block
-from block import Block
-import custom_types
-from util import string_to_3tuple, begins_with
+from buf_wrap import BufferWrap
+from util import string_to_3tuple, begins_with, triple_add
 
 import numpy as np
 
-from custom_types import bounding_node_type
+from custom_types import bounding_node_type, rect_type
 
-DIFFICULTY_SCALING = 5
-MAX_TREE_DEPTH_PER_LEVEL = 7
+DIFFICULTY_SCALING = 1
+MAX_TREE_DEPTH_PER_LEVEL = 4
 
 
 class __TreeNode:
@@ -35,18 +34,20 @@ def generate_new_level(level_idx, buf_wrap, materials):
     subtree_size = 2 ** MAX_TREE_DEPTH_PER_LEVEL
     # make a copy since we don't want to affect these until completion
     bvh_tree_buf_copy = np.copy(buf_wrap.hierarchy)
-    rect_buf_copy = np.copy(buf_wrap.rect_buf)
+    rect_buf_copy = np.copy(buf_wrap.rects)
 
     # we cycle through subtrees to overwrite
     subtree_to_replace = level_idx % 4
     base_difficulty = level_idx / DIFFICULTY_SCALING
     # randomize the difficulty of the world a little bit
-    difficulty = int((2.51 * (random.random() - 0.5)) ** 7) + base_difficulty
-    # bound it
-    difficulty = max(0, difficulty)
-    difficulty = min(5, difficulty)
-    dirpath = f"./world_data/{difficulty}"
-    filepath = random.choice([f for f in os.listdir(dirpath)])
+    # difficulty = (2.51 * (random.random() - 0.5)) ** 7 + base_difficulty
+    # # bound it
+    # difficulty = max(1, difficulty)
+    # difficulty = min(5, difficulty)
+    difficulty = level_idx + 1
+    dirpath = f"./world_data/{int(difficulty)}/"
+    print(dirpath)
+    filepath = dirpath + random.choice([f for f in os.listdir(dirpath)])
     lines = []
     num_rects = 0
     with open(filepath, 'r') as file:
@@ -69,34 +70,53 @@ def generate_new_level(level_idx, buf_wrap, materials):
         if begins_with(line, "material:"):
             data.append(line.split(":")[1].strip())
             mat_index = materials[data[3]]
+            offset = (0, 0, 0)
+            bot_corner = get_min(data[1], data[2])
+            top_corner = get_max(data[1], data[2])
             blocks.append(
-                block.Block(buf_wrap, rect_start_index + num_rects_initialized * 6, data[1], data[2], mat_index))
+                block.Block(buf_wrap, rect_start_index + num_rects_initialized * 6, bot_corner, top_corner, mat_index))
             data = []
+            num_rects_initialized += 1
     if (len(blocks) < 2) or len(blocks) > 128:
-        raise Exception(f"A level must have between 2 and 28 blocks! (has {len(blocks)})")
+        raise Exception(f"A level must have between 2 and 128 blocks! (has {len(blocks)})")
     # generate the subtree
     subtree = generate_bvh_tree(blocks)
 
     # copy subtree data into larger tree
+    layer_size = 1
+    current_pos_in_layer = 0
+    first_idx_in_subtree_layer = 0
+    start = subtree_to_replace
     for i in range(subtree.shape[0]):
-        # shift the new set down past the 3 root nodes
-        new_pos = 4 * i + 3 + subtree_to_replace
-        bvh_tree_buf_copy[new_pos] = subtree[i]
+
+        if current_pos_in_layer == layer_size:
+            layer_size *= 2
+            current_pos_in_layer = 0
+            first_idx_in_layer = 2 * (2 * i + 1) + 1
+            start = first_idx_in_layer + layer_size * subtree_to_replace
+            first_idx_in_subtree_layer = i
+
+        new_idx = i - first_idx_in_subtree_layer + start
+
+        bvh_tree_buf_copy[new_idx] = subtree[i]
+        print("SETTING POSITION ", i,  new_idx)
+        current_pos_in_layer += 1
     # copy new rect data into rect buf
     start = 6 + subtree_size * subtree_to_replace
     for i in range(len(blocks)):
         block_rects = blocks[i].generate_rects()
         for j in range(0, 6):
-            rect_buf_copy[start + 6 * i + j] = block_rects[i] + (blocks[i].material,)
+            rect_buf_copy[start + 6 * i + j] = block_rects[j] + (blocks[i].material,)
 
     # update the parent nodes of the tree
     def recalculate_bounds(idx):
-        bvh_tree_buf_copy["top"][idx] = max(bvh_tree_buf_copy["top"][2 * idx + 1],
-                                            bvh_tree_buf_copy["top"][2 * idx + 2])
-        bvh_tree_buf_copy["bottom"][idx] = max(bvh_tree_buf_copy["bottom"][2 * idx + 1],
-                                               bvh_tree_buf_copy["bottom"][2 * idx + 2])
-
-    recalculate_bounds(subtree // 2)
+        bvh_tree_buf_copy["top"][idx] = get_max(bvh_tree_buf_copy["top"][2 * idx + 1],
+                                                bvh_tree_buf_copy["top"][2 * idx + 2])
+        bvh_tree_buf_copy["bottom"][idx] = get_min(bvh_tree_buf_copy["bottom"][2 * idx + 1],
+                                                   bvh_tree_buf_copy["bottom"][2 * idx + 2])
+    # recalculate the bounds of the node to the left or right of the root
+    recalculate_bounds(subtree_to_replace // 2 + 1)
+    # recalculate the bounds of the root node
     recalculate_bounds(0)
 
     return bvh_tree_buf_copy, rect_buf_copy
@@ -104,18 +124,29 @@ def generate_new_level(level_idx, buf_wrap, materials):
 
 class LevelGenerator:
 
-    def __init__(self, materials, buf_wrap):
-        empty = (True, (0, 0, 0), (0, 0, 0), -1, -1, False)
-        self.buf_wrap = buf_wrap
+    def __init__(self, materials):
         self.materials = materials
+
+        # RECTS initialization
+        rect_empty = ((0, 0, 0), (0, 0, 0), (0, 0, 0), 0)
+        rects = np.array(rect_empty, dtype=rect_type)
+        # num rects possible in hierarchy + 1 for the player
+        rects = rects.repeat(6 * (1 + 2 ** (MAX_TREE_DEPTH_PER_LEVEL + 2)))
+
+        # HIERARCHY initialization
         # we have 4 loaded levels at a time. Generate the top 3 nodes of the tree and keep them
-        hierarchy = np.array([empty, empty, empty], dtype=custom_types.bounding_node_type)
-        hierarchy.reshape(2 ** (MAX_TREE_DEPTH_PER_LEVEL + 2))
-        self.buf_wrap.hierarchy_buf = hierarchy
+        empty_unfilled = (False, (0, 0, 0), (0, 0, 0), -1, -1, False)
+        hierarchy = np.array(empty_unfilled, dtype=bounding_node_type)
+        hierarchy = hierarchy.repeat(2 ** (MAX_TREE_DEPTH_PER_LEVEL + 2))
+        hierarchy["filled"][0:3] = True
+        self.buf_wrap = BufferWrap(rects, hierarchy)
 
     def initialize_world(self):
         for i in range(4):
-            self.buf_wrap.hierarchy_buf, self.buf_wrap.rect_buf = generate_new_level(i, self.buf_wrap, self.materials)
+            self.buf_wrap.hierarchy, self.buf_wrap.rects = generate_new_level(i, self.buf_wrap, self.materials)
+        # for i in range(6, 12):
+        #     print(self.buf_wrap.rects[i])
+        #
 
 
 # split the list in half along the given plane x, y, or z
@@ -141,6 +172,10 @@ def get_max(a, b):
 
 # find the minimum bounding box of the boxes included.
 def get_min_aabb(boxes):
+    # print("__")
+    # for box in boxes:
+    #     print(str(box))
+    # print("__")
     minimum = boxes[0].bottom_corner
     maximum = boxes[0].top_corner
     for box in boxes[1:]:
@@ -184,8 +219,8 @@ def fill_tree_buf(root, buf, root_index):
 
     new_val = (
         True,  # this node has been initialized
-        root.top,
         root.bottom,
+        root.top,
         # most non-leaf branches will not have plane indexes
         root.left if type(root.left) == int else -1,
         root.right if type(root.right) == int else -1,
@@ -198,6 +233,7 @@ def fill_tree_buf(root, buf, root_index):
 
 def generate_bvh_tree(world_rects):
     world_root, depth = branch(world_rects, 0)
+    # print(world_root.print_self(0))
     value_to_fill = (False, (0, 0, 0), (0, 0, 0), -1, -1, False)
     bvh_tree_buf = np.array(value_to_fill, dtype=bounding_node_type)
     bvh_tree_buf = np.repeat(bvh_tree_buf, pow(2, depth) - 1)

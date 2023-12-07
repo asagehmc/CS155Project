@@ -1,6 +1,5 @@
 import math
 
-import keyboard as keyboard
 import numpy as np
 import pygame
 from numpy import array
@@ -48,7 +47,7 @@ def check_plane(plane, moving_rect, x_planes, y_planes, z_planes):
 
 class Player:
     # makes it easier to do collision calculations on an axis index
-    def __init__(self, player_block):
+    def __init__(self, player_block, buf_wrapper):
         self.block = player_block
         bot = player_block.bottom_corner
         top = player_block.top_corner
@@ -58,13 +57,11 @@ class Player:
         self.size = array([x_width, height, z_width], dtype=np.float64)
         self.pos = array([bot[X], bot[Y], bot[Z]], dtype=np.float64)
         self.velocity = array([0, 0, 1], dtype=np.float64)
-        self.world_hierarchy = None
-        self.rects = None
         self.touch_directions = [False, False, False]
+        self.buf_wrap = buf_wrapper
 
     def update_position(self, dt):
         keys = pygame.key.get_pressed()
-
         if keys[pygame.K_d]:
             self.velocity[X] += -XZ_SPEED * dt
         if keys[pygame.K_a]:
@@ -75,7 +72,7 @@ class Player:
             self.velocity[Z] += -XZ_SPEED * dt
         if keys[pygame.K_SPACE] and self.touch_directions[Y] < 0:
             self.velocity[Y] = JUMP_SPEED
-        self.velocity[Y] += -GRAVITY * dt
+        # self.velocity[Y] += -GRAVITY * dt
 
         # determine if we should ever "bounce" in a direction (in case frames go low and we get a high dt force)
         prev_touch_directions = self.touch_directions
@@ -121,7 +118,7 @@ class Player:
                 continue
             inv_axis = 1 / move_vec[axis]
             # get the upper axis coordinate of the leading face in the axis direction
-            player_leading_edge = self.rects[player_wall_indexes[axis]]
+            player_leading_edge = self.buf_wrap.rects[player_wall_indexes[axis]]
             for plane in axis_planes[axis]:
                 plane_pos = plane[BOTTOM][axis]
                 dist_to_travel = plane_pos - player_leading_edge[BOTTOM][axis]
@@ -167,10 +164,6 @@ class Player:
         else:
             self.pos = self.pos + move_vec
 
-    def assign_world_bufs(self, rects, hierarchy):
-        self.rects = rects
-        self.world_hierarchy = hierarchy
-
     # find the planes that the player could possibly collide with
     # (find all planes that exist in a bounding box which intersects with the players movement rect)
     def find_planes(self, moving_rect):
@@ -182,26 +175,25 @@ class Player:
         z_planes = []
         index = 0  # start at left 1 in order to skip player rect
         prev_index = -1
-        tree_size = self.world_hierarchy.shape[0]
+        tree_size = self.buf_wrap.hierarchy.shape[0]
         while True:
             if ((prev_index == index * 2 + 2)  # we are coming from right child
                     or index >= tree_size  # we are outside the tree
-                    or not self.world_hierarchy["filled"][index]  # we are in an empty node
+                    or not self.buf_wrap.hierarchy["filled"][index]  # we are in an empty node
                     # \/ should we continue traversing the tree (only if we overlap or hit a "same" node)
-                    or (not self.world_hierarchy["same"][index] and
-                        not are_blocks_overlapping(moving_rect, (self.world_hierarchy["bottom"][index],
-                                                                 self.world_hierarchy["top"][index])))):
+                    or (not self.buf_wrap.hierarchy["same"][index] and
+                        not are_blocks_overlapping(moving_rect, (self.buf_wrap.hierarchy["bottom"][index],
+                                                                 self.buf_wrap.hierarchy["top"][index])))):
                 prev_index = index
                 index = (index - 1) >> 1
-                print(index, prev_index)
                 if index == -1:
                     break
-            if self.world_hierarchy["plane1"][index] != -1:
+            if self.buf_wrap.hierarchy["plane1"][index] != -1:
                 # pass in the rectangle pointed to by plane1
-                check_plane(self.rects[self.world_hierarchy["plane1"][index]],
+                check_plane(self.buf_wrap.rects[self.buf_wrap.hierarchy["plane1"][index]],
                             moving_rect, x_planes, y_planes, z_planes)
-            if self.world_hierarchy["plane2"][index] != -1:
-                check_plane(self.rects[self.world_hierarchy["plane2"][index]],
+            if self.buf_wrap.hierarchy["plane2"][index] != -1:
+                check_plane(self.buf_wrap.rects[self.buf_wrap.hierarchy["plane2"][index]],
                             moving_rect, x_planes, y_planes, z_planes)
             if prev_index < index:  # coming from parent node, go left
                 prev_index = index

@@ -31,7 +31,7 @@ def generate_rects(corner1, corner2):
 
 
 class Block:
-    def __init__(self, buf_wrap, rect_start, top_corner, bottom_corner, material):
+    def __init__(self, buf_wrap, rect_start, bottom_corner, top_corner, material):
         self.buf_wrap = buf_wrap
         self.rect_start = rect_start
 
@@ -39,30 +39,33 @@ class Block:
         self.bottom_corner = bottom_corner
         self.material = material
 
+    def __str__(self):
+        return f"b[{self.bottom_corner}, {self.top_corner}]"
+
     def generate_rects(self):
         return generate_rects(self.bottom_corner, self.top_corner)
 
     def __get_material(self):
         # all triangles in the block should have the same material
-        return self.buf_wrap.rect_buf["mat"][self.rect_start]
+        return self.buf_wrap.rects["mat"][self.rect_start]
 
     def update_material(self, mat_index):
         # iterate through owned triangles, update material index
         for i in range(self.rect_start, self.rect_start + 6):
-            self.buf_wrap.rect_buf["mat"][i] = mat_index
+            self.buf_wrap.rects["mat"][i] = mat_index
         self.material = mat_index
 
     # using the fact that the order of triangle vertexes comes from this class, so we know the ordering
     def __get_top_corner(self):
-        return self.buf_wrap.rect_buf["top"][self.rect_start + 5]
+        return self.buf_wrap.rects["top"][self.rect_start + 5]
 
     def __get_bottom_corner(self):
-        return self.buf_wrap.rect_buf["bot"][self.rect_start]
+        return self.buf_wrap.rects["bot"][self.rect_start]
 
     def set_corners(self, upper, lower):
         rects = generate_rects(upper, lower)
         for i in range(6):
-            self.buf_wrap.rect_buf[i + self.rect_start] = rects[i] + (self.material,)
+            self.buf_wrap.rects[i + self.rect_start] = rects[i] + (self.material,)
 
     def center(self):
         return np.array(

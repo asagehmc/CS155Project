@@ -1,4 +1,4 @@
-import block
+from block import Block
 import level_generator
 from level_generator import LevelGenerator
 from buf_wrap import BufferWrap
@@ -34,7 +34,7 @@ class World:
     world_data_buf = np.array([], dtype=world_data_type)
 
     # maps material name to it's index in the buffer
-    material_name_index = {}
+    material_name_lookup = {}
 
     # light object dictionary
     game_lights = {}
@@ -86,60 +86,51 @@ class World:
                 self.create_mat(data[0], data[1], data[2], data[3], data[4])
                 data = []
 
-        # generate world bufs:
-
-        # 1 box for the player and then a set amount per level
-        rects_data = np.empty(6 * (1 + 2 ** (level_generator.MAX_TREE_DEPTH_PER_LEVEL + 2)), dtype=rect_type)
-
-        # buffer for the world bounding volume hierarchy (4 branches of max depth)
-        hierarchy_data = np.empty((level_generator.MAX_TREE_DEPTH_PER_LEVEL + 2) ** 2, dtype=bounding_node_type)
-
-        self.buf_wrap = BufferWrap(rects_data, hierarchy_data)
-        self.create_block("PLAYER_BLOCK", (0, 0, 0), (1, 1, 1), "PLAYER_MAT")
 
         # functionality is left in here to have 2+ lights, but we'll leave it at 1 for performance
         self.num_lights = 1
         self.lights_buf = np.array([((0, 0, 0), (1, 1, 0), 1)], dtype=light_type)
         self.game_lights[0] = Light(self.lights_buf, 0)
 
-        self.camera_data_buf = np.array([((0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1))], dtype=camera_data_type)
+        self.camera_data_buf = np.array([((0, 4.5, -4.5), (1, 0, 0), (0, 1, 0), (0, 0, 1))], dtype=camera_data_type)
 
         self.camera = Camera(self.camera_data_buf)
-        if self.player is None:
-            raise Exception("No player block was initialized! \n Create a PLAYER_BLOCK block in world.txt")
-        # get
-        buffer_wrapper = BufferWrap(rects_data, None)
-        generator = LevelGenerator(self.material_name_index, buffer_wrapper)
 
-        bounding_hierarchy, rects_data = generator.initialize_world()
-        self.buf_wrap.bounding_hierarchy = bounding_hierarchy
-        self.buf_wrap.rects_data = rects_data
+        # get
+        generator = LevelGenerator(self.material_name_lookup)
+        # generate player
+        self.buf_wrap = generator.buf_wrap
+        p_block = Block(self.buf_wrap, 0, (-0.5, 1, -3), (0.5, 2, -2), self.material_name_lookup["PLAYER_MAT"])
+        self.player = Player(p_block, self.buf_wrap)
+
+        generator.initialize_world()
+
+
+
         self.world_data_buf = np.array([(self.MAX_VIEW_DISTANCE,
-                                         self.buf_wrap.bounding_hierarchy.shape[0],
+                                         self.buf_wrap.hierarchy.shape[0],
                                          self.num_lights,
                                          self.SHOW_SHADOWS,
                                          self.world_ambient_color,
                                          self.world_background_color,
                                          self.world_ambient_intensity)], dtype=world_data_type)
-        self.player.assign_world_bufs(self.buf_wrap)
-
 
     def create_mat(self, name, ambient, diffuse, specular, spec_power):
         self.materials_buf[self.num_materials_added] = (ambient, diffuse, specular, spec_power)
 
         # store the material's index hashed by material name
         # (for retrieval when creating triangle mat indexes later)
-        self.material_name_index[name] = self.num_materials_added
+        self.material_name_lookup[name] = self.num_materials_added
         self.num_materials_added += 1
 
-
     def update(self, dt):
+        # update world positions
         self.player.update_position(dt)
-        target = self.player.get_center() + [self.player.size[0]/2, 4, -2]
+        target = self.player.get_center() + [0, 4, -2]
         current = self.camera.get_position()
         shift = subtract(target, current)
         # TODO: move this functionality to camera, make it dt smooth
-        self.camera.set_position(current[0] + shift[0] / C_GLIDE,
-                                 current[1] + shift[1] / C_GLIDE,
-                                 current[2] + shift[2] / C_GLIDE)
+        # self.camera.set_position(current[0] + shift[0] / C_GLIDE,
+        #                          current[1] + shift[1] / C_GLIDE,
+        #                          current[2] + shift[2] / C_GLIDE)
         self.camera.set_direction(0, -1, 1)

@@ -1,8 +1,8 @@
 block: block0
-        corner1: -5, -2, -5
-        corner2: 5, 0, 5
+        corner1: 9, 1, 9
+        corner2: 10, 2, 10
         material: green
 block: block0
-        corner1: 0, -0.5, 2
-        corner2: 1, 2, 3
+        corner1: 11, 1, 11
+        corner2: 12, 2, 12
         material: matte_gray
