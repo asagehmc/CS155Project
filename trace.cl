@@ -205,10 +205,10 @@ closest_hit_data check_intersection(__global rect* rects, int index, __private r
 bool intersects_box(__global bounding_node* box, __private ray* ray_cast) {
 
     if (get_global_id(0) == 74748) {
-        printf("BOX BOTTOM: %f %f %f", box->bottom.x, box->bottom.y, box->bottom.z);
-        printf("BOX TOP: %f %f %f", box->top.x, box->top.y, box->top.z);
-        printf("Ray DIR: %f %f %f", ray_cast->dir.x, ray_cast->dir.y, ray_cast->dir.z);
-        printf("BOX POS: %f %f %f", ray_cast->pos.x, ray_cast->pos.y, ray_cast->pos.z);
+        printf("BOX BOTTOM: %f %f %f\n", box->bottom.x, box->bottom.y, box->bottom.z);
+        printf("BOX TOP: %f %f %f\n", box->top.x, box->top.y, box->top.z);
+        printf("Ray DIR: %f %f %f\n", ray_cast->dir.x, ray_cast->dir.y, ray_cast->dir.z);
+        printf("BOX POS: %f %f %f\n", ray_cast->pos.x, ray_cast->pos.y, ray_cast->pos.z);
 
     }
     // Check if the ray is parallel to the axes
@@ -288,8 +288,8 @@ closest_hit_data get_closest_hit(int i,
     }
     while (1) {
         if (get_global_id(0) == 74748) {
-            printf("AAA %d", index);
-            printf("$%d, %d, %d, %d", prev_index == index * 2 + 2, index >= tree_size, !tree[index].initialized, !tree[index].same);
+            printf("AAA %d\n", index);
+            printf("$%d, %d, %d, %d\n", prev_index == index * 2 + 2, index >= tree_size, !tree[index].initialized, !tree[index].same);
 
         }
 

@@ -130,7 +130,7 @@ class World:
         current = self.camera.get_position()
         shift = subtract(target, current)
         # TODO: move this functionality to camera, make it dt smooth
-        # self.camera.set_position(current[0] + shift[0] / C_GLIDE,
-        #                          current[1] + shift[1] / C_GLIDE,
-        #                          current[2] + shift[2] / C_GLIDE)
+        self.camera.set_position(current[0] + shift[0] / C_GLIDE,
+                                 current[1] + shift[1] / C_GLIDE,
+                                 current[2] + shift[2] / C_GLIDE)
         self.camera.set_direction(0, -1, 1)

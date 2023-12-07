@@ -1,6 +1,6 @@
 block: block0
-        corner1: 5, 1, 5
-        corner2: 6, 2, 6
+        corner1: -10, 0, -10
+        corner2: 10, 1.5, 10
         material: blue
 block: block1
         corner1: 7, 1, 7

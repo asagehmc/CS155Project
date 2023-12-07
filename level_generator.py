@@ -86,7 +86,7 @@ def generate_new_level(level_idx, buf_wrap, materials):
     layer_size = 1
     current_pos_in_layer = 0
     first_idx_in_subtree_layer = 0
-    start = subtree_to_replace
+    start = subtree_to_replace + 3
     for i in range(subtree.shape[0]):
 
         if current_pos_in_layer == layer_size:
@@ -147,6 +147,7 @@ class LevelGenerator:
         # for i in range(6, 12):
         #     print(self.buf_wrap.rects[i])
         #
+            print(self.buf_wrap.hierarchy)
 
 
 # split the list in half along the given plane x, y, or z
