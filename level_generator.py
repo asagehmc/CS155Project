@@ -70,9 +70,9 @@ def generate_new_level(level_idx, buf_wrap, materials):
         if begins_with(line, "material:"):
             data.append(line.split(":")[1].strip())
             mat_index = materials[data[3]]
-            offset = (0, 0, 0)
-            bot_corner = get_min(data[1], data[2])
-            top_corner = get_max(data[1], data[2])
+            offset = (0, 0, level_idx * 21)
+            bot_corner = triple_add(get_min(data[1], data[2]), offset)
+            top_corner = triple_add(get_max(data[1], data[2]), offset)
             blocks.append(
                 block.Block(buf_wrap, rect_start_index + num_rects_initialized * 6, bot_corner, top_corner, mat_index))
             data = []
@@ -99,10 +99,9 @@ def generate_new_level(level_idx, buf_wrap, materials):
         new_idx = i - first_idx_in_subtree_layer + start
 
         bvh_tree_buf_copy[new_idx] = subtree[i]
-        print("SETTING POSITION ", i,  new_idx)
         current_pos_in_layer += 1
     # copy new rect data into rect buf
-    start = 6 + subtree_size * subtree_to_replace
+    start = 6 + subtree_size * 6 * subtree_to_replace
     for i in range(len(blocks)):
         block_rects = blocks[i].generate_rects()
         for j in range(0, 6):
@@ -144,10 +143,7 @@ class LevelGenerator:
     def initialize_world(self):
         for i in range(4):
             self.buf_wrap.hierarchy, self.buf_wrap.rects = generate_new_level(i, self.buf_wrap, self.materials)
-        # for i in range(6, 12):
-        #     print(self.buf_wrap.rects[i])
-        #
-            print(self.buf_wrap.hierarchy)
+
 
 
 # split the list in half along the given plane x, y, or z
@@ -173,10 +169,6 @@ def get_max(a, b):
 
 # find the minimum bounding box of the boxes included.
 def get_min_aabb(boxes):
-    # print("__")
-    # for box in boxes:
-    #     print(str(box))
-    # print("__")
     minimum = boxes[0].bottom_corner
     maximum = boxes[0].top_corner
     for box in boxes[1:]:
@@ -234,7 +226,6 @@ def fill_tree_buf(root, buf, root_index):
 
 def generate_bvh_tree(world_rects):
     world_root, depth = branch(world_rects, 0)
-    # print(world_root.print_self(0))
     value_to_fill = (False, (0, 0, 0), (0, 0, 0), -1, -1, False)
     bvh_tree_buf = np.array(value_to_fill, dtype=bounding_node_type)
     bvh_tree_buf = np.repeat(bvh_tree_buf, pow(2, depth) - 1)

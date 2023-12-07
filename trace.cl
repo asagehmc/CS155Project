@@ -204,13 +204,6 @@ closest_hit_data check_intersection(__global rect* rects, int index, __private r
 // credit to chatgpt
 bool intersects_box(__global bounding_node* box, __private ray* ray_cast) {
 
-    if (get_global_id(0) == 74748) {
-        printf("BOX BOTTOM: %f %f %f\n", box->bottom.x, box->bottom.y, box->bottom.z);
-        printf("BOX TOP: %f %f %f\n", box->top.x, box->top.y, box->top.z);
-        printf("Ray DIR: %f %f %f\n", ray_cast->dir.x, ray_cast->dir.y, ray_cast->dir.z);
-        printf("BOX POS: %f %f %f\n", ray_cast->pos.x, ray_cast->pos.y, ray_cast->pos.z);
-
-    }
     // Check if the ray is parallel to the axes
     if (ray_cast->dir.x == 0.0) {
         if (ray_cast->pos.x < box->bottom.x || ray_cast->pos.x > box->top.x) {
@@ -287,11 +280,6 @@ closest_hit_data get_closest_hit(int i,
         printf("\n\n");
     }
     while (1) {
-        if (get_global_id(0) == 74748) {
-            printf("AAA %d\n", index);
-            printf("$%d, %d, %d, %d\n", prev_index == index * 2 + 2, index >= tree_size, !tree[index].initialized, !tree[index].same);
-
-        }
 
         if (prev_index == index * 2 + 2 //if we are coming from a right branch
             || index >= tree_size // we are outside of tree
@@ -299,9 +287,6 @@ closest_hit_data get_closest_hit(int i,
             || (!tree[index].same
                 && !intersects_box(&(tree[index]), ray_cast))) // we are missed by ray cast
         {
-            if (get_global_id(0) == 74748) {
-                printf("BREAKING!");
-            }
             if (index == 0) {
                 break;
             }

@@ -24,7 +24,7 @@ Materials:
         specular_power: 60
     mat: blue
         ambient_color: 0.0, 0, 0.2
-        diffuse_color: 0.0, 0.0, 0.6
+        diffuse_color: 0.1, 0.1, 0.6
         specular_color: 0.2, 0.2, 0.2
         specular_power: 60
     mat: green
