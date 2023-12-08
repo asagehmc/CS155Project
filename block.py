@@ -36,13 +36,14 @@ class Block:
     def __init__(self, buf_wrap, rect_start, bottom_corner, top_corner, material, flags=None):
         self.buf_wrap = buf_wrap
         self.rect_start = rect_start
+        print("INIT", top_corner, bottom_corner)
         self.top_corner = top_corner
         self.bottom_corner = bottom_corner
         self.material = material
         if flags is None:
             flags = []
         self.is_lvl_start = "start" in flags
-        self.is_lvl_end = "end" in flags
+        self.is_lvl_end = "finish" in flags
         self.is_checkpoint = "checkpoint" in flags
 
     def __str__(self):
@@ -96,4 +97,12 @@ class Block:
             [(self.top_corner[0] + self.bottom_corner[0]) / 2,
              self.top_corner[1],
              self.top_corner[2]]
+        )
+
+    def get_near_edge(self):
+        # return the coordinate of the center x, top y, , top z (for placing the next level)
+        return np.array(
+            [(self.top_corner[0] + self.bottom_corner[0]) / 2,
+             self.top_corner[1],
+             self.bottom_corner[2]]
         )

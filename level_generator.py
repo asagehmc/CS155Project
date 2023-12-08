@@ -2,8 +2,10 @@ import os
 import random
 import statistics
 
+import util
 from block import Block
 from buf_wrap import BufferWrap
+from level import Level
 from util import string_to_3tuple, begins_with, triple_add
 
 import numpy as np
@@ -11,7 +13,8 @@ import numpy as np
 from custom_types import bounding_node_type, rect_type
 
 DIFFICULTY_SCALING = 1
-MAX_TREE_DEPTH_PER_LEVEL = 8
+MAX_TREE_DEPTH_PER_LEVEL = 5
+CHECK_D = 3
 
 
 class __TreeNode:
@@ -31,6 +34,7 @@ class __TreeNode:
 
 
 def generate_new_level(level_idx, buf_wrap, materials, prev_level):
+    print("PREV_LEVEL", prev_level)
     subtree_size = 2 ** MAX_TREE_DEPTH_PER_LEVEL
     # make a copy since we don't want to affect these until completion
     bvh_tree_buf_copy = np.copy(buf_wrap.hierarchy)
@@ -56,12 +60,11 @@ def generate_new_level(level_idx, buf_wrap, materials, prev_level):
             lines.append(line.strip())
             if begins_with(line, "block:"):
                 num_rects += 6
-    data = []
+    data = [None, None, None, None, None]
     blocks = []
     rect_start_index = 6 * (1 + subtree_size * subtree_to_replace)
     num_rects_initialized = 0
-    has_start = False
-    has_end = False
+
     for line in lines:
         if begins_with(line, "block:"):
             data[0] = line.split(":")[1].strip()
@@ -76,7 +79,7 @@ def generate_new_level(level_idx, buf_wrap, materials, prev_level):
             data[4] = line.split(":")[1].strip()
             mat_index = materials[data[4]]
             bot_corner = get_min(data[2], data[3])
-            top_corner = get_max(data[2], data[4])
+            top_corner = get_max(data[2], data[3])
             blocks.append(
                 Block(buf_wrap, rect_start_index + num_rects_initialized * 6,
                       bot_corner, top_corner, mat_index, data[1]))
@@ -92,14 +95,29 @@ def generate_new_level(level_idx, buf_wrap, materials, prev_level):
     if start_block is None:
         raise Exception(f"Level {dirpath} must have a block with a 'start' flag")
     if end_block is None:
-        raise Exception(f"Level {dirpath} must have a block with a 'end' flag")
+        raise Exception(f"Level {dirpath} must have a block with a 'finish' flag")
 
     # add in checkpoint blocks here!
+    offset = (0, 0, 0)
     if prev_level is not None:
-        offset = prev_level.get_offset_for_next()
+        print("AAA", prev_level.get_offset_for_next())
+        print("BBB", (0, 0, 6))
+        print("CCC", start_block.get_near_edge())
 
-    #TODO
-    level = None
+        offset = util.triple_add(prev_level.get_offset_for_next(), (0, 0, 3))
+        offset = util.triple_sub(offset, start_block.get_near_edge())
+    for block in blocks:
+        block.apply_offset(offset)
+
+    # buf_wrap, rect_start, bottom_corner, top_corner, material, flags=None
+    checkpoint_block = Block(buf_wrap, rect_start_index + num_rects_initialized * 6,
+                             (-1.5, 0, CHECK_D), (1.5, 1, 3 + CHECK_D),
+                             materials["CHECKPOINT1"], ["checkpoint"])
+    num_rects_initialized += 1
+    checkpoint_block.apply_offset(end_block.get_far_edge())
+    blocks.append(checkpoint_block)
+
+    level = Level(buf_wrap, subtree_to_replace, checkpoint_block, start_block, end_block)
 
     if (len(blocks) < 2) or len(blocks) > 128:
         raise Exception(f"A level must have between 1 and 127 blocks! (has {len(blocks)})")
@@ -168,6 +186,8 @@ class LevelGenerator:
             prev = levels[i - 1 % 4]
             self.buf_wrap.hierarchy, self.buf_wrap.rects, level = generate_new_level(i, self.buf_wrap, self.materials, prev)
             levels[i] = level
+            print(self.buf_wrap.hierarchy)
+            print(self.buf_wrap.rects)
         return levels
 
 # split the list in half along the given plane x, y, or z

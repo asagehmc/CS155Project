@@ -1,8 +1,9 @@
 block: block0
-        corner1: -5, -2, -5
-        corner2: 5, 0, 5
-        material: matte_gray
+    flags: start, finish
+    corner1: -5, -2, -5
+    corner2: 5, 0, 5
+    material: matte_gray
 block: block0
-        corner1: 0, -0.5, 2
-        corner2: 1, 2, 3
-        material: matte_gray
+    corner1: 0, -0.5, 2
+    corner2: 1, 2, 3
+    material: matte_gray
