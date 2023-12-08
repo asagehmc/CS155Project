@@ -2,7 +2,7 @@ import os
 import random
 import statistics
 
-import block
+from block import Block
 from buf_wrap import BufferWrap
 from util import string_to_3tuple, begins_with, triple_add
 
@@ -11,7 +11,7 @@ import numpy as np
 from custom_types import bounding_node_type, rect_type
 
 DIFFICULTY_SCALING = 1
-MAX_TREE_DEPTH_PER_LEVEL = 4
+MAX_TREE_DEPTH_PER_LEVEL = 8
 
 
 class __TreeNode:
@@ -30,7 +30,7 @@ class __TreeNode:
                     " " + str(self.right) + " "))
 
 
-def generate_new_level(level_idx, buf_wrap, materials):
+def generate_new_level(level_idx, buf_wrap, materials, prev_level):
     subtree_size = 2 ** MAX_TREE_DEPTH_PER_LEVEL
     # make a copy since we don't want to affect these until completion
     bvh_tree_buf_copy = np.copy(buf_wrap.hierarchy)
@@ -60,25 +60,49 @@ def generate_new_level(level_idx, buf_wrap, materials):
     blocks = []
     rect_start_index = 6 * (1 + subtree_size * subtree_to_replace)
     num_rects_initialized = 0
+    has_start = False
+    has_end = False
     for line in lines:
         if begins_with(line, "block:"):
-            data.append(line.split(":")[1].strip())
+            data[0] = line.split(":")[1].strip()
+        if begins_with(line, "flags:"):
+            flags = line.split(":")[1].split(",")
+            data[1] = [x.strip() for x in flags]
         if begins_with(line, "corner1:"):
-            data.append(string_to_3tuple(line.split(":")[1].strip()))
+            data[2] = string_to_3tuple(line.split(":")[1].strip())
         if begins_with(line, "corner2:"):
-            data.append(string_to_3tuple(line.split(":")[1].strip()))
+            data[3] = string_to_3tuple(line.split(":")[1].strip())
         if begins_with(line, "material:"):
-            data.append(line.split(":")[1].strip())
-            mat_index = materials[data[3]]
-            offset = (0, 0, level_idx * 21)
-            bot_corner = triple_add(get_min(data[1], data[2]), offset)
-            top_corner = triple_add(get_max(data[1], data[2]), offset)
+            data[4] = line.split(":")[1].strip()
+            mat_index = materials[data[4]]
+            bot_corner = get_min(data[2], data[3])
+            top_corner = get_max(data[2], data[4])
             blocks.append(
-                block.Block(buf_wrap, rect_start_index + num_rects_initialized * 6, bot_corner, top_corner, mat_index))
-            data = []
+                Block(buf_wrap, rect_start_index + num_rects_initialized * 6,
+                      bot_corner, top_corner, mat_index, data[1]))
+            data = [None, None, None, None, None]
             num_rects_initialized += 1
+    start_block = None
+    end_block = None
+    for block in blocks:
+        if block.is_lvl_start:
+            start_block = block
+        if block.is_lvl_end:
+            end_block = block
+    if start_block is None:
+        raise Exception(f"Level {dirpath} must have a block with a 'start' flag")
+    if end_block is None:
+        raise Exception(f"Level {dirpath} must have a block with a 'end' flag")
+
+    # add in checkpoint blocks here!
+    if prev_level is not None:
+        offset = prev_level.get_offset_for_next()
+
+    #TODO
+    level = None
+
     if (len(blocks) < 2) or len(blocks) > 128:
-        raise Exception(f"A level must have between 2 and 128 blocks! (has {len(blocks)})")
+        raise Exception(f"A level must have between 1 and 127 blocks! (has {len(blocks)})")
     # generate the subtree
     subtree = generate_bvh_tree(blocks)
 
@@ -88,7 +112,6 @@ def generate_new_level(level_idx, buf_wrap, materials):
     first_idx_in_subtree_layer = 0
     start = subtree_to_replace + 3
     for i in range(subtree.shape[0]):
-
         if current_pos_in_layer == layer_size:
             layer_size *= 2
             current_pos_in_layer = 0
@@ -118,7 +141,7 @@ def generate_new_level(level_idx, buf_wrap, materials):
     # recalculate the bounds of the root node
     recalculate_bounds(0)
 
-    return bvh_tree_buf_copy, rect_buf_copy
+    return bvh_tree_buf_copy, rect_buf_copy, level
 
 
 class LevelGenerator:
@@ -140,11 +163,12 @@ class LevelGenerator:
         hierarchy["filled"][0:3] = True
         self.buf_wrap = BufferWrap(rects, hierarchy)
 
-    def initialize_world(self):
+    def initialize_world(self, levels):
         for i in range(4):
-            self.buf_wrap.hierarchy, self.buf_wrap.rects = generate_new_level(i, self.buf_wrap, self.materials)
-
-
+            prev = levels[i - 1 % 4]
+            self.buf_wrap.hierarchy, self.buf_wrap.rects, level = generate_new_level(i, self.buf_wrap, self.materials, prev)
+            levels[i] = level
+        return levels
 
 # split the list in half along the given plane x, y, or z
 def partition(tree_list, axis_index):

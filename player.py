@@ -79,7 +79,7 @@ class Player:
         self.touch_directions = [0, 0, 0]
         self.move(self.velocity * dt, prev_touch_directions, dt)
         # update graphics positions
-        self.block.set_corners(self.pos, self.pos + self.size)
+        self.block.set_buf_corners(self.pos, self.pos + self.size)
         for i in range(0, 3):
             # slow the player down a bit, more if shifting
             self.velocity[i] *= math.pow((SPEED_DECAY_SHIFTED if keys[pygame.K_LSHIFT] else SPEED_DECAY)[i], dt)

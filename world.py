@@ -1,7 +1,5 @@
 from block import Block
-import level_generator
 from level_generator import LevelGenerator
-from buf_wrap import BufferWrap
 from camera import Camera
 from custom_types import *
 from light import Light
@@ -95,7 +93,7 @@ class World:
         self.camera_data_buf = np.array([((0, 4.5, -4.5), (1, 0, 0), (0, 1, 0), (0, 0, 1))], dtype=camera_data_type)
 
         self.camera = Camera(self.camera_data_buf)
-
+        self.levels = [None, None, None, None]
         # get
         generator = LevelGenerator(self.material_name_lookup)
         # generate player
@@ -103,7 +101,7 @@ class World:
         p_block = Block(self.buf_wrap, 0, (-0.5, 1, -3), (0.5, 2, -2), self.material_name_lookup["PLAYER_MAT"])
         self.player = Player(p_block, self.buf_wrap)
 
-        generator.initialize_world()
+        self.levels = generator.initialize_world(self.levels)
 
         self.world_data_buf = np.array([(self.MAX_VIEW_DISTANCE,
                                          self.buf_wrap.hierarchy.shape[0],

@@ -2,6 +2,8 @@
 # (with buffer offset included)
 import numpy as np
 
+import util
+
 
 def generate_rects(corner1, corner2):
     # get corners that are highest/lowest in x, y and z directions
@@ -31,13 +33,17 @@ def generate_rects(corner1, corner2):
 
 
 class Block:
-    def __init__(self, buf_wrap, rect_start, bottom_corner, top_corner, material):
+    def __init__(self, buf_wrap, rect_start, bottom_corner, top_corner, material, flags=None):
         self.buf_wrap = buf_wrap
         self.rect_start = rect_start
-
         self.top_corner = top_corner
         self.bottom_corner = bottom_corner
         self.material = material
+        if flags is None:
+            flags = []
+        self.is_lvl_start = "start" in flags
+        self.is_lvl_end = "end" in flags
+        self.is_checkpoint = "checkpoint" in flags
 
     def __str__(self):
         return f"b[{self.bottom_corner}, {self.top_corner}]"
@@ -62,7 +68,12 @@ class Block:
     def __get_bottom_corner(self):
         return self.buf_wrap.rects["bot"][self.rect_start]
 
-    def set_corners(self, upper, lower):
+    def apply_offset(self, offset):
+        # for use in level generation, so we don't need to update buffer yet
+        self.top_corner = util.triple_add(offset, self.top_corner)
+        self.bottom_corner = util.triple_add(offset, self.bottom_corner)
+
+    def set_buf_corners(self, upper, lower):
         rects = generate_rects(upper, lower)
         for i in range(6):
             self.buf_wrap.rects[i + self.rect_start] = rects[i] + (self.material,)
@@ -78,3 +89,11 @@ class Block:
         if index > 5 or index < 0:
             raise Exception("Invalid get_rect index " + str(index))
         return index + self.rect_start
+
+    def get_far_edge(self):
+        # return the coordinate of the center x, top y, , top z (for placing the next level)
+        return np.array(
+            [(self.top_corner[0] + self.bottom_corner[0]) / 2,
+             self.top_corner[1],
+             self.top_corner[2]]
+        )

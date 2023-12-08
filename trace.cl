@@ -276,9 +276,6 @@ closest_hit_data get_closest_hit(int i,
     int index = 0;
     int prev_index = -1;
     closest_hit_data out = {INFINITY, -1};
-    if (get_global_id(0) == 74748) {
-        printf("\n\n");
-    }
     while (1) {
 
         if (prev_index == index * 2 + 2 //if we are coming from a right branch
