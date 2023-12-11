@@ -1,3 +1,6 @@
+import threading
+
+import level_generator
 import util
 from block import Block
 from level_generator import LevelGenerator
@@ -16,6 +19,23 @@ DEATH_DIST = 4
 
 def subtract(v1, v2):
     return np.array([v1[0] - v2[0], v1[1] - v2[1], v1[2] - v2[2]])
+
+
+def threaded_call_level_generate(output, level_idx, buf_wrap, materials, prev_level):
+    tree_buf, rect_buf, new_level, game_blocks = level_generator.generate_new_level(level_idx, buf_wrap,
+                                                                                    materials, prev_level)
+    output.tree_buf = tree_buf
+    output.rect_buf = rect_buf
+    output.new_level = new_level
+    output.game_blocks = game_blocks
+    print("THREAD ENDED!")
+
+
+class LevelGenOutput:
+    tree_buf = None
+    rect_buf = None
+    new_level = None
+    game_blocks = None
 
 
 class World:
@@ -49,7 +69,10 @@ class World:
         self.num_materials_added = 0
         self.num_player_deaths = 0
         self.level_num = 0
-
+        self.num_levels_to_regenerate = 0
+        self.level_regen_thread = None
+        self.level_gen_output = None
+        self.highest_level = 3
         self.player = None
         mat_lines = []
         world_lines = []
@@ -130,17 +153,37 @@ class World:
 
         # update checkpoints
         for block in self.player.touching_blocks:
+            print(block.is_checkpoint, block.level, " ==", self.level_num % 4)
             if (block.is_checkpoint
-                    and block.level == self.level_num % 4
+                    and block.level == self.level_num
                     and block.center()[Z] > self.checkpoint[Z]):
-                block.update_material(self.material_name_lookup["CHECKPOINT2"])
-                self.checkpoint = util.triple_add((0, 5, 0), block.center())
-                self.level_num += 1
+                self.update_checkpoint(block)
             elif block.level == self.level_num + 1:
-                checkpoint_block = self.levels[self.level_num].checkpoint_block
-                checkpoint_block.update_material(self.material_name_lookup["CHECKPOINT2"])
-                self.checkpoint = util.triple_add((0, 5, 0), checkpoint_block.center())
-                self.level_num += 1
+                checkpoint_block = self.levels[self.level_num % 4].checkpoint_block
+                self.update_checkpoint(checkpoint_block)
+        # do we need to regenerate levels, and we haven't started yet?
+        if self.num_levels_to_regenerate > 0 and self.level_regen_thread is None:
+            if self.highest_level > 4:
+                self.level_gen_output = LevelGenOutput()
+                self.level_regen_thread = threading.Thread(target=threaded_call_level_generate,
+                                                           args=(self.level_gen_output,
+                                                                 self.highest_level - 3, self.buf_wrap,
+                                                                 self.material_name_lookup,
+                                                                 self.levels[self.highest_level % 4]))
+                self.level_regen_thread.start()
+            else:
+                self.highest_level += 1
+
+        # Has the thread completed? if so, update the world!
+        if self.level_regen_thread is not None and not self.level_regen_thread.is_alive():
+            print("FINISHED RELOADING!")
+            self.buf_wrap.hierarchy = self.level_gen_output.tree_buf
+            self.buf_wrap.rects = self.level_gen_output.rect_buf
+            self.buf_wrap.game_blocks = self.level_gen_output.game_blocks
+            self.highest_level += 1
+            self.levels[self.highest_level % 4] = self.level_gen_output.new_level
+            self.level_regen_thread = None
+            self.num_levels_to_regenerate -= 1
 
         # let player die
         if self.player.get_center()[Y] < self.buf_wrap.hierarchy["bottom"][0][Y] - DEATH_DIST:
@@ -156,3 +199,11 @@ class World:
                                  current[1] + shift[1] / C_GLIDE,
                                  current[2] + shift[2] / C_GLIDE)
         self.camera.set_direction(0, -1, 1)
+
+    def update_checkpoint(self, block):
+        # handle checkpoint stuff
+        block.update_material(self.material_name_lookup["CHECKPOINT2"])
+        self.checkpoint = util.triple_add((0, 5, 0), block.center())
+        self.level_num += 1
+        # start loading next level
+        self.num_levels_to_regenerate += 1

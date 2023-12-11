@@ -34,6 +34,10 @@ class __TreeNode:
 
 
 def generate_new_level(level_idx, buf_wrap, materials, prev_level):
+    if prev_level is not None:
+        print("replacing level idx", level_idx)
+        print("prev_level: ", prev_level.subtree_idx)
+
     subtree_size = 2 ** MAX_TREE_DEPTH_PER_LEVEL
     # make a copy since we don't want to affect these until completion
     bvh_tree_buf_copy = np.copy(buf_wrap.hierarchy)
@@ -164,8 +168,8 @@ def generate_new_level(level_idx, buf_wrap, materials, prev_level):
     return bvh_tree_buf_copy, rect_buf_copy, level, game_blocks_copy
 
 
+# TODO: we should probably make this not an object, it doesn't really need to be one.
 class LevelGenerator:
-
     def __init__(self, materials):
         self.materials = materials
 
