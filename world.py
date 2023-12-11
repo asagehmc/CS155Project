@@ -153,7 +153,6 @@ class World:
 
         # update checkpoints
         for block in self.player.touching_blocks:
-            print(block.is_checkpoint, block.level, " ==", self.level_num % 4)
             if (block.is_checkpoint
                     and block.level == self.level_num
                     and block.center()[Z] > self.checkpoint[Z]):

@@ -12,7 +12,7 @@ import numpy as np
 
 from custom_types import bounding_node_type, rect_type
 
-DIFFICULTY_SCALING = 1
+DIFFICULTY_SCALING = 5
 MAX_TREE_DEPTH_PER_LEVEL = 5
 CHECK_D = 3
 
@@ -34,10 +34,6 @@ class __TreeNode:
 
 
 def generate_new_level(level_idx, buf_wrap, materials, prev_level):
-    if prev_level is not None:
-        print("replacing level idx", level_idx)
-        print("prev_level: ", prev_level.subtree_idx)
-
     subtree_size = 2 ** MAX_TREE_DEPTH_PER_LEVEL
     # make a copy since we don't want to affect these until completion
     bvh_tree_buf_copy = np.copy(buf_wrap.hierarchy)
@@ -55,11 +51,10 @@ def generate_new_level(level_idx, buf_wrap, materials, prev_level):
     # we cycle through subtrees to overwrite
     base_difficulty = level_idx / DIFFICULTY_SCALING
     # randomize the difficulty of the world a little bit
-    # difficulty = (2.51 * (random.random() - 0.5)) ** 7 + base_difficulty
-    # # bound it
-    # difficulty = max(1, difficulty)
-    # difficulty = min(5, difficulty)
-    difficulty = min(5, level_idx + 1)
+    difficulty = (2.51 * (random.random() - 0.5)) ** 7 + base_difficulty
+    # bound it
+    difficulty = max(1, difficulty)
+    difficulty = min(5, difficulty)
     dirpath = f"./world_data/{int(difficulty)}/"
     print(dirpath)
     filepath = dirpath + random.choice([f for f in os.listdir(dirpath)])
