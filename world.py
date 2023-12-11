@@ -1,3 +1,4 @@
+import util
 from block import Block
 from level_generator import LevelGenerator
 from camera import Camera
@@ -9,6 +10,8 @@ from util import string_to_3tuple, begins_with
 C_GLIDE = 6
 MAT_PATH = "./world_data/materials.txt"
 LEVEL_PATH = "./world_data/1/world.txt"
+X, Y, Z = 0, 1, 2
+DEATH_DIST = 4
 
 
 def subtract(v1, v2):
@@ -41,9 +44,11 @@ class World:
     def __init__(self):
         data = []
         self.num_rects = 0
-
+        self.checkpoint = (0, 5, 0)
         self.num_materials = 0
         self.num_materials_added = 0
+        self.num_player_deaths = 0
+        self.level_num = 0
 
         self.player = None
         mat_lines = []
@@ -124,8 +129,23 @@ class World:
         self.player.update_position(dt)
 
         # update checkpoints
-        for i in range(4):
-            pass
+        for block in self.player.touching_blocks:
+            if (block.is_checkpoint
+                    and block.level == self.level_num % 4
+                    and block.center()[Z] > self.checkpoint[Z]):
+                block.update_material(self.material_name_lookup["CHECKPOINT2"])
+                self.checkpoint = util.triple_add((0, 5, 0), block.center())
+                self.level_num += 1
+            elif block.level == self.level_num + 1:
+                checkpoint_block = self.levels[self.level_num].checkpoint_block
+                checkpoint_block.update_material(self.material_name_lookup["CHECKPOINT2"])
+                self.checkpoint = util.triple_add((0, 5, 0), checkpoint_block.center())
+                self.level_num += 1
+
+        # let player die
+        if self.player.get_center()[Y] < self.buf_wrap.hierarchy["bottom"][0][Y] - DEATH_DIST:
+            self.player.set_position(self.checkpoint)
+            self.num_player_deaths += 1
 
         # move camera
         target = self.player.get_center() + [0, 4, -2]

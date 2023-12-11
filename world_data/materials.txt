@@ -8,10 +8,15 @@ Materials:
         specular_color: 0.05, 0.4, 0.05
         specular_power: 20
     mat: CHECKPOINT1
-        ambient_color: 0.03, 0.1, 0.1
+        ambient_color: 0.1, 0.03, 0.1
         diffuse_color: 0.4, 0.1, 0.4
         specular_color: 0.05, 0.4, 0.05
         specular_power: 20
+    mat: CHECKPOINT2
+        ambient_color: 0.2, 0.2, 0
+        diffuse_color: 0.4, 0.4, 0.4
+        specular_color: 0.05, 0.4, 0.0
+        specular_power: 10
     mat: shiny_gray
         ambient_color: 0.2, 0.2, 0.2
         diffuse_color: 0.6, 0.6, 0.6

@@ -3,6 +3,8 @@ import math
 import numpy as np
 import pygame
 from numpy import array
+
+import util
 from custom_types import TOP, BOTTOM, NORMAL
 
 X = 0
@@ -10,7 +12,7 @@ Y = 1
 Z = 2
 BOUNCE = 0.3  # 0 to 1 with 1 being highest
 XZ_SPEED = 30
-JUMP_SPEED = 30  #
+JUMP_SPEED = 30  #30
 SPEED_DECAY = [0.05, 0.999, 0.05]  # closer to zero is faster decay
 SPEED_DECAY_SHIFTED = [0.0001, 0.999, 0.0001]  # closer to zero is faster decay
 
@@ -58,8 +60,13 @@ class Player:
         z_width = top[Z] - bot[Z]
         self.size = array([x_width, height, z_width], dtype=np.float64)
         self.pos = array([bot[X], bot[Y], bot[Z]], dtype=np.float64)
-        self.velocity = array([0, 0, 1], dtype=np.float64)
+        self.velocity = array([0, 0, 0], dtype=np.float64)
         self.buf_wrap = buf_wrapper
+
+    def set_position(self, pos):
+        self.pos = util.triple_sub(pos, self.size/2)
+        self.velocity = array([0, 0, 0], dtype=np.float64)
+        self.block.set_buf_corners(self.pos, self.pos + self.size)
 
     def update_position(self, dt):
         keys = pygame.key.get_pressed()
@@ -150,7 +157,7 @@ class Player:
                     closest_hit_pos = plane_pos
                     closest_hit_block = block_idx
         if closest_hit_axis != -1:
-            self.touching_blocks.append(closest_hit_block)
+            self.touching_blocks.append(self.buf_wrap.game_blocks[closest_hit_block])
             # move until collision
             self.pos = self.pos + move_vec * closest_hit_scalar
             # lock this position to exactly the collision location to fix for floating pt error
