@@ -34,21 +34,28 @@ class __TreeNode:
 
 
 def generate_new_level(level_idx, buf_wrap, materials, prev_level):
-    print("PREV_LEVEL", prev_level)
     subtree_size = 2 ** MAX_TREE_DEPTH_PER_LEVEL
     # make a copy since we don't want to affect these until completion
     bvh_tree_buf_copy = np.copy(buf_wrap.hierarchy)
     rect_buf_copy = np.copy(buf_wrap.rects)
+    game_blocks_copy = buf_wrap.game_blocks.copy()
 
-    # we cycle through subtrees to overwrite
+    # erase old game Blocks
     subtree_to_replace = level_idx % 4
+    rect_start_index = 6 * (1 + subtree_size * subtree_to_replace)
+    # delete the Block objects for the old tree
+    if prev_level is not None:
+        for i in range(1 + subtree_size * subtree_to_replace, 1 + subtree_size * (subtree_to_replace + 1)):
+            if i in game_blocks_copy:
+                del game_blocks_copy[i]
+    # we cycle through subtrees to overwrite
     base_difficulty = level_idx / DIFFICULTY_SCALING
     # randomize the difficulty of the world a little bit
     # difficulty = (2.51 * (random.random() - 0.5)) ** 7 + base_difficulty
     # # bound it
     # difficulty = max(1, difficulty)
     # difficulty = min(5, difficulty)
-    difficulty = level_idx + 1
+    difficulty = min(5, level_idx + 1)
     dirpath = f"./world_data/{int(difficulty)}/"
     print(dirpath)
     filepath = dirpath + random.choice([f for f in os.listdir(dirpath)])
@@ -62,7 +69,6 @@ def generate_new_level(level_idx, buf_wrap, materials, prev_level):
                 num_rects += 6
     data = [None, None, None, None, None]
     blocks = []
-    rect_start_index = 6 * (1 + subtree_size * subtree_to_replace)
     num_rects_initialized = 0
 
     for line in lines:
@@ -81,8 +87,8 @@ def generate_new_level(level_idx, buf_wrap, materials, prev_level):
             bot_corner = get_min(data[2], data[3])
             top_corner = get_max(data[2], data[3])
             blocks.append(
-                Block(buf_wrap, rect_start_index + num_rects_initialized * 6,
-                      bot_corner, top_corner, mat_index, data[1]))
+                Block(data[0], buf_wrap, rect_start_index + num_rects_initialized * 6,
+                      bot_corner, top_corner, mat_index, level_idx, data[1]))
             data = [None, None, None, None, None]
             num_rects_initialized += 1
     start_block = None
@@ -100,19 +106,15 @@ def generate_new_level(level_idx, buf_wrap, materials, prev_level):
     # add in checkpoint blocks here!
     offset = (0, 0, 0)
     if prev_level is not None:
-        print("AAA", prev_level.get_offset_for_next())
-        print("BBB", (0, 0, 6))
-        print("CCC", start_block.get_near_edge())
-
         offset = util.triple_add(prev_level.get_offset_for_next(), (0, 0, 3))
         offset = util.triple_sub(offset, start_block.get_near_edge())
     for block in blocks:
         block.apply_offset(offset)
 
     # buf_wrap, rect_start, bottom_corner, top_corner, material, flags=None
-    checkpoint_block = Block(buf_wrap, rect_start_index + num_rects_initialized * 6,
+    checkpoint_block = Block(f"CHECKPOINT{subtree_to_replace}", buf_wrap, rect_start_index + num_rects_initialized * 6,
                              (-1.5, 0, CHECK_D), (1.5, 1, 3 + CHECK_D),
-                             materials["CHECKPOINT1"], ["checkpoint"])
+                             materials["CHECKPOINT1"], level_idx, ["checkpoint"])
     num_rects_initialized += 1
     checkpoint_block.apply_offset(end_block.get_far_edge())
     blocks.append(checkpoint_block)
@@ -136,7 +138,6 @@ def generate_new_level(level_idx, buf_wrap, materials, prev_level):
             first_idx_in_layer = 2 * (2 * i + 1) + 1
             start = first_idx_in_layer + layer_size * subtree_to_replace
             first_idx_in_subtree_layer = i
-
         new_idx = i - first_idx_in_subtree_layer + start
 
         bvh_tree_buf_copy[new_idx] = subtree[i]
@@ -145,6 +146,7 @@ def generate_new_level(level_idx, buf_wrap, materials, prev_level):
     start = 6 + subtree_size * 6 * subtree_to_replace
     for i in range(len(blocks)):
         block_rects = blocks[i].generate_rects()
+        game_blocks_copy[1 + i + subtree_size * subtree_to_replace] = blocks[i]
         for j in range(0, 6):
             rect_buf_copy[start + 6 * i + j] = block_rects[j] + (blocks[i].material,)
 
@@ -159,7 +161,7 @@ def generate_new_level(level_idx, buf_wrap, materials, prev_level):
     # recalculate the bounds of the root node
     recalculate_bounds(0)
 
-    return bvh_tree_buf_copy, rect_buf_copy, level
+    return bvh_tree_buf_copy, rect_buf_copy, level, game_blocks_copy
 
 
 class LevelGenerator:
@@ -179,16 +181,16 @@ class LevelGenerator:
         hierarchy = np.array(empty_unfilled, dtype=bounding_node_type)
         hierarchy = hierarchy.repeat(2 ** (MAX_TREE_DEPTH_PER_LEVEL + 2))
         hierarchy["filled"][0:3] = True
-        self.buf_wrap = BufferWrap(rects, hierarchy)
+        self.buf_wrap = BufferWrap(rects, hierarchy, {})
 
     def initialize_world(self, levels):
         for i in range(4):
-            prev = levels[i - 1 % 4]
-            self.buf_wrap.hierarchy, self.buf_wrap.rects, level = generate_new_level(i, self.buf_wrap, self.materials, prev)
+            prev_level = levels[i - 1 % 4]
+            self.buf_wrap.hierarchy, self.buf_wrap.rects, level, self.buf_wrap.game_blocks = \
+                generate_new_level(i, self.buf_wrap, self.materials, prev_level)
             levels[i] = level
-            print(self.buf_wrap.hierarchy)
-            print(self.buf_wrap.rects)
         return levels
+
 
 # split the list in half along the given plane x, y, or z
 def partition(tree_list, axis_index):

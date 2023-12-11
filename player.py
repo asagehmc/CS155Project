@@ -35,18 +35,20 @@ def are_blocks_overlapping(rect1, rect2, axis_to_ignore=-1):
     return x_intersect and y_intersect and z_intersect
 
 
-def check_plane(plane, moving_rect, x_planes, y_planes, z_planes):
+def check_plane(plane, moving_rect, block_idx, x_planes, y_planes, z_planes):
     if are_blocks_overlapping((plane[BOTTOM], plane[TOP]), moving_rect):
         if plane[NORMAL][X] != 0:
-            x_planes.append(plane)
+            x_planes.append((plane, block_idx))
         elif plane[NORMAL][Y] != 0:
-            y_planes.append(plane)
+            y_planes.append((plane, block_idx))
         else:
-            z_planes.append(plane)
+            z_planes.append((plane, block_idx))
 
 
 class Player:
-    # makes it easier to do collision calculations on an axis index
+    touch_directions = [False, False, False]
+    touching_blocks = []
+
     def __init__(self, player_block, buf_wrapper):
         self.block = player_block
         bot = player_block.bottom_corner
@@ -57,7 +59,6 @@ class Player:
         self.size = array([x_width, height, z_width], dtype=np.float64)
         self.pos = array([bot[X], bot[Y], bot[Z]], dtype=np.float64)
         self.velocity = array([0, 0, 1], dtype=np.float64)
-        self.touch_directions = [False, False, False]
         self.buf_wrap = buf_wrapper
 
     def update_position(self, dt):
@@ -77,6 +78,7 @@ class Player:
         # determine if we should ever "bounce" in a direction (in case frames go low and we get a high dt force)
         prev_touch_directions = self.touch_directions
         self.touch_directions = [0, 0, 0]
+        self.touching_blocks = []
         self.move(self.velocity * dt, prev_touch_directions, dt)
         # update graphics positions
         self.block.set_buf_corners(self.pos, self.pos + self.size)
@@ -113,13 +115,14 @@ class Player:
         closest_hit_scalar = -1
         closest_hit_pos = 0
         closest_y_hit_dist_sq = -1
+        closest_hit_block = -1
         for axis in range(3):
             if move_vec[axis] == 0:
                 continue
             inv_axis = 1 / move_vec[axis]
             # get the upper axis coordinate of the leading face in the axis direction
             player_leading_edge = self.buf_wrap.rects[player_wall_indexes[axis]]
-            for plane in axis_planes[axis]:
+            for plane, block_idx in axis_planes[axis]:
                 plane_pos = plane[BOTTOM][axis]
                 dist_to_travel = plane_pos - player_leading_edge[BOTTOM][axis]
                 move_vec_scalar = inv_axis * dist_to_travel
@@ -145,7 +148,10 @@ class Player:
                     closest_hit_axis = axis
                     closest_hit_scalar = move_vec_scalar
                     closest_hit_pos = plane_pos
+                    closest_hit_block = block_idx
         if closest_hit_axis != -1:
+            self.touching_blocks.append(closest_hit_block)
+            # move until collision
             self.pos = self.pos + move_vec * closest_hit_scalar
             # lock this position to exactly the collision location to fix for floating pt error
             self.pos[closest_hit_axis] = closest_hit_pos -\
@@ -190,11 +196,13 @@ class Player:
                     break
             if self.buf_wrap.hierarchy["plane1"][index] != -1:
                 # pass in the rectangle pointed to by plane1
+                block_idx = self.buf_wrap.hierarchy["plane1"][index] // 6
                 check_plane(self.buf_wrap.rects[self.buf_wrap.hierarchy["plane1"][index]],
-                            moving_rect, x_planes, y_planes, z_planes)
+                            moving_rect, block_idx, x_planes, y_planes, z_planes)
             if self.buf_wrap.hierarchy["plane2"][index] != -1:
+                block_idx = self.buf_wrap.hierarchy["plane2"][index] // 6
                 check_plane(self.buf_wrap.rects[self.buf_wrap.hierarchy["plane2"][index]],
-                            moving_rect, x_planes, y_planes, z_planes)
+                            moving_rect, block_idx, x_planes, y_planes, z_planes)
             if prev_index < index:  # coming from parent node, go left
                 prev_index = index
                 index = index * 2 + 1

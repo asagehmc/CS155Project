@@ -33,10 +33,11 @@ def generate_rects(corner1, corner2):
 
 
 class Block:
-    def __init__(self, buf_wrap, rect_start, bottom_corner, top_corner, material, flags=None):
+    def __init__(self, name, buf_wrap, rect_start, bottom_corner, top_corner, material, level=None, flags=None):
+        self.level = level
+        self.name = name
         self.buf_wrap = buf_wrap
         self.rect_start = rect_start
-        print("INIT", top_corner, bottom_corner)
         self.top_corner = top_corner
         self.bottom_corner = bottom_corner
         self.material = material

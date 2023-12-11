@@ -84,7 +84,6 @@ class World:
                 self.create_mat(data[0], data[1], data[2], data[3], data[4])
                 data = []
 
-
         # functionality is left in here to have 2+ lights, but we'll leave it at 1 for performance
         self.num_lights = 1
         self.lights_buf = np.array([((0, 0, 0), (1, 1, 1), 1)], dtype=light_type)
@@ -98,7 +97,8 @@ class World:
         generator = LevelGenerator(self.material_name_lookup)
         # generate player
         self.buf_wrap = generator.buf_wrap
-        p_block = Block(self.buf_wrap, 0, (-0.5, 1, -3), (0.5, 2, -2), self.material_name_lookup["PLAYER_MAT"])
+        p_block = Block("PLAYER", self.buf_wrap, 0, (-0.5, 1, -0.5), (0.5, 2, 0.5),
+                        self.material_name_lookup["PLAYER_MAT"])
         self.player = Player(p_block, self.buf_wrap)
 
         self.levels = generator.initialize_world(self.levels)
@@ -122,6 +122,12 @@ class World:
     def update(self, dt):
         # update world positions
         self.player.update_position(dt)
+
+        # update checkpoints
+        for i in range(4):
+            pass
+
+        # move camera
         target = self.player.get_center() + [0, 4, -2]
         current = self.camera.get_position()
         shift = subtract(target, current)
