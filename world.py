@@ -15,7 +15,7 @@ MAT_PATH = "./world_data/materials.txt"
 LEVEL_PATH = "world_data/2/world1.txt"
 X, Y, Z = 0, 1, 2
 DEATH_DIST = 4
-CAN_DIE = True
+CAN_DIE = False
 LIGHT_INTENSITY = 5
 NUM_LIVES = 5
 
@@ -24,13 +24,14 @@ def subtract(v1, v2):
     return np.array([v1[0] - v2[0], v1[1] - v2[1], v1[2] - v2[2]])
 
 
-def threaded_call_level_generate(output, level_idx, buf_wrap, materials, prev_level):
-    tree_buf, rect_buf, new_level, game_blocks = level_generator.generate_new_level(level_idx, buf_wrap,
+def threaded_call_level_generate(output, level_idx_to_replace, buf_wrap, materials, prev_level):
+    tree_buf, rect_buf, new_level, game_blocks = level_generator.generate_new_level(level_idx_to_replace, buf_wrap,
                                                                                     materials, prev_level)
     output.tree_buf = tree_buf
     output.rect_buf = rect_buf
     output.new_level = new_level
     output.game_blocks = game_blocks
+    print("DONE WITH THREAD!")
 
 
 class LevelGenOutput:
@@ -45,7 +46,7 @@ class World:
     world_background_color = (0, 0, 0)
     world_ambient_intensity = 0
     SHOW_SHADOWS = True
-    MAX_VIEW_DISTANCE = 30
+    MAX_VIEW_DISTANCE = 25
 
     # buffer for world triangles
     rects_data = np.array([], dtype=rect_type)
@@ -166,16 +167,18 @@ class World:
                 self.update_checkpoint(checkpoint_block)
         # do we need to regenerate levels, and we haven't started yet?
         if self.num_levels_to_regenerate > 0 and self.level_regen_thread is None:
-            if self.highest_level > 4:
+            print("NUM LEVELS TO REGENERATE", self.num_levels_to_regenerate)
+            if self.level_num > 1:
                 self.level_gen_output = LevelGenOutput()
+                print("CURRENT LEVEL", self.level_num)
+
                 self.level_regen_thread = threading.Thread(target=threaded_call_level_generate,
                                                            args=(self.level_gen_output,
-                                                                 self.highest_level - 3, self.buf_wrap,
+                                                                 self.level_num - 2,  # level to replace
+                                                                 self.buf_wrap,
                                                                  self.material_name_lookup,
-                                                                 self.levels[self.highest_level % 4]))
+                                                                 self.levels[(self.level_num + 1) % 4]))  # prev level
                 self.level_regen_thread.start()
-            else:
-                self.highest_level += 1
 
         # Has the thread completed? if so, update the world!
         if self.level_regen_thread is not None and not self.level_regen_thread.is_alive():
@@ -214,6 +217,9 @@ class World:
         # handle checkpoint stuff
         block.update_material(self.material_name_lookup["CHECKPOINT2"])
         self.checkpoint = util.triple_add((0, 5, 0), block.center())
-        self.level_num += 1
         # start loading next level
-        self.num_levels_to_regenerate += 1
+        self.level_num += 1
+        print("UPDATING SELF LEVELNUM", self.level_num)
+        if self.level_num > 1:
+            self.num_levels_to_regenerate += 1
+

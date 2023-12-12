@@ -43,7 +43,6 @@ class Block:
         self.material = material
         if flags is None:
             flags = []
-        print(flags)
         self.is_lvl_start = "start" in flags
         self.is_lvl_end = "finish" in flags
         self.is_checkpoint = "checkpoint" in flags

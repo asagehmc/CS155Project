@@ -92,6 +92,6 @@ if __name__ == '__main__':
         text_surface = font.render(text, False, (255, 255, 255))
         screen.blit(text_surface, (SCREEN_WIDTH-60, 10))
         pygame.display.flip()
-        clock.tick()
+        clock.tick(60)
 
     pygame.quit()
