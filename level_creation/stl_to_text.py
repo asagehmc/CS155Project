@@ -113,6 +113,7 @@ for folder in os.listdir(path):
             out_str += f"        corner1: {join_with_commas(block[2])}\n"
             out_str += f"        corner2: {join_with_commas(block[3])}\n"
             out_str += f"        material: {block[4]}\n"
+            out_str += f"        reflectivity: 0\n"
         print(out_str)
         with open(f"./materials_and_objects/{folder}/{folder}.txt", 'w') as file:
             file.write(out_str)

@@ -28,7 +28,6 @@ def threaded_call_level_generate(output, level_idx, buf_wrap, materials, prev_le
     output.rect_buf = rect_buf
     output.new_level = new_level
     output.game_blocks = game_blocks
-    print("THREAD ENDED!")
 
 
 class LevelGenOutput:
@@ -177,7 +176,6 @@ class World:
 
         # Has the thread completed? if so, update the world!
         if self.level_regen_thread is not None and not self.level_regen_thread.is_alive():
-            print("FINISHED RELOADING!")
             self.buf_wrap.hierarchy = self.level_gen_output.tree_buf
             self.buf_wrap.rects = self.level_gen_output.rect_buf
             self.buf_wrap.game_blocks = self.level_gen_output.game_blocks

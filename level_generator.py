@@ -57,7 +57,6 @@ def generate_new_level(level_idx, buf_wrap, materials, prev_level):
     difficulty = min(5, difficulty)
     dirpath = f"./world_data/{int(difficulty)}/"
     filepath = dirpath + random.choice([f for f in os.listdir(dirpath)])
-    print(filepath)
     lines = []
     num_rects = 0
     with open(filepath, 'r') as file:
@@ -195,7 +194,6 @@ class LevelGenerator:
 def partition(tree_list, axis_index):
     data = [x.center()[axis_index] for x in tree_list]
     median = statistics.median(data)
-    print(median)
     low, high = [], []
     flip = 0
     for x in tree_list:
@@ -253,9 +251,7 @@ def branch(boxes, axis_index):
                           left=boxC, right=box.get_rect_index(5), same=True)
         return __TreeNode(get_min_aabb(boxes), boxA, boxD, False), 3
     else:
-        print("CALLING PARTITION ON", boxes)
         low, high = partition(boxes, axis_index)
-        print("low, ", low, "high", high)
         left, depth1 = branch(low, (axis_index + 1) % 3)
         right, depth2 = branch(high, (axis_index + 1) % 3)
     return __TreeNode(get_min_aabb(boxes), left, right), max(depth1, depth2) + 1

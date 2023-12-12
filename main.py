@@ -14,7 +14,7 @@ SCREEN_HEIGHT = 300
 
 OUTPUT_SIZE = SCREEN_HEIGHT * SCREEN_WIDTH
 
-CAN_DIE = True
+CAN_DIE = False
 
 # Pygame initialization
 pygame.init()

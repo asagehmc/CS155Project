@@ -12,7 +12,7 @@ Y = 1
 Z = 2
 BOUNCE = 0.3  # 0 to 1 with 1 being highest
 XZ_SPEED = 30
-JUMP_SPEED = 30  #30
+JUMP_SPEED = 30  # 30
 SPEED_DECAY = [0.05, 0.999, 0.05]  # closer to zero is faster decay
 SPEED_DECAY_SHIFTED = [0.0001, 0.999, 0.0001]  # closer to zero is faster decay
 
