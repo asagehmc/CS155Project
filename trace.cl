@@ -362,7 +362,7 @@ vector get_hit_color(__private vector* origin,
         vector light_pos = lights[i].position;
         vector to_light = ppminus(&light_pos, &intersection_point);
         float magnitude = pnormalize(&to_light);
-
+        float intensity = lights[i].intensity;
 
         bool do_specular_diffuse = true;
         if (world->show_shadows) {
@@ -395,6 +395,7 @@ vector get_hit_color(__private vector* origin,
             light = ppsum(&diffuse, &light);
             light = ppsum(&specular, &light);
         }
+        light = pCmult(&light, intensity/magnitude);
     }
     return light;
 }
