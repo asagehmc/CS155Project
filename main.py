@@ -14,8 +14,6 @@ SCREEN_HEIGHT = 300
 
 OUTPUT_SIZE = SCREEN_HEIGHT * SCREEN_WIDTH
 
-CAN_DIE = True
-
 # Pygame initialization
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -57,18 +55,6 @@ if __name__ == '__main__':
             if event.type == QUIT:
                 running = False
         dt = 1/clock.get_fps() if clock.get_fps() > 0 else 0
-
-        # set light position move towards previous checkpoint
-        x += 2*dt
-        player_pos = world.player.get_center()
-        world.game_lights[0].set_position(player_pos[0] + 2*np.sin(x), world.checkpoint[1] + 5, player_pos[2] + 2*np.cos(x))
-    
-        # set light intensity to decrease with player deaths
-        world.game_lights[0].set_intensity(max(5 - world.num_player_deaths, 0))
-
-        # kill if 5 deaths
-        if world.num_player_deaths >= 5 and CAN_DIE:
-            pygame.quit()
 
         # prepare device memory for input
         rect_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.buf_wrap.rects)
