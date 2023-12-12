@@ -109,7 +109,9 @@ class World:
                 data.append(string_to_3tuple(line.split(":")[1].strip()))
             if begins_with(line, "specular_power:"):
                 data.append(int(line.split(":")[1].strip()))
-                self.create_mat(data[0], data[1], data[2], data[3], data[4])
+            if begins_with(line, "reflectivity:"):
+                data.append(float(line.split(":")[1].strip()))
+                self.create_mat(data[0], data[1], data[2], data[3], data[4], data[5])
                 data = []
 
         # functionality is left in here to have 2+ lights, but we'll leave it at 1 for performance
@@ -139,8 +141,8 @@ class World:
                                          self.world_background_color,
                                          self.world_ambient_intensity)], dtype=world_data_type)
 
-    def create_mat(self, name, ambient, diffuse, specular, spec_power):
-        self.materials_buf[self.num_materials_added] = (ambient, diffuse, specular, spec_power)
+    def create_mat(self, name, ambient, diffuse, specular, spec_power, reflectivity):
+        self.materials_buf[self.num_materials_added] = (ambient, diffuse, specular, spec_power, reflectivity)
 
         # store the material's index hashed by material name
         # (for retrieval when creating triangle mat indexes later)

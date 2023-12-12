@@ -24,6 +24,7 @@ typedef struct {
     vector diffuse_color;
     vector specular_color;
     int specular_power;
+    float reflectivity;
 } material;
 
 
@@ -444,11 +445,12 @@ __kernel void trace_rays(__global rect* rects,
     }
 
     if (closest_rect != -1) {
+        rect rectangle = rects[closest_rect];
         vector light = get_hit_color(&origin, &ray_cast, closest_rect, closest_hit,
                                      world, rects, materials, lights, bounding_hierarchy);
 
         // Get portion of reflection color.
-        if (rects[closest_rect].mat == 500) {
+        if (materials[rectangle.mat].reflectivity > 0.0) {
             vector travel_vec = pCmult(&(ray_cast.dir), closest_hit);
             vector intersection_point = ppsum(&origin, &travel_vec);
             vector normal = rects[closest_rect].normal;
@@ -471,7 +473,7 @@ __kernel void trace_rays(__global rect* rects,
             // Add portion of color.
             vector reflect_color = get_hit_color(&origin, &ray_cast, closest_rect, closest_hit,
                                     world, rects, materials, lights, bounding_hierarchy);
-            reflect_color = pCmult(&reflect_color, 0.3);
+            reflect_color = pCmult(&reflect_color, materials[rectangle.mat].reflectivity);
             light = ppsum(&light, &reflect_color);
         }
         
