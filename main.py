@@ -51,6 +51,11 @@ if __name__ == '__main__':
     running = True
     while running:
 
+        # set light position to move around player
+        x += 2*dt
+        player_pos = world.player.get_center()
+        world.game_lights[0].set_position(player_pos[0] + 2*np.sin(x), world.checkpoint[1] + 5, player_pos[2] + 2*np.cos(x))
+
         for event in pygame.event.get():
             if event.type == QUIT:
                 running = False

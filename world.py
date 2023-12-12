@@ -201,12 +201,7 @@ class World:
                                  current[1] + shift[1] / C_GLIDE,
                                  current[2] + shift[2] / C_GLIDE)
         self.camera.set_direction(0, -1, 1)
-        
-        # set light position move towards previous checkpoint
-        x += 2*dt
-        player_pos = world.player.get_center()
-        world.game_lights[0].set_position(player_pos[0] + 2*np.sin(x), world.checkpoint[1] + 5, player_pos[2] + 2*np.cos(x))
-    
+            
         # set light intensity to decrease with player deaths
         if CAN_DIE:
             world.game_lights[0].set_intensity(max(5 - world.num_player_deaths, 0))
