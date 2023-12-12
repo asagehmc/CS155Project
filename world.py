@@ -109,12 +109,14 @@ class World:
                 data.append(string_to_3tuple(line.split(":")[1].strip()))
             if begins_with(line, "specular_power:"):
                 data.append(int(line.split(":")[1].strip()))
-                self.create_mat(data[0], data[1], data[2], data[3], data[4])
+            if begins_with(line, "reflectivity:"):
+                data.append(float(line.split(":")[1].strip()))
+                self.create_mat(data[0], data[1], data[2], data[3], data[4], data[5])
                 data = []
 
         # functionality is left in here to have 2+ lights, but we'll leave it at 1 for performance
         self.num_lights = 1
-        self.lights_buf = np.array([((0, 0, 0), (1, 1, 1), 1)], dtype=light_type)
+        self.lights_buf = np.array([((0, 5, 0), (1, 1, 1), 5)], dtype=light_type)
         self.game_lights[0] = Light(self.lights_buf, 0)
 
         self.camera_data_buf = np.array([((0, 4.5, -4.5), (1, 0, 0), (0, 1, 0), (0, 0, 1))], dtype=camera_data_type)
@@ -139,8 +141,8 @@ class World:
                                          self.world_background_color,
                                          self.world_ambient_intensity)], dtype=world_data_type)
 
-    def create_mat(self, name, ambient, diffuse, specular, spec_power):
-        self.materials_buf[self.num_materials_added] = (ambient, diffuse, specular, spec_power)
+    def create_mat(self, name, ambient, diffuse, specular, spec_power, reflectivity):
+        self.materials_buf[self.num_materials_added] = (ambient, diffuse, specular, spec_power, reflectivity)
 
         # store the material's index hashed by material name
         # (for retrieval when creating triangle mat indexes later)

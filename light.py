@@ -13,3 +13,6 @@ class Light:
     def set_position_tuple(self, tuple):
         self.light_buffer[self.light_index]["position"] = tuple
 
+    def set_intensity(self, intensity):
+        self.light_buffer[self.light_index]["intensity"] = intensity
+

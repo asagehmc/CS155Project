@@ -24,6 +24,7 @@ typedef struct {
     vector diffuse_color;
     vector specular_color;
     int specular_power;
+    float reflectivity;
 } material;
 
 
@@ -276,6 +277,16 @@ closest_hit_data get_closest_hit(int i,
     int index = 0;
     int prev_index = -1;
     closest_hit_data out = {INFINITY, -1};
+
+    // always check the player's rectangles
+    for (int i = 0; i < 6; i++) {
+        closest_hit_data player_rect_hit = check_intersection(rects, i, ray_cast);
+        if (player_rect_hit.distance < out.distance) {
+            out.closest_rect = i;
+            out.distance = player_rect_hit.distance;
+        }
+    }
+
     while (1) {
 
         if (prev_index == index * 2 + 2 //if we are coming from a right branch
@@ -324,6 +335,71 @@ closest_hit_data get_closest_hit(int i,
 }
 
 
+vector get_hit_color(__private vector* origin,
+                     __private ray* ray_cast,
+                     int closest_rect,
+                     float closest_hit,
+                     __global world_data* world,
+                     __global rect* rects,
+                     __global material* materials,
+                     __global light* lights,
+                     __global bounding_node* bounding_hierarchy) {
+    // copy important data to __private scope
+    rect rectangle = rects[closest_rect];
+    vector normal = rectangle.normal;
+    material mat = materials[rectangle.mat];
+
+    vector travel_vec = pCmult(&(ray_cast->dir), closest_hit);
+    vector intersection_point = ppsum(origin, &travel_vec);
+
+    //get ambient light
+    vector ambient_and_world = gpmult(&(world->world_ambient_color), &(mat.ambient_color));
+    vector light = pCmult(&ambient_and_world, world->world_ambient_intensity);
+    //get ambient & specular light
+    for (int i = 0; i < world->num_lights; ++i) {
+        // setup required vector data
+        vector light_color = lights[i].color;
+        vector light_pos = lights[i].position;
+        vector to_light = ppminus(&light_pos, &intersection_point);
+        float magnitude = pnormalize(&to_light);
+        float intensity = lights[i].intensity;
+
+        bool do_specular_diffuse = true;
+        if (world->show_shadows) {
+            // check for shadows a (bit) in front of the plane to avoid floating error of colliding with one's own wall
+            vector mini_normal = pCmult(&normal, 0.001);
+            vector front_plane = ppsum(&intersection_point, &mini_normal);
+            ray ray_cast = {front_plane, to_light};
+
+            closest_hit_data shadow_hit = get_closest_hit(0, bounding_hierarchy,
+                                                            world->bounding_hierarchy_size,
+                                                            rects, &ray_cast, magnitude, true);
+            if (shadow_hit.closest_rect != -1) {
+                do_specular_diffuse = false;
+            }
+        }
+
+        if (do_specular_diffuse) {
+            // get diffuse color
+            vector diffuse = pCmult(&light_color, fmax(ppdot(&normal, &to_light), 0));
+            diffuse = ppmult(&mat.diffuse_color, &diffuse);
+
+            // construct the reflection vector
+            vector reflected = pCmult(&normal, ppdot(&to_light, &normal));
+            reflected = pCmult(&reflected, 2);
+            reflected = ppminus(&reflected, &to_light);
+
+            vector specular = pCmult(&light_color, pow(fmax(-ppdot(&ray_cast->dir, &reflected), 0), mat.specular_power));
+            specular = ppmult(&mat.specular_color, &specular);
+
+            light = ppsum(&diffuse, &light);
+            light = ppsum(&specular, &light);
+        }
+        light = pCmult(&light, intensity/magnitude);
+    }
+    return light;
+}
+
 __kernel void trace_rays(__global rect* rects,
                          __global light* lights,
                          __global camera_data* camera,
@@ -360,14 +436,6 @@ __kernel void trace_rays(__global rect* rects,
     // index for the closest rectangle hit
     int closest_rect = -1;
     float closest_hit = INFINITY;
-    // always check the player's rectangles
-    for (int i = 0; i < 6; i++) {
-        closest_hit_data player_rect_hit = check_intersection(rects, i, &ray_cast);
-        if (player_rect_hit.distance < closest_hit) {
-            closest_rect = i;
-            closest_hit = player_rect_hit.distance;
-        }
-    }
 
     closest_hit_data hit = get_closest_hit(0, bounding_hierarchy,
                                            world->bounding_hierarchy_size,
@@ -377,67 +445,45 @@ __kernel void trace_rays(__global rect* rects,
         closest_hit = hit.distance;
     }
 
-
-
     if (closest_rect != -1) {
-        // copy important data to __private scope
         rect rectangle = rects[closest_rect];
-        vector normal = rectangle.normal;
-        material mat = materials[rectangle.mat];
+        vector light = get_hit_color(&origin, &ray_cast, closest_rect, closest_hit,
+                                     world, rects, materials, lights, bounding_hierarchy);
 
-        vector travel_vec = pCmult(&(ray_cast.dir), closest_hit);
-        vector intersection_point = ppsum(&origin, &travel_vec);
+        // Get portion of reflection color.
+        if (materials[rectangle.mat].reflectivity > 0.0) {
+            vector travel_vec = pCmult(&(ray_cast.dir), closest_hit);
+            vector intersection_point = ppsum(&origin, &travel_vec);
+            vector normal = rects[closest_rect].normal;
+            vector mini_normal = pCmult(&normal, 0.001);
+            vector front_plane = ppsum(&intersection_point, &mini_normal);
 
-        //get ambient light
-        vector ambient_and_world = gpmult(&(world->world_ambient_color), &(mat.ambient_color));
-        vector light = pCmult(&ambient_and_world, world->world_ambient_intensity);
-        //get ambient & specular light
-        for (int i = 0; i < world->num_lights; ++i) {
-            // setup required vector data
-            vector light_color = lights[i].color;
-            vector light_pos = lights[i].position;
-            vector to_light = ppminus(&light_pos, &intersection_point);
-            float magnitude = pnormalize(&to_light);
+            // Get reflected vector.
+            vector reflected = pCmult(&normal, ppdot(&ray_cast.dir, &normal));
+            reflected = pCmult(&reflected, 2);
+            reflected = ppminus(&ray_cast.dir, &reflected);
+            
+            // Get ray hit.
+            ray ray_cast = {front_plane, reflected};
+            hit = get_closest_hit(0, bounding_hierarchy,
+                                world->bounding_hierarchy_size,
+                                rects, &ray_cast, world->max_view_distance, false);
+            closest_rect = hit.closest_rect;
+            closest_hit = hit.distance;
 
-
-            bool do_specular_diffuse = true;
-            if (world->show_shadows) {
-                // check for shadows a (bit) in front of the plane to avoid floating error of colliding with one's own wall
-                vector mini_normal = pCmult(&normal, 0.001);
-                vector front_plane = ppsum(&intersection_point, &mini_normal);
-                ray ray_cast = {front_plane, to_light};
-
-                closest_hit_data shadow_hit = get_closest_hit(0, bounding_hierarchy,
-                                                              world->bounding_hierarchy_size,
-                                                              rects, &ray_cast, magnitude, true);
-                if (shadow_hit.closest_rect != -1) {
-                    do_specular_diffuse = false;
-                }
-            }
-
-            if (do_specular_diffuse) {
-                // get diffuse color
-                vector diffuse = pCmult(&light_color, fmax(ppdot(&normal, &to_light), 0));
-                diffuse = ppmult(&mat.diffuse_color, &diffuse);
-
-                // construct the reflection vector
-                vector reflected = pCmult(&normal, ppdot(&to_light, &normal));
-                reflected = pCmult(&reflected, 2);
-                reflected = ppminus(&reflected, &to_light);
-
-                vector specular = pCmult(&light_color, pow(fmax(-ppdot(&ray_cast.dir, &reflected), 0), mat.specular_power));
-                specular = ppmult(&mat.specular_color, &specular);
-
-                light = ppsum(&diffuse, &light);
-                light = ppsum(&specular, &light);
-            }
-
+            // Add portion of color.
+            vector reflect_color = get_hit_color(&origin, &ray_cast, closest_rect, closest_hit,
+                                    world, rects, materials, lights, bounding_hierarchy);
+            reflect_color = pCmult(&reflect_color, materials[rectangle.mat].reflectivity);
+            light = ppsum(&light, &reflect_color);
         }
+        
         out[global_id].r = fmin(light.x, 1) * 255;
         out[global_id].g = fmin(light.y, 1) * 255;
         out[global_id].b = fmin(light.z, 1) * 255;
         return;
     }
+
     out[global_id].r = world->world_background_color.x * 255;
     out[global_id].g = world->world_background_color.y * 255;
     out[global_id].b = world->world_background_color.z * 255;
