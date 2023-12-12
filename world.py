@@ -114,7 +114,7 @@ class World:
 
         # functionality is left in here to have 2+ lights, but we'll leave it at 1 for performance
         self.num_lights = 1
-        self.lights_buf = np.array([((0, 0, 0), (1, 1, 1), 1)], dtype=light_type)
+        self.lights_buf = np.array([((0, 5, 0), (1, 1, 1), 1)], dtype=light_type)
         self.game_lights[0] = Light(self.lights_buf, 0)
 
         self.camera_data_buf = np.array([((0, 4.5, -4.5), (1, 0, 0), (0, 1, 0), (0, 0, 1))], dtype=camera_data_type)

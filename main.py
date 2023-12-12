@@ -56,12 +56,10 @@ if __name__ == '__main__':
                 running = False
         dt = 1/clock.get_fps() if clock.get_fps() > 0 else 0
 
-        world.game_lights[0].set_position(5 * math.sin(x), 5, 5 * math.cos(x))
-        # world.camera.set_position(3 * math.sin(x), 2 * math.cos(x/4), 3 * math.cos(x))
-        # world.camera.set_direction(-3 * math.sin(x), -2 * math.cos(x/4), -3 * math.cos(x))
+        light_pos = world.game_lights[0].get_position()
+        if abs(world.checkpoint[2] - light_pos[2]) > 0.1 and (pygame.time.get_ticks() % 10) == 0:
+            world.game_lights[0].set_position(light_pos[0], world.checkpoint[1] + 5, (world.checkpoint[2] + light_pos[2]) / 2)
 
-        # light_data[0]["position"] = (2 * math.sin(x), -2 + 2 * math.cos(x), 3)
-        x += 2 * dt
         # prepare device memory for input
 
         rect_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.buf_wrap.rects)
