@@ -16,6 +16,8 @@ LEVEL_PATH = "world_data/2/world1.txt"
 X, Y, Z = 0, 1, 2
 DEATH_DIST = 4
 CAN_DIE = True
+LIGHT_INTENSITY = 5
+NUM_LIVES = 5
 
 
 def subtract(v1, v2):
@@ -202,10 +204,10 @@ class World:
             
         # set light intensity to decrease with player deaths
         if CAN_DIE:
-            world.game_lights[0].set_intensity(max(5 - world.num_player_deaths, 0))
+            self.game_lights[0].set_intensity(max(LIGHT_INTENSITY - self.num_player_deaths * (LIGHT_INTENSITY/NUM_LIVES), 0))
 
         # kill if 5 deaths
-        if world.num_player_deaths >= 5 and CAN_DIE:
+        if self.num_player_deaths >= NUM_LIVES and CAN_DIE:
             pygame.quit()
 
     def update_checkpoint(self, block):
