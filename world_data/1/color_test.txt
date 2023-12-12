@@ -1,0 +1,146 @@
+block: block0
+        corner1: -1.5, -3.5, 5.5
+        corner2: -0.5, -2.5, 6.5
+        material: DARK_BLUE
+block: block1
+        corner1: -0.5, -3.5, 5.5
+        corner2: 0.5, -2.5, 6.5
+        material: BLUE
+block: block2
+        corner1: -1.5, -3.5, 7.5
+        corner2: -0.5, -2.5, 8.5
+        material: DARK_GREEN
+block: block3
+        corner1: -1.5, -3.5, 4.5
+        corner2: -0.5, -2.5, 5.5
+        material: DARK_NAVY
+block: block4
+        corner1: -1.5, -3.5, 6.5
+        corner2: -0.5, -2.5, 7.5
+        material: DARK_CYAN
+block: block5
+        corner1: -1.5, -3.5, -0.5
+        corner2: -0.5, -2.5, 0.5
+        material: DARK_ASH
+block: block6
+        corner1: -0.5, -3.5, 4.5
+        corner2: 0.5, -2.5, 5.5
+        material: NAVY
+block: block7
+        corner1: -0.5, -3.5, 7.5
+        corner2: 0.5, -2.5, 8.5
+        material: GREEN
+block: block8
+        corner1: -1.5, -3.5, 3.5
+        corner2: -0.5, -2.5, 4.5
+        material: DARK_PURPLE
+block: block9
+        corner1: -1.5, -3.5, 1.5
+        corner2: -0.5, -2.5, 2.5
+        material: DARK_BROWN
+block: block10
+        flags: start
+        corner1: -0.5, -3.5, -0.5
+        corner2: 0.5, -2.5, 0.5
+        material: ASH
+block: block11
+        corner1: -0.5, -3.5, 6.5
+        corner2: 0.5, -2.5, 7.5
+        material: CYAN
+block: block12
+        corner1: -0.5, -3.5, 3.5
+        corner2: 0.5, -2.5, 4.5
+        material: PURPLE
+block: block13
+        corner1: 0.5, -3.5, 5.5
+        corner2: 1.5, -2.5, 6.5
+        material: BLUE_LIGHT
+block: block14
+        corner1: -1.5, -3.5, 2.5
+        corner2: -0.5, -2.5, 3.5
+        material: DARK_PINK
+block: block15
+        corner1: -1.5, -3.5, 10.5
+        corner2: -0.5, -2.5, 11.5
+        material: DARK_RED
+block: block16
+        corner1: 0.5, -3.5, -0.5
+        corner2: 1.5, -2.5, 0.5
+        material: ASH_LIGHT
+block: block17
+        corner1: -0.5, -3.5, 1.5
+        corner2: 0.5, -2.5, 2.5
+        material: BROWN
+block: block18
+        corner1: 0.5, -3.5, 4.5
+        corner2: 1.5, -2.5, 5.5
+        material: NAVY_LIGHT
+block: block19
+        corner1: 0.5, -3.5, 6.5
+        corner2: 1.5, -2.5, 7.5
+        material: CYAN_LIGHT
+block: block20
+        corner1: -1.5, -3.5, 0.5
+        corner2: -0.5, -2.5, 1.5
+        material: DARK_GRAY
+block: block21
+        corner1: 0.5, -3.5, 7.5
+        corner2: 1.5, -2.5, 8.5
+        material: GREEN_LIGHT
+block: block22
+        corner1: 0.5, -3.5, 3.5
+        corner2: 1.5, -2.5, 4.5
+        material: PURPLE_LIGHT
+block: block23
+        corner1: -0.5, -3.5, 2.5
+        corner2: 0.5, -2.5, 3.5
+        material: PINK
+block: block24
+        corner1: -0.5, -3.5, 0.5
+        corner2: 0.5, -2.5, 1.5
+        material: GRAY
+block: block25
+        corner1: -1.5, -3.5, 8.5
+        corner2: -0.5, -2.5, 9.5
+        material: DARK_YELLOW
+block: block26
+        corner1: 0.5, -3.5, 1.5
+        corner2: 1.5, -2.5, 2.5
+        material: BROWN_LIGHT
+block: block27
+        corner1: -1.5, -3.5, 9.5
+        corner2: -0.5, -2.5, 10.5
+        material: DARK_ORANGE
+block: block28
+        flags: finish
+        corner1: -0.5, -3.5, 10.5
+        corner2: 0.5, -2.5, 11.5
+        material: RED
+block: block29
+        corner1: 0.5, -3.5, 10.5
+        corner2: 1.5, -2.5, 11.5
+        material: RED_LIGHT
+block: block30
+        corner1: 0.5, -3.5, 2.5
+        corner2: 1.5, -2.5, 3.5
+        material: PINK_LIGHT
+block: block31
+        corner1: -0.5, -3.5, 9.5
+        corner2: 0.5, -2.5, 10.5
+        material: ORANGE
+block: block32
+        corner1: 0.5, -3.5, 8.5
+        corner2: 1.5, -2.5, 9.5
+        material: YELLOW_LIGHT
+block: block33
+        corner1: 0.5, -3.5, 0.5
+        corner2: 1.5, -2.5, 1.5
+        material: GRAY_LIGHT
+block: block34
+        corner1: 0.5, -3.5, 9.5
+        corner2: 1.5, -2.5, 10.5
+        material: ORANGE_LIGHT
+block: block35
+        corner1: -0.5, -3.5, 8.5
+        corner2: 0.5, -2.5, 9.5
+        material: YELLOW

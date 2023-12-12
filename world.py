@@ -12,7 +12,7 @@ from util import string_to_3tuple, begins_with
 
 C_GLIDE = 6
 MAT_PATH = "./world_data/materials.txt"
-LEVEL_PATH = "./world_data/1/world.txt"
+LEVEL_PATH = "world_data/2/world1.txt"
 X, Y, Z = 0, 1, 2
 DEATH_DIST = 4
 

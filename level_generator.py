@@ -13,7 +13,7 @@ import numpy as np
 from custom_types import bounding_node_type, rect_type
 
 DIFFICULTY_SCALING = 1
-MAX_TREE_DEPTH_PER_LEVEL = 5
+MAX_TREE_DEPTH_PER_LEVEL = 10
 CHECK_D = 3
 
 
@@ -56,8 +56,8 @@ def generate_new_level(level_idx, buf_wrap, materials, prev_level):
     difficulty = max(1, difficulty)
     difficulty = min(5, difficulty)
     dirpath = f"./world_data/{int(difficulty)}/"
-    print(dirpath)
     filepath = dirpath + random.choice([f for f in os.listdir(dirpath)])
+    print(filepath)
     lines = []
     num_rects = 0
     with open(filepath, 'r') as file:
@@ -98,9 +98,9 @@ def generate_new_level(level_idx, buf_wrap, materials, prev_level):
         if block.is_lvl_end:
             end_block = block
     if start_block is None:
-        raise Exception(f"Level {dirpath} must have a block with a 'start' flag")
+        raise Exception(f"Level {filepath} must have a block with a 'start' flag")
     if end_block is None:
-        raise Exception(f"Level {dirpath} must have a block with a 'finish' flag")
+        raise Exception(f"Level {filepath} must have a block with a 'finish' flag")
 
     # add in checkpoint blocks here!
     offset = (0, 0, 0)
@@ -195,12 +195,22 @@ class LevelGenerator:
 def partition(tree_list, axis_index):
     data = [x.center()[axis_index] for x in tree_list]
     median = statistics.median(data)
+    print(median)
     low, high = [], []
+    flip = 0
     for x in tree_list:
-        if x.center()[axis_index] > median:
-            high.append(x)
+        if flip == 0:
+            if x.center()[axis_index] > median:
+                high.append(x)
+            else:
+                low.append(x)
+            flip = 1
         else:
-            low.append(x)
+            if x.center()[axis_index] >= median:
+                high.append(x)
+            else:
+                low.append(x)
+            flip = 0
     return low, high
 
 
@@ -243,7 +253,9 @@ def branch(boxes, axis_index):
                           left=boxC, right=box.get_rect_index(5), same=True)
         return __TreeNode(get_min_aabb(boxes), boxA, boxD, False), 3
     else:
+        print("CALLING PARTITION ON", boxes)
         low, high = partition(boxes, axis_index)
+        print("low, ", low, "high", high)
         left, depth1 = branch(low, (axis_index + 1) % 3)
         right, depth2 = branch(high, (axis_index + 1) % 3)
     return __TreeNode(get_min_aabb(boxes), left, right), max(depth1, depth2) + 1
