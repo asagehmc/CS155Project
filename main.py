@@ -40,7 +40,7 @@ if __name__ == '__main__':
     out = np.empty(shape=(SCREEN_WIDTH, SCREEN_HEIGHT, 3), dtype=np.uint8)
 
     # create context
-    ctx = cl.create_some_context()
+    ctx = cl.create_some_context(interactive=False)
 
     # build program
     prg = cl.Program(ctx, kernels).build()

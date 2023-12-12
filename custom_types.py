@@ -31,7 +31,8 @@ pixel_pos_type = np.dtype([('pix_x', np.float32), ('pix_y', np.float32)])
 material_type = np.dtype([('ambient_color', vector_type),
                           ('diffuse_color', vector_type),
                           ('specular_color', vector_type),
-                          ('specular_power', np.int32)])
+                          ('specular_power', np.int32),
+                          ('reflectivity', np.float32)])
 
 # camera data struct
 camera_data_type = np.dtype([('position', vector_type),
