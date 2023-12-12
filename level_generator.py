@@ -12,7 +12,7 @@ import numpy as np
 
 from custom_types import bounding_node_type, rect_type
 
-DIFFICULTY_SCALING = 5
+DIFFICULTY_SCALING = 1
 MAX_TREE_DEPTH_PER_LEVEL = 5
 CHECK_D = 3
 
