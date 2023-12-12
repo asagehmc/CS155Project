@@ -14,6 +14,8 @@ SCREEN_HEIGHT = 300
 
 OUTPUT_SIZE = SCREEN_HEIGHT * SCREEN_WIDTH
 
+CAN_DIE = True
+
 # Pygame initialization
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -65,7 +67,7 @@ if __name__ == '__main__':
         world.game_lights[0].set_intensity(max(5 - world.num_player_deaths, 0))
 
         # kill if 5 deaths
-        if world.num_player_deaths >= 5:
+        if world.num_player_deaths >= 5 and CAN_DIE:
             pygame.quit()
 
         # prepare device memory for input
