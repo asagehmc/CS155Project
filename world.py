@@ -15,6 +15,7 @@ MAT_PATH = "./world_data/materials.txt"
 LEVEL_PATH = "world_data/2/world1.txt"
 X, Y, Z = 0, 1, 2
 DEATH_DIST = 4
+CAN_DIE = True
 
 
 def subtract(v1, v2):
@@ -198,6 +199,14 @@ class World:
                                  current[1] + shift[1] / C_GLIDE,
                                  current[2] + shift[2] / C_GLIDE)
         self.camera.set_direction(0, -1, 1)
+            
+        # set light intensity to decrease with player deaths
+        if CAN_DIE:
+            world.game_lights[0].set_intensity(max(5 - world.num_player_deaths, 0))
+
+        # kill if 5 deaths
+        if world.num_player_deaths >= 5 and CAN_DIE:
+            pygame.quit()
 
     def update_checkpoint(self, block):
         # handle checkpoint stuff
