@@ -1,5 +1,7 @@
 import threading
 
+import pygame
+
 import level_generator
 import util
 from block import Block
@@ -76,6 +78,7 @@ class World:
         self.level_gen_output = None
         self.highest_level = 3
         self.player = None
+        self.game_over = False
         mat_lines = []
         world_lines = []
         with open(MAT_PATH, 'r') as file:
@@ -208,7 +211,7 @@ class World:
 
         # kill if deaths exceeds lives
         if self.num_player_deaths >= NUM_LIVES and CAN_DIE and not self.player.cheat_death:
-            pygame.quit()
+            self.game_over = True
 
     def update_checkpoint(self, block):
         # handle checkpoint stuff

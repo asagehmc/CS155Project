@@ -2,7 +2,6 @@ import math
 from datetime import datetime
 import pyopencl as cl
 import time
-import pygame
 from pygame.locals import *
 from custom_types import *
 
@@ -84,6 +83,8 @@ if __name__ == '__main__':
         # wait for kernel executions
         world.update(dt)
         before = int(datetime.timestamp(datetime.now()) * 1000)
+        if world.game_over:
+            break
         evt.wait()
 
         cl.enqueue_copy(queue, out, out_buf).wait()

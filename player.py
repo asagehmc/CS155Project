@@ -89,7 +89,6 @@ class Player:
             self.velocity[Y] += -GRAVITY * dt
         if keys[pygame.K_p]:
             self.cheat_death = not self.cheat_death
-        self.velocity[Y] += -GRAVITY * dt
 
         # determine if we should ever "bounce" in a direction (in case frames go low and we get a high dt force)
         prev_touch_directions = self.touch_directions
