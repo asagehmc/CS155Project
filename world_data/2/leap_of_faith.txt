@@ -16,7 +16,7 @@ block: block2
         reflectivity: 0
 block: block3
         flags: finish
-        corner1: -2.5, -40.5, 14.5
+        corner1: -2.5, -40.5, 13.5
         corner2: 2.5, -39.5, 20.5
         material: DARK_RED 
         reflectivity: 0

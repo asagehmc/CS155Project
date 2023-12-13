@@ -38,7 +38,7 @@ block: block7
         flags: finish
         corner1: -2.25, -1.375, 23.25
         corner2: 4.75, 1.625, 26.25
-        material: ORANGE_LIGHT
+        material: DARK_YELLOW
         reflectivity: 0
 block: block8
         corner1: -0.5, -3.375, -0.5
