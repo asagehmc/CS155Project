@@ -62,7 +62,7 @@ class Player:
         self.pos = array([bot[X], bot[Y], bot[Z]], dtype=np.float64)
         self.velocity = array([0, 0, 0], dtype=np.float64)
         self.buf_wrap = buf_wrapper
-        self.cheat_death = False
+        self.cheat_death = True
 
     def set_position(self, pos):
         self.pos = util.triple_sub(pos, self.size/2)

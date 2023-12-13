@@ -8,7 +8,9 @@ from custom_types import *
 # help from: https://github.com/PyOCL/pyopencl-examples
 from world import World
 
-SCREEN_WIDTH = 500
+FULLSCREEN = True
+RESIZING = 3
+SCREEN_WIDTH = 480
 SCREEN_HEIGHT = 300
 
 OUTPUT_SIZE = SCREEN_HEIGHT * SCREEN_WIDTH
@@ -17,7 +19,15 @@ CAN_DIE = False
 
 # Pygame initialization
 pygame.init()
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
+small_screen = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = None
+
+if FULLSCREEN:
+    screen = pygame.display.set_mode((SCREEN_WIDTH * RESIZING, SCREEN_HEIGHT * RESIZING), pygame.FULLSCREEN)
+else:
+    screen = pygame.display.set_mode((SCREEN_WIDTH * RESIZING, SCREEN_HEIGHT * RESIZING))
+
 clock = pygame.time.Clock()
 pygame.font.init()
 font = pygame.font.SysFont('courier', 30)
@@ -88,11 +98,17 @@ if __name__ == '__main__':
         evt.wait()
 
         cl.enqueue_copy(queue, out, out_buf).wait()
-        pygame.surfarray.blit_array(screen, out)
+        pygame.surfarray.blit_array(small_screen, out)
         # text = str(int(clock.get_fps()))
         # text_surface = font.render(text, False, (255, 255, 255))
         # screen.blit(text_surface, (SCREEN_WIDTH-60, 10))
+
+        resized_surface = pygame.transform.scale(small_screen, (SCREEN_WIDTH * RESIZING, SCREEN_HEIGHT * RESIZING))
+
+        newSurface = pygame.transform.scale(small_screen, (SCREEN_WIDTH * RESIZING, SCREEN_HEIGHT * RESIZING))
+        screen.blit(newSurface, (0, 0))
         pygame.display.flip()
+
         clock.tick(60)
 
     pygame.quit()
