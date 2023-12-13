@@ -1,0 +1,31 @@
+block: block0
+        corner1: 20.5, -3.5, 35.25
+        corner2: 21.0, -2.5, 59.25
+        material: BLUE_LIGHT
+        reflectivity: 0
+block: block1
+        corner1: 15.25, -3.5, 14.0
+        corner2: 15.75, -2.5, 38.0
+        material: CYAN_LIGHT
+        reflectivity: 0
+block: block2
+        corner1: 9.75, -3.5, 2.0
+        corner2: 10.25, -2.5, 26.0
+        material: GREEN_LIGHT
+        reflectivity: 0
+block: block3
+        corner1: -5.0, -3.5, -22.25
+        corner2: -4.5, -2.5, 8.75
+        material: RED_LIGHT
+        reflectivity: 0
+block: block4
+        corner1: 4.5, -3.5, -8.5
+        corner2: 5.0, -2.5, 15.5
+        material: YELLOW_LIGHT
+        reflectivity: 0
+block: block5
+        flags: start, finish
+        corner1: -0.25, -3.5, -12.0
+        corner2: 0.25, -2.5, 12.0
+        material: ORANGE_LIGHT
+        reflectivity: 0

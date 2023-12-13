@@ -1,0 +1,46 @@
+block: block0
+        corner1: 0.5, -7.125, 11.0
+        corner2: 1.5, 1.875, 12.0
+        material: DARK_ASH
+        reflectivity: 0
+block: block1
+        corner1: 0.5, -7.125, -0.25
+        corner2: 1.5, 1.875, 0.75
+        material: ASH
+        reflectivity: 0
+block: block2
+        corner1: -2.5, -7.125, 17.25
+        corner2: -1.5, 1.875, 18.25
+        material: ASH_LIGHT
+        reflectivity: 0
+block: block3
+        corner1: -2.0, -7.125, 5.25
+        corner2: -1.0, 1.875, 6.25
+        material: DARK_GRAY
+        reflectivity: 0
+block: block4
+        corner1: 1.5, -0.375, -0.5
+        corner2: 2.5, 0.375, 0.5
+        material: DARK_YELLOW
+        reflectivity: 0
+block: block5
+        corner1: 0.5, -7.125, -1.25
+        corner2: 1.5, -6.375, -0.25
+        material: YELLOW_LIGHT
+        reflectivity: 0
+block: block6
+        corner1: -2.5, -7.375, -1.75
+        corner2: 4.5, -7.125, 18.25
+        material: GRAY_LIGHT
+        reflectivity: 0
+block: block7
+        corner1: -2.25, -1.375, 23.25
+        corner2: 4.75, 1.625, 26.25
+        material: ORANGE_LIGHT
+        reflectivity: 0
+block: block8
+        flags: start, finish
+        corner1: -0.5, -3.375, -0.5
+        corner2: 0.5, -2.625, 0.5
+        material: YELLOW
+        reflectivity: 0
