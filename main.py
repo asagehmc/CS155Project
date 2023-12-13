@@ -1,4 +1,4 @@
-import math
+import pygame
 from datetime import datetime
 import pyopencl as cl
 import time

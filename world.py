@@ -1,7 +1,5 @@
 import threading
 
-import pygame
-
 import level_generator
 import util
 from block import Block
