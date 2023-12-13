@@ -1,0 +1,30 @@
+block: block0
+        corner1: -2.0, -5.5, 23.0
+        corner2: 0.0, -4.5, 25.0
+        material: REFLECTIVE_DARK_YELLOW
+block: block1
+        corner1: 1.0, -6.5, 18.0
+        corner2: 3.0, -5.5, 20.0
+        material: REFLECTIVE_DARK_YELLOW
+block: block2
+        flags: finish
+        corner1: -3.0, -4.5, 28.0
+        corner2: -1.0, -3.5, 30.0
+        material: REFLECTIVE_DARK_YELLOW
+block: block3
+        flags: start
+        corner1: -1.0, -3.5, -1.0
+        corner2: 1.0, -2.5, 1.0
+        material: REFLECTIVE_DARK_YELLOW
+block: block4
+        corner1: 1.0, -2.5, 5.0
+        corner2: 3.0, -1.5, 7.0
+        material: REFLECTIVE_DARK_YELLOW
+block: block5
+        corner1: -6.0, 0.5, 13.0
+        corner2: -4.0, 1.5, 15.0
+        material: REFLECTIVE_DARK_YELLOW
+block: block6
+        corner1: -3.0, -1.5, 10.0
+        corner2: -1.0, -0.5, 12.0
+        material: REFLECTIVE_DARK_YELLOW

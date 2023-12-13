@@ -21,7 +21,6 @@ block: block3
         material: RED_LIGHT
         reflectivity: 0
 block: block4
-        flags: start
         corner1: 4.5, -3.5, -8.5
         corner2: 5.0, -2.5, 15.5
         material: YELLOW_LIGHT

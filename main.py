@@ -88,10 +88,10 @@ if __name__ == '__main__':
 
         cl.enqueue_copy(queue, out, out_buf).wait()
         pygame.surfarray.blit_array(screen, out)
-        text = str(int(clock.get_fps()))
-        text_surface = font.render(text, False, (255, 255, 255))
-        screen.blit(text_surface, (SCREEN_WIDTH-60, 10))
+        # text = str(int(clock.get_fps()))
+        # text_surface = font.render(text, False, (255, 255, 255))
+        # screen.blit(text_surface, (SCREEN_WIDTH-60, 10))
         pygame.display.flip()
-        clock.tick(30)
+        clock.tick(60)
 
     pygame.quit()

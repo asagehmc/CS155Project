@@ -59,10 +59,10 @@ def generate_new_level(replaced_level_idx, buf_wrap, materials, prev_level, firs
     difficulty = min(5, difficulty)
     if new_level_idx == 0:
         difficulty = 0
-        print("HERE")
     dirpath = f"./world_data/{int(difficulty)}/"
 
     filepath = dirpath + random.choice([f for f in os.listdir(dirpath)])
+    print(filepath)
     lines = []
     num_rects = 0
     with open(filepath, 'r') as file:

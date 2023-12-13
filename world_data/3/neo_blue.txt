@@ -1,10 +1,10 @@
 block: block0
-        corner1: -1.0, -2.5, -8.0
-        corner2: 1.0, 2, -6.0
+        corner1: -1.0, -2.5, -7.0
+        corner2: 1.0, 3, -6.0
         material: DARK_BLUE
 block: block1
-        corner1: -1.0, -2.5, -1.0
-        corner2: 1.0, 2, 1.0
+        corner1: -1.0, -2.5, 0
+        corner2: 1.0, 3, 1.0
         material: BLUE
 block: block2
         flags: start, finish
@@ -13,5 +13,5 @@ block: block2
         material: DARK_NAVY
 block: block3
         corner1: -1.0, -2.5, 6.0
-        corner2: 1.0, 2, 8.0
+        corner2: 1.0, 3, 7.0
         material: BLUE_LIGHT

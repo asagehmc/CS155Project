@@ -80,7 +80,12 @@ class Player:
             self.velocity[Z] += -XZ_SPEED * dt
         if keys[pygame.K_SPACE] and self.touch_directions[Y] < 0:
             self.velocity[Y] = JUMP_SPEED
-        self.velocity[Y] += -GRAVITY * dt
+        if keys[pygame.K_c]:
+            self.velocity[Y] = 0
+            if keys[pygame.K_LSHIFT]:
+                self.velocity[Y] = 5
+        else:
+            self.velocity[Y] += -GRAVITY * dt
 
         # determine if we should ever "bounce" in a direction (in case frames go low and we get a high dt force)
         prev_touch_directions = self.touch_directions
