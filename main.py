@@ -61,7 +61,7 @@ if __name__ == '__main__':
         # set light position to move around player
         x += 2*dt
         player_pos = world.player.get_center()
-        world.game_lights[0].set_position(player_pos[0] + 2*np.sin(x), world.checkpoint[1] + 5, player_pos[2] + 2*np.cos(x))
+        world.game_lights[0].set_position(player_pos[0] + 2*np.sin(x), player_pos[1] + 8, player_pos[2] + 2*np.cos(x) - 2)
 
         # prepare device memory for input
         rect_buf = cl.Buffer(ctx, cl.mem_flags.READ_ONLY | cl.mem_flags.COPY_HOST_PTR, hostbuf=world.buf_wrap.rects)
@@ -92,6 +92,6 @@ if __name__ == '__main__':
         text_surface = font.render(text, False, (255, 255, 255))
         screen.blit(text_surface, (SCREEN_WIDTH-60, 10))
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(30)
 
     pygame.quit()
