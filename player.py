@@ -62,6 +62,7 @@ class Player:
         self.pos = array([bot[X], bot[Y], bot[Z]], dtype=np.float64)
         self.velocity = array([0, 0, 0], dtype=np.float64)
         self.buf_wrap = buf_wrapper
+        self.cheat_death = False
 
     def set_position(self, pos):
         self.pos = util.triple_sub(pos, self.size/2)
@@ -80,6 +81,8 @@ class Player:
             self.velocity[Z] += -XZ_SPEED * dt
         if keys[pygame.K_SPACE] and self.touch_directions[Y] < 0:
             self.velocity[Y] = JUMP_SPEED
+        if keys[pygame.K_p]:
+            self.cheat_death = not self.cheat_death
         self.velocity[Y] += -GRAVITY * dt
 
         # determine if we should ever "bounce" in a direction (in case frames go low and we get a high dt force)
