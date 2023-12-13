@@ -19,7 +19,7 @@ Materials:
         diffuse_color: 0.4, 0.4, 0.4
         specular_color: 0.05, 0.4, 0.0
         specular_power: 10
-        reflectivity: 0.0
+        reflectivity: 0.8
     mat: RED_LIGHT
         ambient_color: 0.09137254901960784, 0.05882352941176471, 0.05490196078431373
         diffuse_color: 0.548235294117647, 0.35294117647058826, 0.32941176470588235
