@@ -31,7 +31,6 @@ def threaded_call_level_generate(output, level_idx_to_replace, buf_wrap, materia
     output.rect_buf = rect_buf
     output.new_level = new_level
     output.game_blocks = game_blocks
-    print("DONE WITH THREAD!")
 
 
 class LevelGenOutput:
@@ -167,10 +166,8 @@ class World:
                 self.update_checkpoint(checkpoint_block)
         # do we need to regenerate levels, and we haven't started yet?
         if self.num_levels_to_regenerate > 0 and self.level_regen_thread is None:
-            print("NUM LEVELS TO REGENERATE", self.num_levels_to_regenerate)
             if self.level_num > 1:
                 self.level_gen_output = LevelGenOutput()
-                print("CURRENT LEVEL", self.level_num)
 
                 self.level_regen_thread = threading.Thread(target=threaded_call_level_generate,
                                                            args=(self.level_gen_output,
@@ -219,7 +216,6 @@ class World:
         self.checkpoint = util.triple_add((0, 5, 0), block.center())
         # start loading next level
         self.level_num += 1
-        print("UPDATING SELF LEVELNUM", self.level_num)
         if self.level_num > 1:
             self.num_levels_to_regenerate += 1
 

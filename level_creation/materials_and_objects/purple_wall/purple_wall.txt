@@ -1,0 +1,37 @@
+block: block0
+        corner1: -1.875, -3.5, -1.375
+        corner2: -0.875, 3.5, 17.625
+        material: DARK_PURPLE
+        reflectivity: 0
+block: block1
+        corner1: -0.875, -1.75, 3.375
+        corner2: -0.625, -0.75, 6.625
+        material: PURPLE
+        reflectivity: 0
+block: block2
+        flags: start
+        corner1: -0.875, -3.5, -1.375
+        corner2: 0.875, -2.5, 1.375
+        material: PURPLE
+        reflectivity: 0
+block: block3
+        corner1: -10.875, 3.5, -1.625
+        corner2: -0.875, 3.75, -1.375
+        material: BLUE_LIGHT
+        reflectivity: 0
+block: block4
+        corner1: -0.875, 2.5, 14.375
+        corner2: -0.625, 3.5, 17.625
+        material: NAVY_LIGHT
+        reflectivity: 0
+block: block5
+        flags: finish
+        corner1: -10.875, 3.75, 1.875
+        corner2: -10.375, 4.0, 17.375
+        material: CYAN_LIGHT
+        reflectivity: 0
+block: block6
+        corner1: -0.875, 0.25, 8.125
+        corner2: -0.625, 1.25, 11.375
+        material: PURPLE_LIGHT
+        reflectivity: 0

@@ -35,8 +35,6 @@ class __TreeNode:
 
 def generate_new_level(replaced_level_idx, buf_wrap, materials, prev_level, first=False):
     new_level_idx = replaced_level_idx + 4 - (4 if first else 0)
-    print("NEW LEVEL", new_level_idx)
-    print("LEVEL BEING REPLACED:", replaced_level_idx)
 
     subtree_size = 2 ** MAX_TREE_DEPTH_PER_LEVEL
     # make a copy since we don't want to affect these until completion
@@ -59,11 +57,12 @@ def generate_new_level(replaced_level_idx, buf_wrap, materials, prev_level, firs
     # bound it
     difficulty = max(1, difficulty)
     difficulty = min(5, difficulty)
+    if new_level_idx == 0:
+        difficulty = 0
+        print("HERE")
     dirpath = f"./world_data/{int(difficulty)}/"
 
     filepath = dirpath + random.choice([f for f in os.listdir(dirpath)])
-    print("LOADING ", filepath)
-    print()
     lines = []
     num_rects = 0
     with open(filepath, 'r') as file:
