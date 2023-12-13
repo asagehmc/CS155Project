@@ -15,7 +15,7 @@ MAT_PATH = "./world_data/materials.txt"
 LEVEL_PATH = "world_data/2/world1.txt"
 X, Y, Z = 0, 1, 2
 DEATH_DIST = 4
-CAN_DIE = False
+CAN_DIE = True
 LIGHT_INTENSITY = 10
 NUM_LIVES = 5
 
@@ -203,11 +203,11 @@ class World:
         self.camera.set_direction(0, -1, 1)
             
         # set light intensity to decrease with player deaths
-        if CAN_DIE:
+        if CAN_DIE and not self.player.cheat_death:
             self.game_lights[0].set_intensity(max(LIGHT_INTENSITY - self.num_player_deaths * (LIGHT_INTENSITY/NUM_LIVES), 0))
 
         # kill if deaths exceeds lives
-        if self.num_player_deaths >= NUM_LIVES and CAN_DIE:
+        if self.num_player_deaths >= NUM_LIVES and CAN_DIE and not self.player.cheat_death:
             pygame.quit()
 
     def update_checkpoint(self, block):
