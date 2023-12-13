@@ -16,7 +16,7 @@ LEVEL_PATH = "world_data/2/world1.txt"
 X, Y, Z = 0, 1, 2
 DEATH_DIST = 4
 CAN_DIE = False
-LIGHT_INTENSITY = 5
+LIGHT_INTENSITY = 10
 NUM_LIVES = 5
 
 
@@ -118,7 +118,7 @@ class World:
 
         # functionality is left in here to have 2+ lights, but we'll leave it at 1 for performance
         self.num_lights = 1
-        self.lights_buf = np.array([((0, 5, 0), (1, 1, 1), 5)], dtype=light_type)
+        self.lights_buf = np.array([((0, 5, 0), (1, 1, 1), LIGHT_INTENSITY)], dtype=light_type)
         self.game_lights[0] = Light(self.lights_buf, 0)
 
         self.camera_data_buf = np.array([((0, 4.5, -4.5), (1, 0, 0), (0, 1, 0), (0, 0, 1))], dtype=camera_data_type)
@@ -206,7 +206,7 @@ class World:
         if CAN_DIE:
             self.game_lights[0].set_intensity(max(LIGHT_INTENSITY - self.num_player_deaths * (LIGHT_INTENSITY/NUM_LIVES), 0))
 
-        # kill if 5 deaths
+        # kill if deaths exceeds lives
         if self.num_player_deaths >= NUM_LIVES and CAN_DIE:
             pygame.quit()
 
