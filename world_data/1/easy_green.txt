@@ -1,0 +1,27 @@
+block: block0
+        corner1: 5.5, -3.5, 6.0
+        corner2: 8.5, -2.5, 9.0
+        material: DARK_GREEN
+        reflectivity: 0
+block: block1
+        corner1: 5.5, -3.5, 13.0
+        corner2: 8.5, -2.5, 16.0
+        material: DARK_CYAN
+        reflectivity: 0
+block: block2
+        corner1: -1.5, -3.5, 6.0
+        corner2: 1.5, -2.5, 9.0
+        material: GREEN
+        reflectivity: 0
+block: block3
+        flags: finish
+        corner1: 5.5, -3.5, 20.0
+        corner2: 8.5, -2.5, 23.0
+        material: CYAN
+        reflectivity: 0
+block: block4
+        flags: start
+        corner1: -1.5, -3.5, -1.5
+        corner2: 1.5, -2.5, 1.5
+        material: GREEN_LIGHT
+        reflectivity: 0

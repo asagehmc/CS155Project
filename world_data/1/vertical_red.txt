@@ -1,0 +1,27 @@
+block: block0
+        flags: start
+        corner1: -1.5, -3.5, -1.0
+        corner2: 1.5, -2.5, 1.0
+        material: DARK_RED 
+        reflectivity: 0
+block: block1
+        corner1: -5.5, -0.5, -1.0
+        corner2: -3.5, 0.5, 5.0
+        material: DARK_ORANGE
+        reflectivity: 0
+block: block2
+        corner1: 3.5, -0.5, -1.0
+        corner2: 5.5, 0.5, 5.0
+        material: RED
+        reflectivity: 0
+block: block3
+        corner1: -3.0, 3.5, 0.0
+        corner2: 3.0, 4.5, 2.0
+        material: ORANGE
+        reflectivity: 0
+block: block4
+        flags: finish
+        corner1: -3.0, 5.5, 5.5
+        corner2: 3.0, 6.5, 10.5
+        material: YELLOW
+        reflectivity: 0
