@@ -1,0 +1,62 @@
+block: block0
+        corner1: -9.495000000000001, -13.0, 14.5
+        corner2: -8.504999999999999, 7.0, 15.5
+        material: BLUE
+        reflectivity: 0
+block: block1
+        corner1: -3.495, -13.0, 15.5
+        corner2: -2.505, 7.0, 16.5
+        material: NAVY
+        reflectivity: 0
+block: block2
+        corner1: -3.4850000000000003, -13.0, 7.5
+        corner2: -2.495, 7.0, 8.5
+        material: GREEN
+        reflectivity: 0
+block: block3
+        flags: finish
+        corner1: -6.495, -13.0, 26.5
+        corner2: -5.505, 7.0, 27.5
+        material: ASH
+        reflectivity: 0
+block: block4
+        corner1: -6.495, -13.0, 10.5
+        corner2: -5.505, 7.0, 11.5
+        material: CYAN
+        reflectivity: 0
+block: block5
+        corner1: 1.505, -13.0, 12.5
+        corner2: 2.495, 7.0, 13.5
+        material: PURPLE
+        reflectivity: 0
+block: block6
+        corner1: -2.495, -13.0, 22.5
+        corner2: -1.505, 7.0, 23.5
+        material: BROWN
+        reflectivity: 0
+block: block7
+        corner1: 2.505, -13.0, 19.5
+        corner2: 3.495, 7.0, 20.5
+        material: PINK
+        reflectivity: 0
+block: block8
+        corner1: -8.495000000000001, -13.0, 19.5
+        corner2: -7.505, 7.0, 20.5
+        material: GRAY
+        reflectivity: 0
+block: block9
+        flags: start
+        corner1: -0.4950000000000001, -13.0, -0.5
+        corner2: 0.4950000000000001, 7.0, 0.5
+        material: RED
+        reflectivity: 0
+block: block10
+        corner1: -5.485, -13.0, 2.5
+        corner2: -4.495, 7.0, 3.5
+        material: ORANGE
+        reflectivity: 0
+block: block11
+        corner1: 2.505, -13.0, 3.5
+        corner2: 3.495, 7.0, 4.5
+        material: YELLOW
+        reflectivity: 0
