@@ -472,10 +472,12 @@ __kernel void trace_rays(__global rect* rects,
             closest_hit = hit.distance;
 
             // Add portion of color.
-            vector reflect_color = get_hit_color(&origin, &ray_cast, closest_rect, closest_hit,
-                                    world, rects, materials, lights, bounding_hierarchy);
-            reflect_color = pCmult(&reflect_color, materials[rectangle.mat].reflectivity);
-            light = ppsum(&light, &reflect_color);
+            if (closest_rect != -1) {
+                vector reflect_color = get_hit_color(&origin, &ray_cast, closest_rect, closest_hit,
+                                        world, rects, materials, lights, bounding_hierarchy);
+                reflect_color = pCmult(&reflect_color, materials[rectangle.mat].reflectivity);
+                light = ppsum(&light, &reflect_color);
+            }
         }
         
         out[global_id].r = fmin(light.x, 1) * 255;
